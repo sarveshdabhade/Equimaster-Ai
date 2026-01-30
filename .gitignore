@@ -1,0 +1,17 @@
+# Python junk
+__pycache__/
+*.py[cod]
+.venv/
+env/
+venv/
+
+# Heavy Data (CRITICAL: Do not upload these)
+data/
+*.csv
+*.h5
+*.pkl
+*.parquet
+
+# Cursor/VS Code settings
+.vscode/
+.cursorrules
