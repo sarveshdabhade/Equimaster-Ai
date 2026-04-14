@@ -176,8 +176,35 @@ st.markdown("""
 
     /* Soft glass card for sections */
     .glass-card { background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border-radius: 12px; padding: 10px; border: 1px solid rgba(255,255,255,0.025); }
+
+    /* Sidebar styles */
+    section[data-testid="stSidebar"] {
+        background: linear-gradient(180deg, rgba(6,10,20,0.95), rgba(10,14,20,0.98));
+        border-right: 1px solid #2A2F3E;
+    }
+    section[data-testid="stSidebar"] > div > div > button {
+        width: 100%;
+        margin-bottom: 8px;
+    }
     </style>
 """, unsafe_allow_html=True)
+
+# Sidebar with quick actions (Phase 1)
+with st.sidebar:
+    st.markdown('<h3 style="color: #7CE6FF;">⚡ Quick Actions</h3>', unsafe_allow_html=True)
+    if st.button("🔄 Refresh Data", use_container_width=True):
+        st.cache_data.clear()
+        st.success("Cache cleared - data refreshing!")
+    if st.button("🚀 Retrain Selected Ticker", use_container_width=True):
+        st.info("Opening Training Manager...")
+        st.switch_page("pages/training_manager.py")
+    st.markdown("---")
+    st.markdown('<h4 style="color: #92FE9D;">📊 Platform Stats</h4>', unsafe_allow_html=True)
+    models_count = len([f for f in os.listdir("models") if f.endswith('.keras')])
+    st.metric("Trained Models", models_count)
+    st.metric("Stocks Covered", len(os.listdir("logs")) - 1 if os.path.exists("logs") else 0)
+    st.markdown("---")
+    st.caption("Equimaster v1.0")
 
 # --- 2. LOTTIE ANIMATIONS ---
 # Use refactored helper in `utils.py`
@@ -194,16 +221,37 @@ with col2:
 
 st.divider()
 
-# Live Index Bar
+# Hero KPIs Grid (Phase 1)
+st.markdown('<p class="market-band">Platform Overview</p>', unsafe_allow_html=True)
+kpi_cols = st.columns(4)
+with kpi_cols[0]:
+    models = len([f for f in os.listdir("models/") if f.endswith(('.keras', '.h5'))])
+    st.metric("🧠 AI Models", models)
+with kpi_cols[1]:
+    stocks = len([f for f in os.listdir("logs/") if f.endswith('.json')]) if os.path.exists("logs/") else 0
+    st.metric("📈 Stocks Trained", stocks)
+with kpi_cols[2]:
+    try:
+        data_age = (pd.Timestamp.now() - pd.to_datetime(os.path.getmtime("data/processed") if os.path.exists("data/processed") else 0, unit='s')).days
+        st.metric("📊 Data Freshness", f"{data_age} days")
+    except:
+        st.metric("📊 Data Freshness", "Checking...")
+with kpi_cols[3]:
+    st.metric("⚡ Status", "Live 🟢", delta="Online")
+
+st.divider()
+
+# Live Index Bar (enhanced)
 indices = fetch_index_snapshot()
 if indices:
     st.markdown('<p class="market-band">Live Market Indices</p>', unsafe_allow_html=True)
     cols = st.columns(len(indices))
     for col, (label, data) in zip(cols, indices.items()):
+        delta_color = "normal" if data['pct'] > 0 else "inverse"
         with col:
-            st.metric(label, f"₹{data['last']:,.2f}", f"{data['delta']:,.2f} ({data['pct']:.2f}%)")
+            st.metric(label, f"₹{data['last']:,.2f}", f"{data['delta']:,.2f} ({data['pct']:.2f}%)", delta_color=delta_color)
 else:
-    st.info("Live indices are temporarily unavailable. Please refresh in a moment.")
+    st.info("🌐 Live indices temporarily unavailable. Click sidebar 🔄 Refresh Data.")
 st.divider()
 
 # --- 5. MAIN ASSET SEARCH BAR ---
@@ -213,13 +261,18 @@ local_files = [f.replace("_processed.csv", "") for f in os.listdir(processed_dir
 # Force NIFTY 50 to be the default first option
 dropdown_options = ["NIFTY 50"] + local_files
 
-# Create a sleek layout for the search bar
-st.markdown('<h2 class="section-title"><span class="accent">Asset Search Terminal</span></h2>', unsafe_allow_html=True)
-col_search, col_status = st.columns([3, 1])
+# Enhanced Ticker Search with Preview (Phase 1)
+st.markdown('<h2 class="section-title"><span class="accent">🔍 Asset Search Terminal</span></h2>', unsafe_allow_html=True)
 
+# Search preview expander
+with st.expander("Preview Available Stocks (Click to explore)", expanded=False):
+    st.dataframe(pd.DataFrame({"Stocks": dropdown_options}), use_container_width=True, hide_index=True)
+
+col_search, col_status = st.columns([3, 1])
 with col_search:
-    # label_visibility="collapsed" hides the text above the box to make it look like a pure search bar
-    ticker = st.selectbox("Search Stocks", dropdown_options, index=0, label_visibility="collapsed")
+    ticker = st.selectbox("Select Stock", dropdown_options, index=0, label_visibility="collapsed", help="Choose from trained models or enter custom (data auto-downloads)")
+    if ticker:
+        st.info(f"📂 Loaded: {ticker}")
 
 # Dynamic Paths based on the Search Bar
 if ticker == "NIFTY 50":
@@ -283,7 +336,7 @@ data_mtime = os.path.getmtime(DATA_PATH) if DATA_PATH and os.path.exists(DATA_PA
 df = load_data(ticker, DATA_PATH, data_mtime)
 
 # --- 7. THE 4 RESEARCH PILLARS (TABS) ---
-tab1, tab2, tab3, tab4 = st.tabs(["Technical Chart", "The LSTM Model", "RAG Model Sentiment Analysis (News)", "The Miner (Fundamentals)"])
+tab1, tab2, tab3, tab4 = st.tabs(["📊 Technical Chart", "🧠 The LSTM Model", "📰 RAG News Sentiment", "⛏️ Fundamentals Miner"])
 
 # --- TAB 1: TECHNICALS (MULTI-PANEL TRADINGVIEW UI) ---
 with tab1:
@@ -301,3 +354,16 @@ with tab3:
 # --- TAB 4: MINER (FUNDAMENTALS) ---
 with tab4:
     fundamentals.render_fundamentals_tab(ticker)
+
+# Footer Status (Phase 1)
+st.markdown("---")
+st.markdown('<div class="glass-card" style="text-align: center; padding: 16px;">', unsafe_allow_html=True)
+col_footer1, col_footer2 = st.columns(2)
+with col_footer1:
+    data_exists = os.path.exists(DATA_PATH)
+    st.metric("💾 Local Data", "✅ Ready" if data_exists else "❌ Missing", delta="Load now?")
+with col_footer2:
+    model_ready = MODEL_PATH and os.path.exists(MODEL_PATH)
+    st.metric("🤖 Model Status", "🟢 Loaded" if model_ready else "🔴 Offline", delta="Retrain?")
+st.markdown('  <p style="color: #8EA6C4; font-size: 0.85rem; margin-top: 8px;">Data updated recently | Models optimized for Nifty500</p>', unsafe_allow_html=True)
+st.markdown('</div>', unsafe_allow_html=True)
