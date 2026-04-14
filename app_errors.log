@@ -1,0 +1,135 @@
+2026-04-09 16:59:54,716 WARNING From D:\Projects\Equimaster-Ai\.venv\Lib\site-packages\keras\src\backend\common\global_state.py:82: The name tf.reset_default_graph is deprecated. Please use tf.compat.v1.reset_default_graph instead.
+
+2026-04-09 17:00:33,263 WARNING TensorFlow GPU support is not available on native Windows for TensorFlow >= 2.11. Even if CUDA/cuDNN are installed, GPU will not be used. Please use WSL2 or the TensorFlow-DirectML plugin.
+2026-04-09 17:00:33,269 WARNING Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+2026-04-10 10:10:50,732 WARNING From D:\Projects\Equimaster-Ai\.venv\Lib\site-packages\keras\src\backend\common\global_state.py:82: The name tf.reset_default_graph is deprecated. Please use tf.compat.v1.reset_default_graph instead.
+
+2026-04-10 10:12:13,523 WARNING TensorFlow GPU support is not available on native Windows for TensorFlow >= 2.11. Even if CUDA/cuDNN are installed, GPU will not be used. Please use WSL2 or the TensorFlow-DirectML plugin.
+2026-04-10 10:12:13,526 WARNING Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+2026-04-11 20:10:37,478 WARNING From D:\Projects\Equimaster-Ai\.venv\Lib\site-packages\keras\src\backend\common\global_state.py:82: The name tf.reset_default_graph is deprecated. Please use tf.compat.v1.reset_default_graph instead.
+
+2026-04-11 20:11:08,163 WARNING TensorFlow GPU support is not available on native Windows for TensorFlow >= 2.11. Even if CUDA/cuDNN are installed, GPU will not be used. Please use WSL2 or the TensorFlow-DirectML plugin.
+2026-04-11 20:11:08,169 WARNING Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+2026-04-11 20:57:49,222 WARNING From D:\Projects\Equimaster-Ai\.venv\Lib\site-packages\keras\src\backend\common\global_state.py:82: The name tf.reset_default_graph is deprecated. Please use tf.compat.v1.reset_default_graph instead.
+
+2026-04-11 20:58:14,188 WARNING TensorFlow GPU support is not available on native Windows for TensorFlow >= 2.11. Even if CUDA/cuDNN are installed, GPU will not be used. Please use WSL2 or the TensorFlow-DirectML plugin.
+2026-04-11 20:58:14,196 WARNING Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+2026-04-11 20:58:45,863 WARNING Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+2026-04-11 21:23:36,487 WARNING From C:\Users\SSD\AppData\Roaming\Python\Python313\site-packages\keras\src\backend\common\global_state.py:82: The name tf.reset_default_graph is deprecated. Please use tf.compat.v1.reset_default_graph instead.
+
+2026-04-11 22:34:13,662 WARNING From D:\Projects\Equimaster-Ai\.venv\Lib\site-packages\keras\src\backend\common\global_state.py:82: The name tf.reset_default_graph is deprecated. Please use tf.compat.v1.reset_default_graph instead.
+
+2026-04-11 22:34:58,949 WARNING TensorFlow GPU support is not available on native Windows for TensorFlow >= 2.11. Even if CUDA/cuDNN are installed, GPU will not be used. Please use WSL2 or the TensorFlow-DirectML plugin.
+2026-04-11 22:34:58,952 WARNING Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+2026-04-11 23:52:26,139 WARNING Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+2026-04-11 23:52:48,320 WARNING Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+2026-04-11 23:53:07,106 WARNING Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+2026-04-11 23:53:53,877 WARNING Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+2026-04-11 23:53:55,827 WARNING 5 out of the last 7 calls to <function TensorFlowTrainer.make_predict_function.<locals>.one_step_on_data_distributed at 0x000002427AA19620> triggered tf.function retracing. Tracing is expensive and the excessive number of tracings could be due to (1) creating @tf.function repeatedly in a loop, (2) passing tensors with different shapes, (3) passing Python objects instead of tensors. For (1), please define your @tf.function outside of the loop. For (2), @tf.function has reduce_retracing=True option that can avoid unnecessary retracing. For (3), please refer to https://www.tensorflow.org/guide/function#controlling_retracing and https://www.tensorflow.org/api_docs/python/tf/function for  more details.
+2026-04-12 00:06:37,273 WARNING From C:\Users\SSD\AppData\Roaming\Python\Python313\site-packages\keras\src\backend\common\global_state.py:82: The name tf.reset_default_graph is deprecated. Please use tf.compat.v1.reset_default_graph instead.
+
+2026-04-12 00:08:28,319 WARNING Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+2026-04-12 00:08:28,695 WARNING Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+2026-04-12 00:09:00,870 WARNING Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+2026-04-12 00:09:00,948 WARNING Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+2026-04-12 00:09:27,814 WARNING Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+2026-04-12 00:09:46,208 WARNING Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+2026-04-12 00:09:46,355 WARNING Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+2026-04-12 00:13:02,282 WARNING Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+2026-04-12 00:13:14,606 WARNING Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+2026-04-12 00:13:14,701 WARNING Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+2026-04-12 00:13:38,322 WARNING Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+2026-04-12 00:13:38,442 WARNING Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+2026-04-12 00:14:00,041 WARNING Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+2026-04-12 00:14:00,133 WARNING Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+2026-04-12 00:19:42,408 WARNING From D:\Projects\Equimaster-Ai\.venv\Lib\site-packages\keras\src\backend\common\global_state.py:82: The name tf.reset_default_graph is deprecated. Please use tf.compat.v1.reset_default_graph instead.
+
+2026-04-12 00:21:15,434 WARNING TensorFlow GPU support is not available on native Windows for TensorFlow >= 2.11. Even if CUDA/cuDNN are installed, GPU will not be used. Please use WSL2 or the TensorFlow-DirectML plugin.
+2026-04-12 00:21:15,439 WARNING Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+2026-04-12 00:21:26,418 WARNING Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+2026-04-12 00:21:26,545 WARNING Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+2026-04-12 00:25:15,262 WARNING Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+2026-04-12 00:29:27,764 WARNING From D:\Projects\Equimaster-Ai\.venv\Lib\site-packages\keras\src\backend\common\global_state.py:82: The name tf.reset_default_graph is deprecated. Please use tf.compat.v1.reset_default_graph instead.
+
+2026-04-12 00:35:06,679 WARNING From D:\Projects\Equimaster-Ai\.venv\Lib\site-packages\keras\src\backend\common\global_state.py:82: The name tf.reset_default_graph is deprecated. Please use tf.compat.v1.reset_default_graph instead.
+
+2026-04-12 00:50:02,168 WARNING From D:\Projects\Equimaster-Ai\.venv\Lib\site-packages\keras\src\backend\common\global_state.py:82: The name tf.reset_default_graph is deprecated. Please use tf.compat.v1.reset_default_graph instead.
+
+2026-04-12 00:50:36,632 WARNING TensorFlow GPU support is not available on native Windows for TensorFlow >= 2.11. Even if CUDA/cuDNN are installed, GPU will not be used. Please use WSL2 or the TensorFlow-DirectML plugin.
+2026-04-12 00:50:36,636 WARNING Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+2026-04-12 00:50:46,374 WARNING Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+2026-04-12 00:50:46,472 WARNING Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+2026-04-12 00:51:39,307 WARNING Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+2026-04-12 00:51:49,606 WARNING Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+2026-04-12 00:51:49,745 WARNING Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+2026-04-12 18:59:48,054 WARNING From D:\Projects\Equimaster-Ai\.venv\Lib\site-packages\keras\src\backend\common\global_state.py:82: The name tf.reset_default_graph is deprecated. Please use tf.compat.v1.reset_default_graph instead.
+
+2026-04-12 19:00:33,782 WARNING TensorFlow GPU support is not available on native Windows for TensorFlow >= 2.11. Even if CUDA/cuDNN are installed, GPU will not be used. Please use WSL2 or the TensorFlow-DirectML plugin.
+2026-04-12 19:00:33,794 WARNING Compiled the loaded model, but the compiled metrics have yet to be built. `model.compile_metrics` will be empty until you train or evaluate the model.
+2026-04-12 19:11:15,042 WARNING From C:\Users\SSD\AppData\Roaming\Python\Python313\site-packages\keras\src\backend\common\global_state.py:82: The name tf.reset_default_graph is deprecated. Please use tf.compat.v1.reset_default_graph instead.
+
+2026-04-12 19:12:17,633 INFO Initialize LSTM for ADANIENT.NS horizon=1 model=models/lstm_ADANIENT.NS.keras
+2026-04-12 19:12:47,751 INFO Initialize LSTM for ADANIENT.NS horizon=5 model=models/lstm_ADANIENT.NS_h5.keras
+2026-04-12 19:16:21,607 WARNING From D:\Projects\Equimaster-Ai\.venv\Lib\site-packages\keras\src\backend\common\global_state.py:82: The name tf.reset_default_graph is deprecated. Please use tf.compat.v1.reset_default_graph instead.
+
+2026-04-12 19:17:15,881 INFO Initialize LSTM for ADANIENT.NS horizon=1 model=models/lstm_ADANIENT.NS.keras
+2026-04-12 19:17:16,277 WARNING TensorFlow GPU support is not available on native Windows for TensorFlow >= 2.11. Even if CUDA/cuDNN are installed, GPU will not be used. Please use WSL2 or the TensorFlow-DirectML plugin.
+2026-04-12 19:17:30,261 INFO Initialize LSTM for ADANIENT.NS horizon=5 model=models/lstm_ADANIENT.NS_h5.keras
+2026-04-12 19:17:47,775 INFO Initialize LSTM for ADANIENT.NS horizon=22 model=models/lstm_ADANIENT.NS_h22.keras
+2026-04-12 19:18:23,610 INFO Initialize LSTM for ADANIENT.NS horizon=88 model=models/lstm_ADANIENT.NS_h88.keras
+2026-04-12 19:19:44,711 INFO Initialize LSTM for TCS.NS horizon=5 model=models/lstm_TCS.NS_h5.keras
+2026-04-12 19:20:05,613 INFO Initialize LSTM for TCS.NS horizon=22 model=models/lstm_TCS.NS_h22.keras
+2026-04-12 19:20:26,285 INFO Initialize LSTM for TCS.NS horizon=88 model=models/lstm_TCS.NS_h88.keras
+2026-04-12 19:21:43,089 INFO Initialize LSTM for TCS.NS horizon=88 model=models/lstm_TCS.NS_h88.keras
+2026-04-12 19:23:22,209 INFO Initialize LSTM for TCS.NS horizon=88 model=models/lstm_TCS.NS_h88.keras
+2026-04-13 12:09:19,938 ERROR 
+1 Failed download:
+2026-04-13 12:09:19,939 ERROR ['^NSEI']: TypeError("'NoneType' object is not subscriptable")
+2026-04-13 12:09:20,000 ERROR 
+1 Failed download:
+2026-04-13 12:09:20,001 ERROR ['^NSEBANK']: TypeError("'NoneType' object is not subscriptable")
+2026-04-13 12:09:21,901 WARNING From D:\Projects\Equimaster-Ai\.venv\Lib\site-packages\keras\src\backend\common\global_state.py:82: The name tf.reset_default_graph is deprecated. Please use tf.compat.v1.reset_default_graph instead.
+
+2026-04-13 12:09:37,007 INFO Initialize LSTM for ADANIENT.NS horizon=1 model=models/lstm_ADANIENT.NS.keras
+2026-04-13 12:09:37,565 WARNING TensorFlow GPU support is not available on native Windows for TensorFlow >= 2.11. Even if CUDA/cuDNN are installed, GPU will not be used. Please use WSL2 or the TensorFlow-DirectML plugin.
+2026-04-13 12:09:57,056 INFO Initialize LSTM for ADANIENT.NS horizon=5 model=models/lstm_ADANIENT.NS_h5.keras
+2026-04-13 12:10:09,007 INFO Initialize LSTM for ADANIENT.NS horizon=5 model=models/lstm_ADANIENT.NS_h5.keras
+2026-04-13 12:11:19,208 ERROR 
+1 Failed download:
+2026-04-13 12:11:19,208 ERROR ['^NSEI']: TypeError("'NoneType' object is not subscriptable")
+2026-04-13 12:11:19,226 ERROR 
+1 Failed download:
+2026-04-13 12:11:19,226 ERROR ['^NSEBANK']: TypeError("'NoneType' object is not subscriptable")
+2026-04-13 12:11:20,565 INFO Initialize LSTM for ADANIENT.NS horizon=22 model=models/lstm_ADANIENT.NS_h22.keras
+2026-04-13 12:11:46,857 INFO Initialize LSTM for APOLLOHOSP.NS horizon=22 model=models/lstm_APOLLOHOSP.NS_h22.keras
+2026-04-13 12:26:54,366 INFO Initialize LSTM for APOLLOHOSP.NS horizon=1 model=models/lstm_APOLLOHOSP.NS.keras
+2026-04-13 12:59:48,964 WARNING From D:\Projects\Equimaster-Ai\.venv\Lib\site-packages\keras\src\backend\common\global_state.py:82: The name tf.reset_default_graph is deprecated. Please use tf.compat.v1.reset_default_graph instead.
+
+2026-04-13 13:00:02,748 INFO Initialize LSTM for NIFTY 50 horizon=1 model=models/lstm_NSEI.keras
+2026-04-13 13:00:03,110 WARNING TensorFlow GPU support is not available on native Windows for TensorFlow >= 2.11. Even if CUDA/cuDNN are installed, GPU will not be used. Please use WSL2 or the TensorFlow-DirectML plugin.
+2026-04-13 13:01:31,145 INFO Initialize LSTM for ADANIENT.NS horizon=1 model=models/lstm_ADANIENT.NS.keras
+2026-04-13 13:01:44,093 INFO Initialize LSTM for ADANIENT.NS horizon=5 model=models/lstm_ADANIENT.NS_h5.keras
+2026-04-13 13:02:02,028 INFO Initialize LSTM for ADANIENT.NS horizon=22 model=models/lstm_ADANIENT.NS_h22.keras
+2026-04-13 13:02:16,247 INFO Initialize LSTM for ADANIENT.NS horizon=1 model=models/lstm_ADANIENT.NS.keras
+2026-04-13 13:06:40,323 INFO Initialize LSTM for NIFTY 50 horizon=1 model=models/lstm_NSEI.keras
+2026-04-13 13:07:51,608 INFO Initialize LSTM for TCS.NS horizon=5 model=models/lstm_TCS.NS_h5.keras
+2026-04-13 13:08:07,124 INFO Initialize LSTM for TCS.NS horizon=22 model=models/lstm_TCS.NS_h22.keras
+2026-04-13 13:11:11,483 INFO Initialize LSTM for TCS.NS horizon=1 model=models/lstm_TCS.NS.keras
+2026-04-13 13:11:21,925 INFO Initialize LSTM for TCS.NS horizon=5 model=models/lstm_TCS.NS_h5.keras
+2026-04-13 13:11:49,780 INFO Initialize LSTM for TCS.NS horizon=22 model=models/lstm_TCS.NS_h22.keras
+2026-04-13 13:16:27,694 INFO Initialize LSTM for ADANIENT.NS horizon=1 model=models/lstm_ADANIENT.NS.keras
+2026-04-13 13:16:41,920 INFO Initialize LSTM for ADANIENT.NS horizon=5 model=models/lstm_ADANIENT.NS_h5.keras
+2026-04-13 13:16:56,715 INFO Initialize LSTM for ADANIENT.NS horizon=22 model=models/lstm_ADANIENT.NS_h22.keras
+2026-04-13 13:17:19,064 INFO Initialize LSTM for ADANIENT.NS horizon=88 model=models/lstm_ADANIENT.NS_h88.keras
+2026-04-13 13:57:18,414 INFO Initialize LSTM for ADANIENT.NS horizon=1 model=models/lstm_ADANIENT.NS.keras
+2026-04-13 15:23:21,208 INFO Initialize LSTM for TCS.NS horizon=1 model=models/lstm_TCS.NS.keras
+2026-04-13 15:23:21,841 WARNING TensorFlow GPU support is not available on native Windows for TensorFlow >= 2.11. Even if CUDA/cuDNN are installed, GPU will not be used. Please use WSL2 or the TensorFlow-DirectML plugin.
+2026-04-13 15:23:43,311 INFO Initialize LSTM for TCS.NS horizon=5 model=models/lstm_TCS.NS_h5.keras
+2026-04-13 15:24:00,882 INFO Initialize LSTM for TCS.NS horizon=22 model=models/lstm_TCS.NS_h22.keras
+2026-04-13 15:30:26,775 INFO Initialize LSTM for TCS.NS horizon=1 model=models/lstm_TCS.NS.keras
+2026-04-13 15:31:33,541 INFO Initialize LSTM for TCS.NS horizon=5 model=models/lstm_TCS.NS_h5.keras
+2026-04-13 15:31:55,963 INFO Initialize LSTM for TCS.NS horizon=22 model=models/lstm_TCS.NS_h22.keras
+2026-04-14 09:09:18,667 INFO Initialize LSTM for TCS.NS horizon=88 model=models/lstm_TCS.NS_h88.keras
+2026-04-14 09:09:59,005 INFO Initialize LSTM for ADANIPORTS.NS horizon=5 model=models/lstm_ADANIPORTS.NS_h5.keras
+2026-04-14 09:10:15,006 INFO Initialize LSTM for ADANIPORTS.NS horizon=22 model=models/lstm_ADANIPORTS.NS_h22.keras
+2026-04-14 09:10:30,797 INFO Initialize LSTM for ADANIPORTS.NS horizon=88 model=models/lstm_ADANIPORTS.NS_h88.keras

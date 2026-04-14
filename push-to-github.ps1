@@ -13,10 +13,10 @@ git add .
 git commit -m "Day 1: Initial Setup"
 
 # Add GitHub remote and push (replace YOUR_USERNAME with your GitHub username)
-$repoUrl = "https://github.com/YOUR_USERNAME/Equimaster-Ai.git"
+$repoUrl = "https://github.com/sarveshdabhade/Equimaster-Ai.git"
 git remote remove origin 2>$null
 git remote add origin $repoUrl
 git branch -M main
 git push -u origin main
 
-Write-Host "Done. Your repo is at: https://github.com/YOUR_USERNAME/Equimaster-Ai" -ForegroundColor Green
+Write-Host "Done. Your repo is at: https://github.com/sarveshdabhade/Equimaster-Ai" -ForegroundColor Green

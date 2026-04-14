@@ -12,6 +12,9 @@ data/
 *.pkl
 *.parquet
 
+# Generated notebook outputs
+notebooks/audit_plot.png
+
 # Cursor/VS Code settings
 .vscode/
 .cursorrules

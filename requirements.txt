@@ -1,0 +1,11 @@
+streamlit
+streamlit-lottie
+tensorflow
+pandas
+numpy
+scikit-learn
+joblib
+plotly
+matplotlib
+pandas_ta
+yfinance
