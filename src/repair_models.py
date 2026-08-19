@@ -17,6 +17,17 @@ def find_tickers():
     return tickers
 
 
+def resolve_model_path(ticker):
+    candidates = [
+        os.path.join(MODELS_DIR, f'lstm_{ticker}.keras'),
+        os.path.join(MODELS_DIR, f'lstm_{ticker}.h5'),
+    ]
+    for candidate in candidates:
+        if os.path.exists(candidate):
+            return candidate
+    return candidates[0]
+
+
 def model_input_features(model_path):
     try:
         import tensorflow as tf
@@ -55,7 +66,7 @@ def main(epochs=3):
     to_retrain = []
     for t in tickers:
         scaler_p = os.path.join(TRAIN_DIR, f'scaler_{t}.pkl')
-        model_p = os.path.join(MODELS_DIR, f'lstm_{t}.h5')
+        model_p = resolve_model_path(t)
         sf = scaler_features(scaler_p)
         mf = model_input_features(model_p) if os.path.exists(model_p) else None
         if mf is None or sf is None or mf != sf:

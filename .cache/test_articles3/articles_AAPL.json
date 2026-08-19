@@ -1,0 +1,18 @@
+[
+  {
+    "title": "AAPL: market focus shifts as positive sentiment returns",
+    "summary": "earnings beat and strong guidance lift sentiment for AAPL.",
+    "content": "AAPL continues to show positive market momentum. Analysts note higher demand, stronger execution, and improved operating leverage. The company remains focused on margin discipline and inventory control.",
+    "source": "Local fallback feed",
+    "published_at": "2026-08-19T11:22:25.067799+00:00",
+    "url": "https://example.com/aapl/0"
+  },
+  {
+    "title": "AAPL: market focus shifts as neutral sentiment returns",
+    "summary": "revenue momentum and demand expansion improve outlook for AAPL.",
+    "content": "AAPL remains in a mixed phase with stable cash generation and moderate growth. The market is watching margin improvements and any signs of stronger than expected demand.",
+    "source": "Local fallback feed",
+    "published_at": "2026-08-19T11:22:25.067812+00:00",
+    "url": "https://example.com/aapl/1"
+  }
+]

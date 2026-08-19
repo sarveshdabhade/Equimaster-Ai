@@ -10,6 +10,7 @@ import streamlit as st
 import logging
 import tensorflow as tf
 import plotly.graph_objects as go
+from src.market_context import build_market_context
 from src.preprocessor import add_technical_indicators
 from streamlit_lottie import st_lottie
 from utils import load_lottieurl
@@ -307,6 +308,25 @@ def render_lstm_tab(df, ticker, MODEL_PATH, SCALER_PATH, CLOSE_COL_IDX=1):
                         change = pred_val - current_price
                         change_pct = (change / current_price) * 100
                         st.metric(metric_label, f"₹{pred_val:,.2f}", f"{change:,.1f} ({change_pct:.1f}%)")
+
+                        market_context = build_market_context(ticker, horizon=horizon)
+                        sentiment_score = market_context.get("sentiment", {}).get("overall_score", 0.0)
+                        combined_score = market_context.get("combined_score", 0.0)
+                        combined_label = market_context.get("label", "Neutral")
+                        st.markdown("### Unified Market Signal")
+                        col_sig1, col_sig2, col_sig3 = st.columns(3)
+                        with col_sig1:
+                            st.metric("LSTM Signal", f"{change:+.2f}", f"{change_pct:+.1f}%")
+                        with col_sig2:
+                            st.metric("News Sentiment", f"{sentiment_score:+.2f}", delta=market_context.get("sentiment", {}).get("label", "Neutral"))
+                        with col_sig3:
+                            st.metric("Combined Signal", f"{combined_score:+.2f}", delta=combined_label)
+                        st.caption(market_context.get("summary", "No market context summary available."))
+
+                        if market_context.get("sentiment", {}).get("drivers"):
+                            st.markdown("**Key drivers:**")
+                            for driver in market_context["sentiment"]["drivers"]:
+                                st.markdown(f"- {driver}")
 
                         # Signal badge
                         signal_color = "🟢 BULLISH" if change > 0 else "🔴 BEARISH"

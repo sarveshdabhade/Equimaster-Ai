@@ -9,3 +9,7 @@ plotly
 matplotlib
 pandas_ta
 yfinance
+sentence-transformers
+faiss-cpu
+transformers
+torch
