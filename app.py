@@ -16,7 +16,8 @@ from streamlit_lottie import st_lottie
 
 # Import refactored helpers and tab renderers
 from utils import load_lottieurl, fetch_index_snapshot, fetch_stock_snapshot, load_data
-from tabs import technicals, lstm_model, news_sentinel, fundamentals
+from src.market_context import build_market_context
+from tabs import technicals, lstm_model, news_sentinel, fundamentals, market_overview
 
 # --- 1. CONFIGURATION & CSS ---
 st.set_page_config(page_title="Equimaster-Ai", page_icon=None, layout="wide")
@@ -326,6 +327,25 @@ else:
         # Non-fatal: do not block the rest of the app if live fetch fails
         pass
 
+if ticker:
+    market_context = build_market_context(ticker, horizon=5)
+    st.markdown('<h2 class="section-title"><span class="accent">🧠 Market Intelligence</span></h2>', unsafe_allow_html=True)
+    mc_cols = st.columns(4)
+    with mc_cols[0]:
+        st.metric("Technical Signal", f"{market_context.get('technical_signal', 0.0):+.4f}")
+    with mc_cols[1]:
+        st.metric("Sentiment", f"{market_context.get('sentiment', {}).get('overall_score', 0.0):+.2f}", delta=market_context.get('sentiment', {}).get('label', 'Neutral'))
+    with mc_cols[2]:
+        st.metric("Combined Signal", f"{market_context.get('combined_score', 0.0):+.2f}", delta=market_context.get('label', 'Neutral'))
+    with mc_cols[3]:
+        st.metric("Confidence", f"{market_context.get('sentiment', {}).get('confidence', 0.0):.2f}")
+    st.caption(market_context.get('summary', 'No market intelligence summary is available.'))
+    drivers = market_context.get('sentiment', {}).get('drivers', [])
+    if drivers:
+        st.markdown("**Leading drivers:**")
+        for driver in drivers:
+            st.markdown(f"- {driver}")
+
 CLOSE_COL_IDX = 1 
 st.divider() # Adds a clean line before the charts start
 
@@ -335,14 +355,13 @@ st.divider() # Adds a clean line before the charts start
 data_mtime = os.path.getmtime(DATA_PATH) if DATA_PATH and os.path.exists(DATA_PATH) else None
 df = load_data(ticker, DATA_PATH, data_mtime)
 
-# --- 7. THE 4 RESEARCH PILLARS (TABS) ---
-tab1, tab2, tab3, tab4 = st.tabs(["📊 Technical Chart", "🧠 The LSTM Model", "📰 RAG News Sentiment", "⛏️ Fundamentals Miner"])
+# --- 7. THE 5 RESEARCH PILLARS (TABS) ---
+tab1, tab2, tab3, tab4, tab5 = st.tabs(["📊 Technical Chart", "🧠 The LSTM Model", "📰 RAG News Sentiment", "📈 Market Overview", "⛏️ Fundamentals Miner"])
 
 # --- TAB 1: TECHNICALS (MULTI-PANEL TRADINGVIEW UI) ---
 with tab1:
     technicals.render_technicals(df, ticker)
 
-# --- TAB 2: LSTM ---
 # --- TAB 2: LSTM ---
 with tab2:
     lstm_model.render_lstm_tab(df, ticker, MODEL_PATH, SCALER_PATH)
@@ -351,8 +370,12 @@ with tab2:
 with tab3:
     news_sentinel.render_news_tab(ticker)
 
-# --- TAB 4: MINER (FUNDAMENTALS) ---
+# --- TAB 4: MARKET OVERVIEW ---
 with tab4:
+    market_overview.render_market_overview(ticker)
+
+# --- TAB 5: MINER (FUNDAMENTALS) ---
+with tab5:
     fundamentals.render_fundamentals_tab(ticker)
 
 # Footer Status (Phase 1)

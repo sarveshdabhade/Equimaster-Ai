@@ -12,8 +12,9 @@ from .embeddings import EmbeddingRetriever
 class NewsRetriever:
     """Retrieval layer using sentence embeddings when available, otherwise TF-IDF fallback."""
 
-    def __init__(self, top_k: int = 5):
+    def __init__(self, top_k: int = 5, embedding_cache_dir: str | None = None):
         self.top_k = top_k
+        self.embedding_cache_dir = embedding_cache_dir
 
     def _fallback_tfidf(self, chunks: List[Dict[str, Any]], query: str) -> List[Dict[str, Any]]:
         texts = [item["chunk_text"] for item in chunks]
@@ -42,10 +43,11 @@ class NewsRetriever:
         if not chunks:
             return []
 
-        embedder = EmbeddingRetriever()
+        embedder = EmbeddingRetriever(persist_dir=self.embedding_cache_dir)
         if embedder.available:
             texts = [item["chunk_text"] for item in chunks]
-            embedder.build_index(texts)
+            if not embedder.load_index() or len(embedder.documents) != len(texts):
+                embedder.build_index(texts)
             hits = embedder.search(query, k=min(self.top_k, len(chunks)))
             if hits:
                 scored = []

@@ -20,6 +20,7 @@ def render_news_tab(ticker):
     label = sentiment_result.get("label", "Neutral")
     confidence = sentiment_result.get("confidence", 0.0)
     evidence = sentiment_result.get("evidence", [])
+    drivers = sentiment_result.get("drivers", [])
 
     color = "#22c55e" if label == "Bullish" else "#ef4444" if label == "Bearish" else "#f59e0b"
     st.markdown(
@@ -40,6 +41,11 @@ def render_news_tab(ticker):
         st.metric("Sentiment Signal", f"{score:+.2f}", delta=label)
         st.metric("Confidence", f"{confidence:.2f}")
         st.caption(market_context.get("summary", "No summary available."))
+
+        if drivers:
+            st.markdown("**Key drivers**")
+            for driver in drivers:
+                st.markdown(f"- {driver}")
 
     with col_b:
         if evidence:
@@ -72,4 +78,4 @@ def render_news_tab(ticker):
     else:
         st.info("No article-level evidence is currently available.")
 
-    st.caption("Architecture: data ingestion → price trend → retrieval → sentiment scoring → combined signal.")
+    st.caption(sentiment_result.get("summary", "Architecture: data ingestion → price trend → retrieval → sentiment scoring → combined signal."))

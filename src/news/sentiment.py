@@ -3,8 +3,24 @@ from typing import List, Dict, Any
 
 import numpy as np
 
+try:
+    import torch
+except Exception:  # pragma: no cover - fallback path when torch is unavailable
+    torch = None
+
+try:
+    from transformers import AutoModelForSequenceClassification, AutoTokenizer
+except Exception:  # pragma: no cover - fallback path when transformers is unavailable
+    AutoModelForSequenceClassification = None
+    AutoTokenizer = None
+
 from .fetcher import POSITIVE_WORDS, NEGATIVE_WORDS, fetch_ticker_articles
 from .retriever import NewsRetriever
+
+
+_FINBERT_MODEL = "ProsusAI/finbert"
+_FINBERT_TOKENIZER = None
+_FINBERT_MODEL_OBJ = None
 
 
 def _safe_score(value: float, lower: float = -1.0, upper: float = 1.0) -> float:
@@ -14,6 +30,59 @@ def _safe_score(value: float, lower: float = -1.0, upper: float = 1.0) -> float:
 def _word_frequency(text: str, words: List[str]) -> int:
     lowered = text.lower()
     return sum(lowered.count(word.lower()) for word in words)
+
+
+def _load_finbert_if_available():
+    global _FINBERT_TOKENIZER, _FINBERT_MODEL_OBJ
+    if AutoTokenizer is None or AutoModelForSequenceClassification is None or torch is None:
+        return False
+    if _FINBERT_MODEL_OBJ is not None and _FINBERT_TOKENIZER is not None:
+        return True
+    try:
+        _FINBERT_TOKENIZER = AutoTokenizer.from_pretrained(_FINBERT_MODEL)
+        _FINBERT_MODEL_OBJ = AutoModelForSequenceClassification.from_pretrained(_FINBERT_MODEL)
+        _FINBERT_MODEL_OBJ.eval()
+        return True
+    except Exception:
+        _FINBERT_TOKENIZER = None
+        _FINBERT_MODEL_OBJ = None
+        return False
+
+
+def _finbert_score(text: str) -> float:
+    if not _load_finbert_if_available():
+        return 0.0
+
+    try:
+        inputs = _FINBERT_TOKENIZER(
+            text,
+            return_tensors="pt",
+            truncation=True,
+            padding=True,
+            max_length=512,
+        )
+        with torch.no_grad():
+            logits = _FINBERT_MODEL_OBJ(**inputs).logits
+        probs = torch.softmax(logits, dim=-1)[0]
+        if hasattr(_FINBERT_MODEL_OBJ.config, "id2label"):
+            scores = {
+                str(_FINBERT_MODEL_OBJ.config.id2label.get(idx, idx)).lower(): float(prob)
+                for idx, prob in enumerate(probs)
+            }
+        else:
+            scores = {
+                "positive": float(probs[0]),
+                "negative": float(probs[1]),
+                "neutral": float(probs[2]),
+            }
+        dominant = max(scores, key=scores.get)
+        if dominant == "positive":
+            return 1.0 * scores.get("positive", 0.0)
+        if dominant == "negative":
+            return -1.0 * scores.get("negative", 0.0)
+        return 0.0
+    except Exception:
+        return 0.0
 
 
 def analyze_ticker_sentiment(ticker: str, max_articles: int = 8) -> Dict[str, Any]:
@@ -49,8 +118,12 @@ def analyze_ticker_sentiment(ticker: str, max_articles: int = 8) -> Dict[str, An
             if chunk.get("title") == article.get("title"):
                 article_relevance = max(article_relevance, float(chunk.get("relevance", 0.0)))
 
-        adjusted = raw_score * (0.7 + article_relevance)
-        score = _safe_score(adjusted / max(1.0, math.sqrt(len(text.split()) / 8.0)))
+        finbert_bias = _finbert_score(text)
+        if finbert_bias != 0.0:
+            score = _safe_score(finbert_bias * (0.7 + article_relevance))
+        else:
+            adjusted = raw_score * (0.7 + article_relevance)
+            score = _safe_score(adjusted / max(1.0, math.sqrt(len(text.split()) / 8.0)))
 
         scored_articles.append({
             "title": article.get("title", "").strip(),
@@ -95,9 +168,25 @@ def analyze_ticker_sentiment(ticker: str, max_articles: int = 8) -> Dict[str, An
         for item in top_articles
     ]
 
+    positive_count = sum(1 for item in top_articles if item["score"] > 0)
+    negative_count = sum(1 for item in top_articles if item["score"] < 0)
+    neutral_count = len(top_articles) - positive_count - negative_count
+
+    drivers = []
+    if positive_count > 0:
+        drivers.append("demand and earnings tailwinds")
+    if negative_count > 0:
+        drivers.append("execution and risk concerns")
+    if neutral_count > 0:
+        drivers.append("mixed market positioning")
+
+    if not drivers:
+        drivers = ["limited fresh catalysts"]
+
     summary = (
         f"{ticker} sentiment is {label.lower()} with a composite score of {overall_score:.2f}. "
-        f"Recent retrieved news suggests {('positive momentum' if label == 'Bullish' else 'negative pressure' if label == 'Bearish' else 'mixed market tone')} in the short term."
+        f"The leading evidence is driven by {', '.join(drivers[:2])}, while the broader news flow suggests "
+        f"{('positive momentum' if label == 'Bullish' else 'negative pressure' if label == 'Bearish' else 'mixed market tone')} in the short term."
     )
 
     return {
@@ -108,4 +197,5 @@ def analyze_ticker_sentiment(ticker: str, max_articles: int = 8) -> Dict[str, An
         "articles": top_articles,
         "evidence": evidence,
         "summary": summary,
+        "drivers": drivers,
     }

@@ -64,6 +64,8 @@ def build_market_context(ticker: str, horizon: int = 5) -> Dict[str, Any]:
         "overall_score": sentiment.get("overall_score", 0.0),
         "label": sentiment.get("label", "Neutral"),
         "confidence": sentiment.get("confidence", 0.0),
+        "drivers": sentiment.get("drivers", []),
+        "summary": sentiment.get("summary", ""),
     }
 
     if data_path and os.path.exists(data_path):
@@ -94,5 +96,7 @@ def build_market_context(ticker: str, horizon: int = 5) -> Dict[str, Any]:
         f"{ticker} combines a technical signal of {technical_signal:.4f}, a sentiment score of {sentiment_score:.2f}, "
         f"and a combined market score of {combined_score:.4f}."
     )
+    if signal["sentiment"].get("summary"):
+        signal["summary"] = signal["sentiment"]["summary"]
 
     return signal
