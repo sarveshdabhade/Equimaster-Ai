@@ -53,7 +53,11 @@ class EmbeddingRetriever:
         if not self.available or not self.documents:
             return
         self._ensure_storage()
-        faiss.write_index(self.index, str(self.index_path))
+        try:
+            faiss.write_index(self.index, str(self.index_path))
+        except Exception:
+            # best-effort; don't fail the caller on save errors
+            pass
         with open(self.metadata_path, "w", encoding="utf-8") as handle:
             json.dump({"documents": self.documents}, handle)
 
@@ -72,6 +76,7 @@ class EmbeddingRetriever:
             return False
 
     def build_index(self, texts: Sequence[str]):
+        """Build a full index from texts and persist it to disk."""
         self.documents = list(texts)
         if not self.available or not self.documents:
             return None
@@ -83,6 +88,38 @@ class EmbeddingRetriever:
         self.index = index
         self.save_index()
         return index
+
+    def add_documents(self, texts: Sequence[str]):
+        """Incrementally encode and add new texts to the existing index and metadata.
+
+        If no index exists, this creates a fresh index identical to build_index.
+        """
+        new_docs = list(texts)
+        if not self.available or not new_docs:
+            return None
+
+        # Ensure model is loaded
+        vectors = self.encode(new_docs).astype("float32")
+        if self.index is None:
+            # create new index
+            dimension = vectors.shape[1]
+            idx = faiss.IndexFlatIP(dimension)
+            idx.add(vectors)
+            self.index = idx
+            self.documents = new_docs
+        else:
+            # append vectors
+            try:
+                self.index.add(vectors)
+                self.documents.extend(new_docs)
+            except Exception:
+                # fallback: rebuild full index including new docs
+                combined = list(self.documents) + new_docs
+                return self.build_index(combined)
+
+        # persist
+        self.save_index()
+        return self.index
 
     def search(self, query: str, k: int = 5) -> List[dict]:
         if self.index is None and self.load_index():

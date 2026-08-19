@@ -46,8 +46,14 @@ class NewsRetriever:
         embedder = EmbeddingRetriever(persist_dir=self.embedding_cache_dir)
         if embedder.available:
             texts = [item["chunk_text"] for item in chunks]
-            if not embedder.load_index() or len(embedder.documents) != len(texts):
+            # If a cached index exists and matches the same document count, reuse it.
+            # Otherwise build a fresh index for this ephemeral set (safer alignment).
+            if embedder.load_index() and len(embedder.documents) == len(texts):
+                # cached index matches; use it directly
+                pass
+            else:
                 embedder.build_index(texts)
+
             hits = embedder.search(query, k=min(self.top_k, len(chunks)))
             if hits:
                 scored = []
