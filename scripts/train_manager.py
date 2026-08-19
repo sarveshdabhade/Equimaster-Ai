@@ -41,6 +41,17 @@ def write_progress(ticker, data):
     os.replace(tmp, path)
 
 
+def resolve_model_path(ticker, horizon=None):
+    suffix = f'_h{horizon}' if horizon and horizon > 1 else ''
+    candidates = []
+    for ext in ('.keras', '.h5'):
+        candidates.append(os.path.join(MODELS_DIR, f'lstm_{ticker}{suffix}{ext}'))
+    for candidate in candidates:
+        if os.path.exists(candidate):
+            return candidate
+    return candidates[0]
+
+
 def process_and_train_ticker(ticker, horizons, window_size, epochs, only_missing=False):
     # Called in worker process
     try:
@@ -93,14 +104,14 @@ def process_and_train_ticker(ticker, horizons, window_size, epochs, only_missing
         train_tasks = []
         # determine if we need to train (only_missing check)
         # single-step model path
-        msingle = os.path.join(MODELS_DIR, f'lstm_{ticker}.h5')
+        msingle = resolve_model_path(ticker)
         if not (only_missing and os.path.exists(msingle)):
             train_tasks.append((1, os.path.join(TRAIN_DIR, f'X_train_{ticker}.npy'), os.path.join(TRAIN_DIR, f'y_train_{ticker}.npy')))
 
         for h in horizons:
             if h <= 1:
                 continue
-            mpath = os.path.join(MODELS_DIR, f'lstm_{ticker}_h{h}.h5')
+            mpath = resolve_model_path(ticker, h)
             if only_missing and os.path.exists(mpath):
                 continue
             xfile = os.path.join(TRAIN_DIR, f'X_train_{ticker}_h{h}.npy')
