@@ -15,20 +15,11 @@ TRAIN_DIR = "data/train_data"
 MODELS_DIR = "models"
 os.makedirs(MODELS_DIR, exist_ok=True)
 
-def load_data():
-    """Loads the prepared training data from disk."""
-    print("[*] Loading data tensors...")
-    X_train = np.load(f"{TRAIN_DIR}/X_train.npy")
-    y_train = np.load(f"{TRAIN_DIR}/y_train.npy")
-    X_test = np.load(f"{TRAIN_DIR}/X_test.npy")
-    y_test = np.load(f"{TRAIN_DIR}/y_test.npy")
-    return X_train, y_train, X_test, y_test
-
 def build_model(input_shape, output_size=1):
     """
     Creates the LSTM Neural Network Architecture.
     """
-    print(f"[*] Building Model with input shape: {input_shape}...")
+    # DEBUG: print(f"[*] Building Model with input shape: {input_shape}...")
     
     model = Sequential()
     # Use an explicit Input layer to avoid passing `input_shape` to RNN layers
@@ -57,14 +48,14 @@ def train_all():
     # Find all training files
     # Look for files like "X_train_RELIANCE.NS.npy"
     files = glob.glob(f"{TRAIN_DIR}/X_train_*.npy")
-    print(f"Found {len(files)} datasets to train on...")
+    # DEBUG: print(f"Found {len(files)} datasets to train on...")
 
     for file_path in files:
         try:
             # Extract ticker from filename "data/train_data\X_train_TCS.NS.npy"
             ticker = file_path.split("X_train_")[-1].replace(".npy", "")
 
-            print(f"\nTraining for: {ticker}")
+            # DEBUG: print(f"\nTraining for: {ticker}")
 
             # 1. Load THIS stock's data
             X_train = np.load(f"{TRAIN_DIR}/X_train_{ticker}.npy")
@@ -80,16 +71,21 @@ def train_all():
                 out_size = y_train.shape[1]
             model = build_model((X_train.shape[1], X_train.shape[2]), output_size=out_size)
 
-            # 3. Train (Fewer epochs for speed testing, increase to 20 later)
-            model.fit(X_train, y_train, epochs=10, batch_size=32, verbose=0)
+            # 3. Train with validation split to detect overfitting
+            history = model.fit(
+                X_train, y_train,
+                epochs=10, batch_size=32, verbose=0,
+                validation_split=0.1,
+            )
 
             # 4. Save Unique Model (use native Keras format)
             model_path = os.path.join(MODELS_DIR, f"lstm_{ticker}.keras")
             model.save(model_path)
-            print(f"Saved: {os.path.basename(model_path)}")
+            # DEBUG: print(f"Saved: {os.path.basename(model_path)}")
 
-        except Exception as e:
-            print(f"Failed {ticker}: {e}")
+        except Exception:
+            # DEBUG: print(f"Failed {ticker}: {e}")
+            pass
 
 
 if __name__ == "__main__":

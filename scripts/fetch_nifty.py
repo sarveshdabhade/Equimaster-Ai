@@ -8,7 +8,7 @@ Usage:
 """
 import os
 import argparse
-from datetime import datetime
+from datetime import datetime, timezone
 import yfinance as yf
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
@@ -36,7 +36,7 @@ if 'Adj Close' not in df.columns:
 # Write in repo's raw CSV format: add 3-line header to match preprocess expectations
 with open(RAW_PATH, 'w', encoding='utf-8', newline='') as fh:
     fh.write('Price,NSEI,Daily\n')
-    fh.write(f'Ticker,NSEI,Fetched:{datetime.utcnow().isoformat()}\n')
+    fh.write(f'Ticker,NSEI,Fetched:{datetime.now(timezone.utc).isoformat()}\n')
     fh.write('Date,Adj Close,Close,High,Low,Open,Volume\n')
     for idx, row in df.iterrows():
         date_str = idx.strftime('%Y-%m-%d')

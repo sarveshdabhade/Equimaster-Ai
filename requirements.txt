@@ -9,3 +9,5 @@ plotly
 matplotlib
 pandas_ta
 yfinance
+requests
+pytz

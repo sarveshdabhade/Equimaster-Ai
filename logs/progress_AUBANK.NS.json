@@ -1,6 +1,6 @@
 {
-  "status": "done",
-  "step": "complete",
-  "message": "All done",
-  "last_updated": "2026-04-12T12:57:37.131042Z"
+  "status": "error",
+  "step": "exception",
+  "message": "[WinError 5] Access is denied: 'D:\\\\Projects\\\\Equimaster-Ai\\\\logs\\\\progress_AUBANK.NS.json.tmp' -> 'D:\\\\Projects\\\\Equimaster-Ai\\\\logs\\\\progress_AUBANK.NS.json'",
+  "last_updated": "2026-04-15T06:47:11.036959+00:00"
 }

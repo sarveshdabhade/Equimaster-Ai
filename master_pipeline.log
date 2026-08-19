@@ -89,3 +89,151 @@ UnicodeEncodeError: 'charmap' codec can't encode character in position 0: charac
 2026-04-09 16:45:07,507 [INFO] PIPELINE COMPLETE! All systems ready for tomorrow's market.
 2026-04-09 16:45:07,507 [INFO] Total Execution Time: 573.74 seconds
 2026-04-09 16:45:07,507 [INFO] ==================================================
+2026-05-09 18:52:39,747 [INFO] ==================================================
+2026-05-09 18:52:39,748 [INFO] EQUIMASTER-AI MASTER PIPELINE INITIALIZED
+2026-05-09 18:52:39,748 [INFO] ==================================================
+2026-05-09 18:52:39,749 [INFO] Starting Step: Fetch Fresh Market Data (src/update_data.py)
+2026-05-09 18:52:53,319 [INFO] SUCCESS: Fetch Fresh Market Data completed in 13.57 seconds.
+2026-05-09 18:52:55,839 [INFO] Up-to-date processed tickers: 50
+2026-05-09 18:52:55,840 [INFO] Stale/missing processed tickers: 0
+2026-05-09 18:52:55,840 [INFO] No stale processed data detected. Skipping preprocess/sequence/train steps.
+2026-05-09 18:52:55,840 [INFO] ==================================================
+2026-05-09 18:52:55,840 [INFO] PIPELINE COMPLETE! All systems ready for tomorrow's market.
+2026-05-09 18:52:55,840 [INFO] Total Execution Time: 16.09 seconds
+2026-05-09 18:52:55,841 [INFO] ==================================================
+2026-05-10 20:07:38,678 [INFO] ==================================================
+2026-05-10 20:07:38,679 [INFO] EQUIMASTER-AI MASTER PIPELINE INITIALIZED
+2026-05-10 20:07:38,679 [INFO] ==================================================
+2026-05-10 20:07:38,679 [INFO] Starting Step: Fetch Fresh Market Data (src/update_data.py)
+2026-05-10 20:07:52,645 [INFO] SUCCESS: Fetch Fresh Market Data completed in 13.97 seconds.
+2026-05-10 20:07:54,053 [INFO] Up-to-date processed tickers: 1
+2026-05-10 20:07:54,053 [INFO] Stale/missing processed tickers: 49
+2026-05-10 20:07:54,054 [INFO] Detected stale tickers: ADANIENT.NS, ADANIPORTS.NS, APOLLOHOSP.NS, ASIANPAINT.NS, AXISBANK.NS, BAJAJ-AUTO.NS, BAJAJFINSV.NS, BAJFINANCE.NS ...
+2026-05-10 20:07:54,054 [INFO] Starting Step: Calculate Technical Indicators (src/preprocessor.py)
+2026-05-10 20:08:00,197 [INFO] SUCCESS: Calculate Technical Indicators completed in 6.14 seconds.
+2026-05-10 20:08:00,198 [INFO] Starting Step: Generate LSTM Sequences (src/data_sequencer.py)
+2026-05-10 20:08:15,435 [INFO] SUCCESS: Generate LSTM Sequences completed in 15.24 seconds.
+2026-05-10 20:08:15,435 [INFO] Starting Step: Train LSTM Models (src/train_model.py)
+2026-05-10 21:40:30,944 [INFO] SUCCESS: Train LSTM Models completed in 5535.49 seconds.
+2026-05-10 21:40:30,968 [INFO] ==================================================
+2026-05-10 21:40:30,969 [INFO] PIPELINE COMPLETE! All systems ready for tomorrow's market.
+2026-05-10 21:40:30,970 [INFO] Total Execution Time: 5572.29 seconds
+2026-05-10 21:40:30,971 [INFO] ==================================================
+2026-05-12 19:13:24,176 [INFO] ==================================================
+2026-05-12 19:13:24,177 [INFO] EQUIMASTER-AI MASTER PIPELINE INITIALIZED
+2026-05-12 19:13:24,178 [INFO] ==================================================
+2026-05-12 19:13:24,178 [INFO] Starting Step: Fetch Fresh Market Data (src/update_data.py)
+2026-05-12 19:13:40,182 [INFO] SUCCESS: Fetch Fresh Market Data completed in 16.00 seconds.
+2026-05-12 19:13:41,731 [INFO] Up-to-date processed tickers: 1
+2026-05-12 19:13:41,731 [INFO] Stale/missing processed tickers: 49
+2026-05-12 19:13:41,731 [INFO] Detected stale tickers: ADANIENT.NS, ADANIPORTS.NS, APOLLOHOSP.NS, ASIANPAINT.NS, AXISBANK.NS, BAJAJ-AUTO.NS, BAJAJFINSV.NS, BAJFINANCE.NS ...
+2026-05-12 19:13:41,731 [INFO] Starting Step: Calculate Technical Indicators (src/preprocessor.py)
+2026-05-12 19:13:48,517 [INFO] SUCCESS: Calculate Technical Indicators completed in 6.79 seconds.
+2026-05-12 19:13:48,517 [INFO] Starting Step: Generate LSTM Sequences (src/data_sequencer.py)
+2026-05-12 19:14:02,950 [INFO] SUCCESS: Generate LSTM Sequences completed in 14.43 seconds.
+2026-05-12 19:14:02,950 [INFO] Starting Step: Train LSTM Models (src/train_model.py)
+2026-05-12 20:04:20,907 [INFO] SUCCESS: Train LSTM Models completed in 3017.95 seconds.
+2026-05-12 20:04:20,911 [INFO] ==================================================
+2026-05-12 20:04:20,911 [INFO] PIPELINE COMPLETE! All systems ready for tomorrow's market.
+2026-05-12 20:04:20,911 [INFO] Total Execution Time: 3056.73 seconds
+2026-05-12 20:04:20,912 [INFO] ==================================================
+2026-05-14 23:15:51,383 [INFO] ==================================================
+2026-05-14 23:15:51,384 [INFO] EQUIMASTER-AI MASTER PIPELINE INITIALIZED
+2026-05-14 23:15:51,384 [INFO] ==================================================
+2026-05-14 23:15:51,384 [INFO] Starting Step: Fetch Fresh Market Data (src/update_data.py)
+2026-05-14 23:16:03,518 [INFO] SUCCESS: Fetch Fresh Market Data completed in 12.13 seconds.
+2026-05-14 23:16:04,598 [INFO] Up-to-date processed tickers: 1
+2026-05-14 23:16:04,598 [INFO] Stale/missing processed tickers: 49
+2026-05-14 23:16:04,599 [INFO] Detected stale tickers: ADANIENT.NS, ADANIPORTS.NS, APOLLOHOSP.NS, ASIANPAINT.NS, AXISBANK.NS, BAJAJ-AUTO.NS, BAJAJFINSV.NS, BAJFINANCE.NS ...
+2026-05-14 23:16:04,599 [INFO] Starting Step: Calculate Technical Indicators (src/preprocessor.py)
+2026-05-14 23:16:09,870 [INFO] SUCCESS: Calculate Technical Indicators completed in 5.27 seconds.
+2026-05-14 23:16:09,870 [INFO] Starting Step: Generate LSTM Sequences (src/data_sequencer.py)
+2026-05-14 23:16:19,860 [INFO] SUCCESS: Generate LSTM Sequences completed in 9.99 seconds.
+2026-05-14 23:16:19,860 [INFO] Starting Step: Train LSTM Models (src/train_model.py)
+2026-05-17 19:12:43,660 [INFO] ==================================================
+2026-05-17 19:12:43,660 [INFO] EQUIMASTER-AI MASTER PIPELINE INITIALIZED
+2026-05-17 19:12:43,661 [INFO] ==================================================
+2026-05-17 19:12:43,662 [INFO] Starting Step: Fetch Fresh Market Data (src/update_data.py)
+2026-05-17 19:13:04,469 [INFO] SUCCESS: Fetch Fresh Market Data completed in 20.81 seconds.
+2026-05-17 19:13:09,937 [INFO] Up-to-date processed tickers: 50
+2026-05-17 19:13:09,938 [INFO] Stale/missing processed tickers: 0
+2026-05-17 19:13:09,938 [INFO] No stale processed data detected. Skipping preprocess/sequence/train steps.
+2026-05-17 19:13:09,939 [INFO] ==================================================
+2026-05-17 19:13:09,939 [INFO] PIPELINE COMPLETE! All systems ready for tomorrow's market.
+2026-05-17 19:13:09,940 [INFO] Total Execution Time: 26.28 seconds
+2026-05-17 19:13:09,940 [INFO] ==================================================
+2026-05-25 21:58:19,563 [INFO] ==================================================
+2026-05-25 21:58:19,564 [INFO] EQUIMASTER-AI MASTER PIPELINE INITIALIZED
+2026-05-25 21:58:19,564 [INFO] ==================================================
+2026-05-25 21:58:19,564 [INFO] Starting Step: Fetch Fresh Market Data (src/update_data.py)
+2026-05-25 21:58:39,376 [INFO] SUCCESS: Fetch Fresh Market Data completed in 19.81 seconds.
+2026-05-25 21:58:40,965 [INFO] Up-to-date processed tickers: 1
+2026-05-25 21:58:40,966 [INFO] Stale/missing processed tickers: 49
+2026-05-25 21:58:40,966 [INFO] Detected stale tickers: ADANIENT.NS, ADANIPORTS.NS, APOLLOHOSP.NS, ASIANPAINT.NS, AXISBANK.NS, BAJAJ-AUTO.NS, BAJAJFINSV.NS, BAJFINANCE.NS ...
+2026-05-25 21:58:40,966 [INFO] Starting Step: Calculate Technical Indicators (src/preprocessor.py)
+2026-05-25 21:58:47,248 [INFO] SUCCESS: Calculate Technical Indicators completed in 6.28 seconds.
+2026-05-25 21:58:47,248 [INFO] Starting Step: Generate LSTM Sequences (src/data_sequencer.py)
+2026-05-25 21:59:01,310 [INFO] SUCCESS: Generate LSTM Sequences completed in 14.06 seconds.
+2026-05-25 21:59:01,310 [INFO] Starting Step: Train LSTM Models (src/train_model.py)
+2026-05-26 18:52:39,957 [INFO] ==================================================
+2026-05-26 18:52:39,957 [INFO] EQUIMASTER-AI MASTER PIPELINE INITIALIZED
+2026-05-26 18:52:39,958 [INFO] ==================================================
+2026-05-26 18:52:39,958 [INFO] Starting Step: Fetch Fresh Market Data (src/update_data.py)
+2026-05-26 18:52:56,375 [INFO] SUCCESS: Fetch Fresh Market Data completed in 16.42 seconds.
+2026-05-26 18:52:58,039 [INFO] Up-to-date processed tickers: 1
+2026-05-26 18:52:58,040 [INFO] Stale/missing processed tickers: 49
+2026-05-26 18:52:58,040 [INFO] Detected stale tickers: ADANIENT.NS, ADANIPORTS.NS, APOLLOHOSP.NS, ASIANPAINT.NS, AXISBANK.NS, BAJAJ-AUTO.NS, BAJAJFINSV.NS, BAJFINANCE.NS ...
+2026-05-26 18:52:58,040 [INFO] Starting Step: Calculate Technical Indicators (src/preprocessor.py)
+2026-05-26 18:53:03,461 [INFO] SUCCESS: Calculate Technical Indicators completed in 5.42 seconds.
+2026-05-26 18:53:03,461 [INFO] Starting Step: Generate LSTM Sequences (src/data_sequencer.py)
+2026-05-26 18:53:15,427 [INFO] SUCCESS: Generate LSTM Sequences completed in 11.97 seconds.
+2026-05-26 18:53:15,428 [INFO] Starting Step: Train LSTM Models (src/train_model.py)
+2026-06-10 09:44:54,327 [INFO] ==================================================
+2026-06-10 09:44:54,328 [INFO] EQUIMASTER-AI MASTER PIPELINE INITIALIZED
+2026-06-10 09:44:54,328 [INFO] ==================================================
+2026-06-10 09:44:54,328 [INFO] Starting Step: Fetch Fresh Market Data (src/update_data.py)
+2026-06-10 09:45:05,823 [INFO] SUCCESS: Fetch Fresh Market Data completed in 11.49 seconds.
+2026-06-10 09:45:06,776 [INFO] Up-to-date processed tickers: 1
+2026-06-10 09:45:06,776 [INFO] Stale/missing processed tickers: 49
+2026-06-10 09:45:06,776 [INFO] Detected stale tickers: ADANIENT.NS, ADANIPORTS.NS, APOLLOHOSP.NS, ASIANPAINT.NS, AXISBANK.NS, BAJAJ-AUTO.NS, BAJAJFINSV.NS, BAJFINANCE.NS ...
+2026-06-10 09:45:06,776 [INFO] Starting Step: Calculate Technical Indicators (src/preprocessor.py)
+2026-06-10 09:45:11,366 [INFO] SUCCESS: Calculate Technical Indicators completed in 4.59 seconds.
+2026-06-10 09:45:11,366 [INFO] Starting Step: Generate LSTM Sequences (src/data_sequencer.py)
+2026-06-10 09:45:20,067 [INFO] SUCCESS: Generate LSTM Sequences completed in 8.70 seconds.
+2026-06-10 09:45:20,067 [INFO] Starting Step: Train LSTM Models (src/train_model.py)
+2026-07-17 09:25:09,791 [INFO] ==================================================
+2026-07-17 09:25:09,791 [INFO] EQUIMASTER-AI MASTER PIPELINE INITIALIZED
+2026-07-17 09:25:09,792 [INFO] ==================================================
+2026-07-17 09:25:09,792 [INFO] Starting Step: Fetch Fresh Market Data (src/update_data.py)
+2026-07-17 09:25:26,741 [INFO] SUCCESS: Fetch Fresh Market Data completed in 16.95 seconds.
+2026-07-17 09:25:29,206 [INFO] Up-to-date processed tickers: 1
+2026-07-17 09:25:29,206 [INFO] Stale/missing processed tickers: 49
+2026-07-17 09:25:29,206 [INFO] Detected stale tickers: ADANIENT.NS, ADANIPORTS.NS, APOLLOHOSP.NS, ASIANPAINT.NS, AXISBANK.NS, BAJAJ-AUTO.NS, BAJAJFINSV.NS, BAJFINANCE.NS ...
+2026-07-17 09:25:29,206 [INFO] Starting Step: Calculate Technical Indicators (src/preprocessor.py)
+2026-07-17 09:25:41,882 [INFO] SUCCESS: Calculate Technical Indicators completed in 12.68 seconds.
+2026-07-17 09:25:41,882 [INFO] Starting Step: Generate LSTM Sequences (src/data_sequencer.py)
+2026-07-17 09:25:48,709 [INFO] SUCCESS: Generate LSTM Sequences completed in 10.00 seconds.
+2026-07-17 09:25:48,709 [INFO] Starting Step: Train LSTM Models (src/train_model.py)
+2026-07-17 13:24:42,988 [INFO] SUCCESS: Train LSTM Models completed in 14337.22 seconds.
+2026-07-17 13:24:42,996 [INFO] ==================================================
+2026-07-17 13:24:42,997 [INFO] PIPELINE COMPLETE! All systems ready for tomorrow's market.
+2026-07-17 13:24:42,997 [INFO] Total Execution Time: 14379.33 seconds
+2026-07-17 13:24:42,997 [INFO] ==================================================
+2026-07-25 18:52:39,798 [INFO] ==================================================
+2026-07-25 18:52:39,799 [INFO] EQUIMASTER-AI MASTER PIPELINE INITIALIZED
+2026-07-25 18:52:39,800 [INFO] ==================================================
+2026-07-25 18:52:39,800 [INFO] Starting Step: Fetch Fresh Market Data (src/update_data.py)
+2026-07-25 18:53:00,681 [INFO] SUCCESS: Fetch Fresh Market Data completed in 20.88 seconds.
+2026-07-25 18:53:02,769 [INFO] Up-to-date processed tickers: 1
+2026-07-25 18:53:02,769 [INFO] Stale/missing processed tickers: 49
+2026-07-25 18:53:02,770 [INFO] Detected stale tickers: ADANIENT.NS, ADANIPORTS.NS, APOLLOHOSP.NS, ASIANPAINT.NS, AXISBANK.NS, BAJAJ-AUTO.NS, BAJAJFINSV.NS, BAJFINANCE.NS ...
+2026-07-25 18:53:02,770 [INFO] Starting Step: Calculate Technical Indicators (src/preprocessor.py)
+2026-07-25 18:53:10,807 [INFO] SUCCESS: Calculate Technical Indicators completed in 8.04 seconds.
+2026-07-25 18:53:10,807 [INFO] Starting Step: Generate LSTM Sequences (src/data_sequencer.py)
+2026-07-25 18:53:27,055 [INFO] SUCCESS: Generate LSTM Sequences completed in 16.25 seconds.
+2026-07-25 18:53:27,055 [INFO] Starting Step: Train LSTM Models (src/train_model.py)
+2026-07-25 19:45:15,527 [INFO] SUCCESS: Train LSTM Models completed in 3108.47 seconds.
+2026-07-25 19:45:15,535 [INFO] ==================================================
+2026-07-25 19:45:15,535 [INFO] PIPELINE COMPLETE! All systems ready for tomorrow's market.
+2026-07-25 19:45:15,535 [INFO] Total Execution Time: 3155.74 seconds
+2026-07-25 19:45:15,536 [INFO] ==================================================

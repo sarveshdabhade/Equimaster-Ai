@@ -23,49 +23,61 @@ def load_lottieurl(url: str):
         return None
 
 
-INDEX_TICKERS = {
-    "NIFTY 50": "^NSEI",
-    "BANK NIFTY": "^NSEBANK",
-}
+import sys
+import os
+from concurrent.futures import ThreadPoolExecutor, as_completed
+ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+if ROOT not in sys.path:
+    sys.path.insert(0, ROOT)
+from config import INDEX_TICKERS
 
 
-@st.cache_data(ttl=60)
-def fetch_index_snapshot():
-    # Lazy import yfinance to avoid heavy imports at module import time
+def _fetch_single_index(label_symbol):
+    """Fetch data for a single index."""
+    label, symbol = label_symbol
     try:
         import yfinance as yf
-    except Exception:
-        return {}
+        hist = yf.download(symbol, period="5d", interval="1d", progress=False)
+        if not hist.empty:
+            close_data = hist["Close"].dropna()
 
-    snapshot = {}
-    for label, symbol in INDEX_TICKERS.items():
-        try:
-            hist = yf.download(symbol, period="5d", interval="1d", progress=False)
-            if not hist.empty:
-                close_data = hist["Close"].dropna()
-
-                if isinstance(close_data, pd.DataFrame):
-                    if symbol in close_data.columns:
-                        close_series = close_data[symbol].dropna()
-                    else:
-                        close_series = close_data.iloc[:, 0].dropna()
+            if isinstance(close_data, pd.DataFrame):
+                if symbol in close_data.columns:
+                    close_series = close_data[symbol].dropna()
                 else:
-                    close_series = close_data
+                    close_series = close_data.iloc[:, 0].dropna()
+            else:
+                close_series = close_data
 
-                if close_series.empty:
-                    continue
+            if close_series.empty:
+                return None
 
-                last_val = float(close_series.iloc[-1])
-                prev_val = float(close_series.iloc[-2]) if len(close_series) > 1 else last_val
-                delta = last_val - prev_val
-                pct = (delta / prev_val * 100.0) if prev_val != 0 else 0.0
-                snapshot[label] = {"last": last_val, "delta": delta, "pct": pct}
-        except Exception:
-            continue
+            last_val = float(close_series.iloc[-1])
+            prev_val = float(close_series.iloc[-2]) if len(close_series) > 1 else last_val
+            delta = last_val - prev_val
+            pct = (delta / prev_val * 100.0) if prev_val != 0 else 0.0
+            return (label, {"last": last_val, "delta": delta, "pct": pct})
+    except Exception:
+        pass
+    return None
+
+@st.cache_data(ttl=600)
+def fetch_index_snapshot():
+    """Fetch all index data in parallel."""
+    snapshot = {}
+    
+    with ThreadPoolExecutor(max_workers=5) as executor:
+        futures = {executor.submit(_fetch_single_index, item): item for item in INDEX_TICKERS.items()}
+        for future in as_completed(futures):
+            result = future.result()
+            if result:
+                label, data = result
+                snapshot[label] = data
+    
     return snapshot
 
 
-@st.cache_data(ttl=60)
+@st.cache_data(ttl=300)
 def fetch_stock_snapshot(symbol: str):
     try:
         import yfinance as yf
@@ -101,16 +113,18 @@ def fetch_stock_snapshot(symbol: str):
 
 
 @st.cache_data(ttl=300)
-def load_data(selected_ticker, data_path, data_mtime):
+def load_data(selected_ticker, data_path, _data_fingerprint):
     """
     Prefer local CSV when available (fast). Only fetch live data when no local file exists
     or when the user explicitly requests the market index view.
     Lazy-imports `yfinance` to avoid startup overhead.
+
+    _data_fingerprint: a stable hash of (file_size, mtime_rounded_to_minute)
+                       used solely to invalidate cache when the file changes.
     """
     # If a processed CSV is available, load it immediately (fast path)
     if data_path and os.path.exists(data_path):
         try:
-            _ = data_mtime
             df_local = pd.read_csv(data_path, index_col=0, parse_dates=True)
             return df_local.sort_index()
         except FileNotFoundError:

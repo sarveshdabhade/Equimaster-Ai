@@ -12,11 +12,9 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import yfinance as yf
 import requests
-from streamlit_lottie import st_lottie
 
-# Import refactored helpers and tab renderers
-from utils import load_lottieurl, fetch_index_snapshot, fetch_stock_snapshot, load_data
-from tabs import technicals, lstm_model, news_sentinel, fundamentals
+# Import refactored helpers
+from views import render_home_view
 
 # --- 1. CONFIGURATION & CSS ---
 st.set_page_config(page_title="Equimaster-Ai", page_icon=None, layout="wide")
@@ -186,184 +184,65 @@ st.markdown("""
         width: 100%;
         margin-bottom: 8px;
     }
+    /* Sidebar navigation - bold and uppercase */
+    section[data-testid="stSidebar"] a,
+    section[data-testid="stSidebar"] div[data-testid="stSidebarNav"] a,
+    section[data-testid="stSidebar"] div[data-testid="stSidebarNav"] span {
+        font-weight: 700 !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.5px !important;
+        font-size: 14px !important;
+    }
+    section[data-testid="stSidebar"] a span,
+    section[data-testid="stSidebar"] div[role="listitem"] span {
+        font-weight: 700 !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.5px !important;
+        font-size: 14px !important;
+    }
+    /* Target Streamlit navigation links specifically */
+    .st-emotion-cache-1cypcdb a,
+    .st-emotion-cache-1cypcdb span {
+        font-weight: 700 !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.5px !important;
+    }
+    /* Universal catch-all for sidebar nav items */
+    section[data-testid="stSidebar"] * {
+        text-transform: uppercase !important;
+    }
+    section[data-testid="stSidebar"] div:has(> a) span,
+    section[data-testid="stSidebar"] nav span {
+        font-weight: 700 !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.5px !important;
+    }
     </style>
 """, unsafe_allow_html=True)
 
 # Sidebar with quick actions (Phase 1)
 with st.sidebar:
-    st.markdown('<h3 style="color: #7CE6FF;">⚡ Quick Actions</h3>', unsafe_allow_html=True)
-    if st.button("🔄 Refresh Data", use_container_width=True):
-        st.cache_data.clear()
+    st.markdown('<h3 style="color: #7CE6FF;">Quick Actions</h3>', unsafe_allow_html=True)
+    if st.button("Refresh Data", use_container_width=True):
+        from utils import fetch_index_snapshot, fetch_stock_snapshot
+        fetch_index_snapshot.clear()
+        fetch_stock_snapshot.clear()
         st.success("Cache cleared - data refreshing!")
-    if st.button("🚀 Retrain Selected Ticker", use_container_width=True):
-        st.info("Opening Training Manager...")
-        st.switch_page("pages/training_manager.py")
+
     st.markdown("---")
-    st.markdown('<h4 style="color: #92FE9D;">📊 Platform Stats</h4>', unsafe_allow_html=True)
-    models_count = len([f for f in os.listdir("models") if f.endswith('.keras')])
-    st.metric("Trained Models", models_count)
-    st.metric("Stocks Covered", len(os.listdir("logs")) - 1 if os.path.exists("logs") else 0)
+    st.markdown('<h4 style="color: #92FE9D;">Platform Stats</h4>', unsafe_allow_html=True)
+    st.caption("Visit Training Manager page for model details and retraining.")
     st.markdown("---")
     st.caption("Equimaster v1.0")
 
-# --- 2. LOTTIE ANIMATIONS ---
-# Use refactored helper in `utils.py`
-lottie_trading = load_lottieurl("https://lottie.host/80dc18df-05ba-4114-b816-5c5b0ab128ac/oGkCihKzY7.json")
-
-# --- 4. HEADER SECTION ---
-col1, col2 = st.columns([3, 1])
-with col1:
-    st.markdown('<h1 class="title-text">Equimaster-Ai</h1>', unsafe_allow_html=True)
-    st.markdown('<p class="subtitle-text">Multi-Modal Deep Learning Platform for Financial Time-Series</p>', unsafe_allow_html=True)
-with col2:
-    if lottie_trading:
-        st_lottie(lottie_trading, height=100, key="trading_anim")
+# --- 2. HEADER SECTION ---
+st.markdown('<h1 class="title-text">Equimaster-Ai</h1>', unsafe_allow_html=True)
+st.markdown('<p class="subtitle-text">Multi-Modal Deep Learning Platform for Financial Time-Series</p>', unsafe_allow_html=True)
 
 st.divider()
 
-# Hero KPIs Grid (Phase 1)
-st.markdown('<p class="market-band">Platform Overview</p>', unsafe_allow_html=True)
-kpi_cols = st.columns(4)
-with kpi_cols[0]:
-    models = len([f for f in os.listdir("models/") if f.endswith(('.keras', '.h5'))])
-    st.metric("🧠 AI Models", models)
-with kpi_cols[1]:
-    stocks = len([f for f in os.listdir("logs/") if f.endswith('.json')]) if os.path.exists("logs/") else 0
-    st.metric("📈 Stocks Trained", stocks)
-with kpi_cols[2]:
-    try:
-        data_age = (pd.Timestamp.now() - pd.to_datetime(os.path.getmtime("data/processed") if os.path.exists("data/processed") else 0, unit='s')).days
-        st.metric("📊 Data Freshness", f"{data_age} days")
-    except:
-        st.metric("📊 Data Freshness", "Checking...")
-with kpi_cols[3]:
-    st.metric("⚡ Status", "Live 🟢", delta="Online")
+# --- 3. HOME VIEW (Tickers, Search, Market Movers) ---
+# This will handle search and navigation to stock_analyzer page
+render_home_view()
 
-st.divider()
 
-# Live Index Bar (enhanced)
-indices = fetch_index_snapshot()
-if indices:
-    st.markdown('<p class="market-band">Live Market Indices</p>', unsafe_allow_html=True)
-    cols = st.columns(len(indices))
-    for col, (label, data) in zip(cols, indices.items()):
-        delta_color = "normal" if data['pct'] > 0 else "inverse"
-        with col:
-            st.metric(label, f"₹{data['last']:,.2f}", f"{data['delta']:,.2f} ({data['pct']:.2f}%)", delta_color=delta_color)
-else:
-    st.info("🌐 Live indices temporarily unavailable. Click sidebar 🔄 Refresh Data.")
-st.divider()
-
-# --- 5. MAIN ASSET SEARCH BAR ---
-processed_dir = "data/processed"
-local_files = [f.replace("_processed.csv", "") for f in os.listdir(processed_dir) if f.endswith("_processed.csv")] if os.path.exists(processed_dir) else []
-
-# Force NIFTY 50 to be the default first option
-dropdown_options = ["NIFTY 50"] + local_files
-
-# Enhanced Ticker Search with Preview (Phase 1)
-st.markdown('<h2 class="section-title"><span class="accent">🔍 Asset Search Terminal</span></h2>', unsafe_allow_html=True)
-
-# Search preview expander
-with st.expander("Preview Available Stocks (Click to explore)", expanded=False):
-    st.dataframe(pd.DataFrame({"Stocks": dropdown_options}), use_container_width=True, hide_index=True)
-
-col_search, col_status = st.columns([3, 1])
-with col_search:
-    ticker = st.selectbox("Select Stock", dropdown_options, index=0, label_visibility="collapsed", help="Choose from trained models or enter custom (data auto-downloads)")
-    if ticker:
-        st.info(f"📂 Loaded: {ticker}")
-
-# Dynamic Paths based on the Search Bar
-if ticker == "NIFTY 50":
-    # Map 'NIFTY 50' to the NSEI processed CSV and model naming used in the repo
-    DATA_PATH = f"data/processed/NSEI_processed.csv"
-    # prefer native Keras format, fall back to legacy h5
-    candidate_keras = f"models/lstm_NSEI.keras"
-    candidate_h5 = f"models/lstm_NSEI.h5"
-    if os.path.exists(candidate_keras):
-        MODEL_PATH = candidate_keras
-    elif os.path.exists(candidate_h5):
-        MODEL_PATH = candidate_h5
-    else:
-        MODEL_PATH = None
-    SCALER_PATH = f"data/train_data/scaler_NSEI.pkl"
-    with col_status:
-        st.info("Market Index View Active")
-else:
-    DATA_PATH = f"data/processed/{ticker}_processed.csv"
-    # prefer native Keras format, fall back to legacy h5
-    candidate_keras = f"models/lstm_{ticker}.keras"
-    candidate_h5 = f"models/lstm_{ticker}.h5"
-    MODEL_PATH = candidate_keras if os.path.exists(candidate_keras) else candidate_h5
-    SCALER_PATH = f"data/train_data/scaler_{ticker}.pkl"
-    with col_status:
-        st.success(f"AI Brain Connected: {ticker}")
-
-    # Show the searched asset details (name + live market price) just below the search bar
-    try:
-        snapshot = fetch_stock_snapshot(ticker)
-        if snapshot:
-            # Place price left of the name, and increase the stock name size
-            col_left, col_right = st.columns([4, 1])
-            price_val = f"₹{snapshot['last']:,.2f}"
-            price_delta = f"{snapshot['delta']:,.2f} ({snapshot['pct']:.2f}%)"
-            with col_left:
-                st.markdown(
-                    f"<div style='display:flex;align-items:center;gap:14px'>"
-                    f"<div style='font-size:28px;font-weight:800;color:#61E5FF'>{price_val}<div style=\"font-size:12px;color:#FFB86B;font-weight:700;\">{price_delta}</div></div>"
-                    f"<div>"
-                    f"<div style='font-size:22px;font-weight:800'>{snapshot['name']}</div>"
-                    f"<div style='font-size:13px;color:#C7D2E0'>{snapshot['symbol']}</div>"
-                    f"</div>"
-                    f"</div>",
-                    unsafe_allow_html=True,
-                )
-            with col_right:
-                # keep space for layout consistency (empty for now)
-                st.write("")
-    except Exception:
-        # Non-fatal: do not block the rest of the app if live fetch fails
-        pass
-
-CLOSE_COL_IDX = 1 
-st.divider() # Adds a clean line before the charts start
-
-# --- 6. DATA LOADING ---
-# Implemented in `utils.load_data`
-
-data_mtime = os.path.getmtime(DATA_PATH) if DATA_PATH and os.path.exists(DATA_PATH) else None
-df = load_data(ticker, DATA_PATH, data_mtime)
-
-# --- 7. THE 4 RESEARCH PILLARS (TABS) ---
-tab1, tab2, tab3, tab4 = st.tabs(["📊 Technical Chart", "🧠 The LSTM Model", "📰 RAG News Sentiment", "⛏️ Fundamentals Miner"])
-
-# --- TAB 1: TECHNICALS (MULTI-PANEL TRADINGVIEW UI) ---
-with tab1:
-    technicals.render_technicals(df, ticker)
-
-# --- TAB 2: LSTM ---
-# --- TAB 2: LSTM ---
-with tab2:
-    lstm_model.render_lstm_tab(df, ticker, MODEL_PATH, SCALER_PATH)
-
-# --- TAB 3: SENTINEL (NEWS) ---
-with tab3:
-    news_sentinel.render_news_tab(ticker)
-
-# --- TAB 4: MINER (FUNDAMENTALS) ---
-with tab4:
-    fundamentals.render_fundamentals_tab(ticker)
-
-# Footer Status (Phase 1)
-st.markdown("---")
-st.markdown('<div class="glass-card" style="text-align: center; padding: 16px;">', unsafe_allow_html=True)
-col_footer1, col_footer2 = st.columns(2)
-with col_footer1:
-    data_exists = os.path.exists(DATA_PATH)
-    st.metric("💾 Local Data", "✅ Ready" if data_exists else "❌ Missing", delta="Load now?")
-with col_footer2:
-    model_ready = MODEL_PATH and os.path.exists(MODEL_PATH)
-    st.metric("🤖 Model Status", "🟢 Loaded" if model_ready else "🔴 Offline", delta="Retrain?")
-st.markdown('  <p style="color: #8EA6C4; font-size: 0.85rem; margin-top: 8px;">Data updated recently | Models optimized for Nifty500</p>', unsafe_allow_html=True)
-st.markdown('</div>', unsafe_allow_html=True)

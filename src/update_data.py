@@ -6,24 +6,17 @@ import time
 import sys
 import subprocess
 import argparse
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 if sys.stdout.encoding and "utf" not in sys.stdout.encoding.lower():
     sys.stdout.reconfigure(encoding="utf-8")
 
 # 1. Configuration
-# All 50 NIFTY stocks + The NIFTY 50 Index (^NSEI)
-TICKERS = [
-    "^NSEI", "ADANIENT.NS", "ADANIPORTS.NS", "APOLLOHOSP.NS", "ASIANPAINT.NS", 
-    "AXISBANK.NS", "BAJAJ-AUTO.NS", "BAJFINANCE.NS", "BAJAJFINSV.NS", "BPCL.NS", 
-    "BHARTIARTL.NS", "BRITANNIA.NS", "CIPLA.NS", "COALINDIA.NS", "DIVISLAB.NS", 
-    "DRREDDY.NS", "EICHERMOT.NS", "GRASIM.NS", "HCLTECH.NS", "HDFCBANK.NS", 
-    "HDFCLIFE.NS", "HEROMOTOCO.NS", "HINDALCO.NS", "HINDUNILVR.NS", "ICICIBANK.NS", 
-    "INDUSINDBK.NS", "INFY.NS", "ITC.NS", "JSWSTEEL.NS", "KOTAKBANK.NS", "LT.NS", 
-    "LTIM.NS", "M&M.NS", "MARUTI.NS", "NESTLEIND.NS", "NTPC.NS", "ONGC.NS", 
-    "POWERGRID.NS", "RELIANCE.NS", "SBILIFE.NS", "SBIN.NS", "SHRIRAMFIN.NS", 
-    "SUNPHARMA.NS", "TATACONSUM.NS", "TATAMOTORS.NS", "TATASTEEL.NS", "TCS.NS", 
-    "TECHM.NS", "TITAN.NS", "ULTRACEMCO.NS", "WIPRO.NS"
-]
+# Import centralized ticker configuration
+ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+if ROOT not in sys.path:
+    sys.path.insert(0, ROOT)
+from config import UPDATE_TICKERS as TICKERS
 
 RAW_DIR = "data/raw"  
 
@@ -64,48 +57,66 @@ def run_downstream_pipeline(skip_training: bool = False) -> bool:
 
     return True
 
-def update_all_stocks(skip_downstream: bool = False, skip_training: bool = False):
-    print(f"Starting daily data fetch at {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-    print(f"Total assets to fetch: {len(TICKERS)}\n")
+def _update_single_ticker(ticker):
+    """Update data for a single ticker."""
+    try:
+        # We download the last 5 years of data up to TODAY
+        stock = yf.Ticker(ticker)
+        df = stock.history(period="5y", interval="1d")
+        
+        if not df.empty:
+            # Remove timezone to keep it clean
+            if df.index.tz is not None:
+                df.index = df.index.tz_localize(None)
+            
+            # Save and overwrite the old CSV with fresh data
+            safe_ticker = ticker.replace("^", "")
+            save_path = f"{RAW_DIR}/{safe_ticker}.csv"
+
+            prev_max_date = _latest_date(save_path)
+            
+            df.to_csv(save_path)
+
+            new_max_date = _latest_date(save_path)
+            has_new_data = prev_max_date is None or (new_max_date is not None and new_max_date > prev_max_date)
+
+            return (ticker, True, has_new_data, None)
+        else:
+            return (ticker, False, False, "No data found")
+                
+    except Exception as e:
+        return (ticker, False, False, str(e))
+
+def update_all_stocks(skip_downstream: bool = False, skip_training: bool = False, max_workers=3):
+    print(f"Starting parallel daily data fetch at {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    print(f"Total assets to fetch: {len(TICKERS)} (workers={max_workers})\n")
 
     tickers_with_new_rows = 0
+    success_count = 0
+    error_count = 0
     
-    for ticker in TICKERS:
-        print(f"Fetching latest data for {ticker}...")
-        try:
-            # We download the last 5 years of data up to TODAY
-            stock = yf.Ticker(ticker)
-            df = stock.history(period="5y", interval="1d")
+    with ThreadPoolExecutor(max_workers=max_workers) as executor:
+        futures = {executor.submit(_update_single_ticker, ticker): ticker for ticker in TICKERS}
+        
+        for future in as_completed(futures):
+            ticker, success, has_new_data, error = future.result()
             
-            if not df.empty:
-                # Remove timezone to keep it clean
-                if df.index.tz is not None:
-                    df.index = df.index.tz_localize(None)
-                
-                # Save and overwrite the old CSV with fresh data
-                # We replace the '^' in the index ticker so Windows doesn't get confused
-                safe_ticker = ticker.replace("^", "")
-                save_path = f"{RAW_DIR}/{safe_ticker}.csv"
-
-                prev_max_date = _latest_date(save_path)
-                
-                df.to_csv(save_path)
-
-                new_max_date = _latest_date(save_path)
-                if prev_max_date is None or (new_max_date is not None and new_max_date > prev_max_date):
-                    tickers_with_new_rows += 1
-
-                print(f"Updated {safe_ticker}.csv successfully.")
+            if error:
+                print(f"[ERROR] {ticker}: {error}")
+                error_count += 1
             else:
-                print(f"No data found for {ticker}.")
-                
-        except Exception as e:
-            print(f"Error fetching {ticker}: {e}")
+                safe_ticker = ticker.replace("^", "")
+                if has_new_data:
+                    tickers_with_new_rows += 1
+                    print(f"[OK+NEW] {safe_ticker}.csv updated with new data")
+                else:
+                    print(f"[OK] {safe_ticker}.csv updated")
+                success_count += 1
             
-        # PRO-TIP: Pause for 1 second between downloads so Yahoo Finance doesn't block your IP!
-        time.sleep(1)
+            # Small delay to be nice to the API
+            time.sleep(0.1)
             
-    print("\nAll CSVs are now up to date.")
+    print(f"\nAll CSVs updated! Success: {success_count}, Errors: {error_count}, New data: {tickers_with_new_rows}")
 
     if tickers_with_new_rows > 0 and not skip_downstream:
         print(f"Detected new rows in {tickers_with_new_rows} ticker files. Running downstream pipeline...")
@@ -131,7 +142,12 @@ if __name__ == "__main__":
         action="store_true",
         help="Run preprocess/sequence but skip model training.",
     )
+    parser.add_argument(
+        "--workers",
+        type=int,
+        default=3,
+        help="Number of parallel workers for fetching (default: 3)",
+    )
     args = parser.parse_args()
 
-    update_all_stocks(skip_downstream=args.skip_downstream, skip_training=args.skip_training)
-    
+    update_all_stocks(skip_downstream=args.skip_downstream, skip_training=args.skip_training, max_workers=args.workers)

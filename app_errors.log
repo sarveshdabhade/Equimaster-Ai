@@ -133,3 +133,298 @@
 2026-04-14 09:09:59,005 INFO Initialize LSTM for ADANIPORTS.NS horizon=5 model=models/lstm_ADANIPORTS.NS_h5.keras
 2026-04-14 09:10:15,006 INFO Initialize LSTM for ADANIPORTS.NS horizon=22 model=models/lstm_ADANIPORTS.NS_h22.keras
 2026-04-14 09:10:30,797 INFO Initialize LSTM for ADANIPORTS.NS horizon=88 model=models/lstm_ADANIPORTS.NS_h88.keras
+2026-04-14 09:33:52,647 WARNING From D:\Projects\Equimaster-Ai\.venv\Lib\site-packages\keras\src\backend\common\global_state.py:82: The name tf.reset_default_graph is deprecated. Please use tf.compat.v1.reset_default_graph instead.
+
+2026-04-14 09:34:25,802 INFO Initialize LSTM for NIFTY 50 horizon=1 model=models/lstm_NSEI.keras
+2026-04-14 09:34:26,052 WARNING TensorFlow GPU support is not available on native Windows for TensorFlow >= 2.11. Even if CUDA/cuDNN are installed, GPU will not be used. Please use WSL2 or the TensorFlow-DirectML plugin.
+2026-04-14 09:34:46,117 WARNING From D:\Projects\Equimaster-Ai\.venv\Lib\site-packages\keras\src\backend\common\global_state.py:82: The name tf.reset_default_graph is deprecated. Please use tf.compat.v1.reset_default_graph instead.
+
+2026-04-14 09:35:04,119 INFO Initialize LSTM for NIFTY 50 horizon=1 model=models/lstm_NSEI.keras
+2026-04-14 09:35:04,292 WARNING TensorFlow GPU support is not available on native Windows for TensorFlow >= 2.11. Even if CUDA/cuDNN are installed, GPU will not be used. Please use WSL2 or the TensorFlow-DirectML plugin.
+2026-04-14 09:35:29,058 INFO Initialize LSTM for TCS.NS horizon=1 model=models/lstm_TCS.NS.keras
+2026-04-14 09:41:16,292 WARNING From D:\Projects\Equimaster-Ai\.venv\Lib\site-packages\keras\src\backend\common\global_state.py:82: The name tf.reset_default_graph is deprecated. Please use tf.compat.v1.reset_default_graph instead.
+
+2026-04-14 09:43:00,986 INFO Initialize LSTM for ASIANPAINT.NS horizon=22 model=models/lstm_ASIANPAINT.NS_h22.keras
+2026-04-14 09:43:01,250 WARNING TensorFlow GPU support is not available on native Windows for TensorFlow >= 2.11. Even if CUDA/cuDNN are installed, GPU will not be used. Please use WSL2 or the TensorFlow-DirectML plugin.
+2026-04-14 09:43:44,087 INFO Initialize LSTM for ASIANPAINT.NS horizon=88 model=models/lstm_ASIANPAINT.NS_h88.keras
+2026-04-14 10:12:08,742 INFO Initialize LSTM for NIFTY 50 horizon=1 model=models/lstm_NSEI.keras
+2026-04-14 10:12:46,015 INFO Initialize LSTM for NIFTY 50 horizon=1 model=models/lstm_NSEI.keras
+2026-04-14 10:23:42,579 WARNING From D:\Projects\Equimaster-Ai\.venv\Lib\site-packages\keras\src\backend\common\global_state.py:82: The name tf.reset_default_graph is deprecated. Please use tf.compat.v1.reset_default_graph instead.
+
+2026-04-14 10:24:14,046 INFO Initialize LSTM for NIFTY 50 horizon=1 model=models/lstm_NSEI.keras
+2026-04-14 10:24:14,466 WARNING TensorFlow GPU support is not available on native Windows for TensorFlow >= 2.11. Even if CUDA/cuDNN are installed, GPU will not be used. Please use WSL2 or the TensorFlow-DirectML plugin.
+2026-04-14 10:56:49,672 WARNING From C:\Users\SSD\AppData\Roaming\Python\Python313\site-packages\keras\src\backend\common\global_state.py:82: The name tf.reset_default_graph is deprecated. Please use tf.compat.v1.reset_default_graph instead.
+
+2026-04-14 11:06:43,690 WARNING From C:\Users\SSD\AppData\Roaming\Python\Python313\site-packages\keras\src\backend\common\global_state.py:82: The name tf.reset_default_graph is deprecated. Please use tf.compat.v1.reset_default_graph instead.
+
+2026-04-14 11:15:52,597 WARNING From C:\Users\SSD\AppData\Roaming\Python\Python313\site-packages\keras\src\backend\common\global_state.py:82: The name tf.reset_default_graph is deprecated. Please use tf.compat.v1.reset_default_graph instead.
+
+2026-04-14 12:00:06,119 INFO Initialize LSTM for NIFTY 50 horizon=1 model=models/lstm_NSEI.keras
+2026-04-14 12:15:48,227 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: TATAMOTORS.NS"}}}
+2026-04-14 12:18:43,694 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: TATAMOTORS.NS"}}}
+2026-04-14 12:19:34,241 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: TATAMOTORS.NS"}}}
+2026-04-14 12:20:31,467 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: TATAMOTORS.NS"}}}
+2026-04-14 12:20:36,242 INFO Initialize LSTM for NIFTY 50 horizon=1 model=models/lstm_NSEI.keras
+2026-04-14 12:21:21,342 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: TATAMOTORS.NS"}}}
+2026-04-14 12:31:27,441 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: TATAMOTORS.NS"}}}
+2026-04-14 12:31:31,066 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: NIFTY 50.NS"}}}
+2026-04-14 12:36:20,360 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: TATAMOTORS.NS"}}}
+2026-04-14 12:36:24,364 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: NIFTY 50.NS"}}}
+2026-04-14 12:37:56,818 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: TATAMOTORS.NS"}}}
+2026-04-14 12:38:01,773 INFO Initialize LSTM for ADANIENT.NS horizon=1 model=models/lstm_ADANIENT.NS.keras
+2026-04-14 12:38:44,096 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: TATAMOTORS.NS"}}}
+2026-04-14 12:47:01,739 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: TATAMOTORS.NS"}}}
+2026-04-14 12:47:05,306 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: NIFTY 50.NS"}}}
+2026-04-14 12:55:04,189 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: TATAMOTORS.NS"}}}
+2026-04-14 12:55:08,595 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: NIFTY 50.NS"}}}
+2026-04-14 12:56:13,302 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: TATAMOTORS.NS"}}}
+2026-04-14 12:56:18,468 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: NIFTY 50.NS"}}}
+2026-04-14 12:56:22,668 WARNING From C:\Users\SSD\AppData\Roaming\Python\Python313\site-packages\keras\src\backend\common\global_state.py:82: The name tf.reset_default_graph is deprecated. Please use tf.compat.v1.reset_default_graph instead.
+
+2026-04-14 13:00:52,140 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: TATAMOTORS.NS"}}}
+2026-04-14 13:03:54,271 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: TATAMOTORS.NS"}}}
+2026-04-14 13:07:31,463 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: TATAMOTORS.NS"}}}
+2026-04-14 13:07:34,960 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: NIFTY 50.NS"}}}
+2026-04-14 13:10:54,267 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: TATAMOTORS.NS"}}}
+2026-04-14 13:10:58,084 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: NIFTY 50.NS"}}}
+2026-04-14 13:13:45,610 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: TATAMOTORS.NS"}}}
+2026-04-14 13:13:49,693 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: NIFTY 50.NS"}}}
+2026-04-14 13:21:08,708 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: TATAMOTORS.NS"}}}
+2026-04-14 13:21:12,338 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: NIFTY 50.NS"}}}
+2026-04-14 13:25:08,680 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: TATAMOTORS.NS"}}}
+2026-04-14 13:25:12,678 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: NIFTY 50.NS"}}}
+2026-04-14 13:28:30,901 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: TATAMOTORS.NS"}}}
+2026-04-14 13:28:36,542 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: NIFTY 50.NS"}}}
+2026-04-14 13:29:11,867 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: TATAMOTORS.NS"}}}
+2026-04-14 13:31:51,516 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: TATAMOTORS.NS"}}}
+2026-04-14 13:31:56,629 INFO Initialize LSTM for ADANIPORTS.NS horizon=1 model=models/lstm_ADANIPORTS.NS.keras
+2026-04-14 13:34:02,128 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: TATAMOTORS.NS"}}}
+2026-04-14 13:37:36,933 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: TATAMOTORS.NS"}}}
+2026-04-14 13:37:42,692 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: NIFTY 50.NS"}}}
+2026-04-14 13:39:59,696 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: TATAMOTORS.NS"}}}
+2026-04-14 13:48:23,957 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: TATAMOTORS.NS"}}}
+2026-04-14 13:48:34,853 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: TATAMOTORS.NS"}}}
+2026-04-14 13:48:35,820 ERROR $TATAMOTORS.NS: possibly delisted; no price data found  (period=2d) (Yahoo error = "No data found, symbol may be delisted")
+2026-04-14 13:48:37,130 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: NIFTY 50.NS"}}}
+2026-04-14 13:49:01,864 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: TATAMOTORS.NS"}}}
+2026-04-14 13:49:10,827 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: TATAMOTORS.NS"}}}
+2026-04-14 13:49:11,421 ERROR $TATAMOTORS.NS: possibly delisted; no price data found  (period=2d) (Yahoo error = "No data found, symbol may be delisted")
+2026-04-14 13:49:12,650 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: NIFTY 50.NS"}}}
+2026-04-14 13:50:19,623 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: TATAMOTORS.NS"}}}
+2026-04-14 13:50:28,747 ERROR $TATAMOTORS.NS: possibly delisted; no price data found  (period=2d) (Yahoo error = "No data found, symbol may be delisted")
+2026-04-14 13:55:53,745 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: TATAMOTORS.NS"}}}
+2026-04-14 13:56:02,980 ERROR $TATAMOTORS.NS: possibly delisted; no price data found  (period=2d) (Yahoo error = "No data found, symbol may be delisted")
+2026-04-14 13:56:04,104 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: NIFTY 50.NS"}}}
+2026-04-14 14:02:04,042 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: TATAMOTORS.NS"}}}
+2026-04-14 14:02:13,444 ERROR $TATAMOTORS.NS: possibly delisted; no price data found  (period=2d) (Yahoo error = "No data found, symbol may be delisted")
+2026-04-14 14:02:14,894 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: NIFTY 50.NS"}}}
+2026-04-14 14:03:23,595 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: TATAMOTORS.NS"}}}
+2026-04-14 14:03:32,324 ERROR $TATAMOTORS.NS: possibly delisted; no price data found  (period=2d) (Yahoo error = "No data found, symbol may be delisted")
+2026-04-14 14:03:33,710 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: NIFTY 50.NS"}}}
+2026-04-14 14:09:55,795 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: TATAMOTORS.NS"}}}
+2026-04-14 14:10:05,558 ERROR $TATAMOTORS.NS: possibly delisted; no price data found  (period=2d) (Yahoo error = "No data found, symbol may be delisted")
+2026-04-14 14:10:44,044 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: TATAMOTORS.NS"}}}
+2026-04-14 14:11:44,183 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: TATAMOTORS.NS"}}}
+2026-04-14 14:11:52,847 ERROR $TATAMOTORS.NS: possibly delisted; no price data found  (period=2d) (Yahoo error = "No data found, symbol may be delisted")
+2026-04-14 14:12:36,505 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: TATAMOTORS.NS"}}}
+2026-04-14 14:40:49,886 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: TATAMOTORS.NS"}}}
+2026-04-14 14:41:10,032 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: TATAMOTORS.NS"}}}
+2026-04-14 14:41:10,852 ERROR $TATAMOTORS.NS: possibly delisted; no price data found  (period=2d) (Yahoo error = "No data found, symbol may be delisted")
+2026-04-14 14:41:12,416 WARNING From C:\Users\SSD\AppData\Roaming\Python\Python313\site-packages\keras\src\backend\common\global_state.py:82: The name tf.reset_default_graph is deprecated. Please use tf.compat.v1.reset_default_graph instead.
+
+2026-04-14 14:41:40,082 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: TATAMOTORS.NS"}}}
+2026-04-14 14:42:55,914 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: TATAMOTORS.NS"}}}
+2026-04-14 14:43:12,050 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: TATAMOTORS.NS"}}}
+2026-04-14 14:43:13,528 ERROR $TATAMOTORS.NS: possibly delisted; no price data found  (period=2d) (Yahoo error = "No data found, symbol may be delisted")
+2026-04-14 14:53:38,277 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: TATAMOTORS.NS"}}}
+2026-04-14 14:53:50,585 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: TATAMOTORS.NS"}}}
+2026-04-14 14:53:51,154 ERROR $TATAMOTORS.NS: possibly delisted; no price data found  (period=2d) (Yahoo error = "No data found, symbol may be delisted")
+2026-04-14 14:53:52,150 WARNING From C:\Users\SSD\AppData\Roaming\Python\Python313\site-packages\keras\src\backend\common\global_state.py:82: The name tf.reset_default_graph is deprecated. Please use tf.compat.v1.reset_default_graph instead.
+
+2026-04-14 14:57:15,297 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: TATAMOTORS.NS"}}}
+2026-04-14 14:57:27,054 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: TATAMOTORS.NS"}}}
+2026-04-14 14:57:27,630 ERROR $TATAMOTORS.NS: possibly delisted; no price data found  (period=2d) (Yahoo error = "No data found, symbol may be delisted")
+2026-04-14 14:57:29,366 WARNING From C:\Users\SSD\AppData\Roaming\Python\Python313\site-packages\keras\src\backend\common\global_state.py:82: The name tf.reset_default_graph is deprecated. Please use tf.compat.v1.reset_default_graph instead.
+
+2026-04-14 14:57:58,265 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: TATAMOTORS.NS"}}}
+2026-04-14 15:00:47,685 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: TATAMOTORS.NS"}}}
+2026-04-14 15:01:00,256 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: TATAMOTORS.NS"}}}
+2026-04-14 15:01:01,162 ERROR $TATAMOTORS.NS: possibly delisted; no price data found  (period=2d) (Yahoo error = "No data found, symbol may be delisted")
+2026-04-14 15:01:02,121 WARNING From C:\Users\SSD\AppData\Roaming\Python\Python313\site-packages\keras\src\backend\common\global_state.py:82: The name tf.reset_default_graph is deprecated. Please use tf.compat.v1.reset_default_graph instead.
+
+2026-04-14 15:02:03,883 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: TATAMOTORS.NS"}}}
+2026-04-14 15:06:42,042 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: TATAMOTORS.NS"}}}
+2026-04-14 15:06:54,751 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: TATAMOTORS.NS"}}}
+2026-04-14 15:06:55,498 ERROR $TATAMOTORS.NS: possibly delisted; no price data found  (period=2d) (Yahoo error = "No data found, symbol may be delisted")
+2026-04-14 15:06:56,413 WARNING From C:\Users\SSD\AppData\Roaming\Python\Python313\site-packages\keras\src\backend\common\global_state.py:82: The name tf.reset_default_graph is deprecated. Please use tf.compat.v1.reset_default_graph instead.
+
+2026-04-14 15:07:34,318 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: TATAMOTORS.NS"}}}
+2026-04-14 15:08:29,758 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: TATAMOTORS.NS"}}}
+2026-04-14 15:08:40,215 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: TATAMOTORS.NS"}}}
+2026-04-14 15:08:40,902 ERROR $TATAMOTORS.NS: possibly delisted; no price data found  (period=2d) (Yahoo error = "No data found, symbol may be delisted")
+2026-04-14 15:13:10,658 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: TATAMOTORS.NS"}}}
+2026-04-14 15:13:20,984 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: TATAMOTORS.NS"}}}
+2026-04-14 15:13:21,589 ERROR $TATAMOTORS.NS: possibly delisted; no price data found  (period=2d) (Yahoo error = "No data found, symbol may be delisted")
+2026-04-14 15:13:22,547 WARNING From C:\Users\SSD\AppData\Roaming\Python\Python313\site-packages\keras\src\backend\common\global_state.py:82: The name tf.reset_default_graph is deprecated. Please use tf.compat.v1.reset_default_graph instead.
+
+2026-04-14 15:19:09,665 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: TATAMOTORS.NS"}}}
+2026-04-14 15:19:22,143 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: TATAMOTORS.NS"}}}
+2026-04-14 15:19:22,829 ERROR $TATAMOTORS.NS: possibly delisted; no price data found  (period=2d) (Yahoo error = "No data found, symbol may be delisted")
+2026-04-14 15:19:23,868 WARNING From C:\Users\SSD\AppData\Roaming\Python\Python313\site-packages\keras\src\backend\common\global_state.py:82: The name tf.reset_default_graph is deprecated. Please use tf.compat.v1.reset_default_graph instead.
+
+2026-04-14 15:24:57,812 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: TATAMOTORS.NS"}}}
+2026-04-14 15:25:09,678 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: TATAMOTORS.NS"}}}
+2026-04-14 15:25:10,509 ERROR $TATAMOTORS.NS: possibly delisted; no price data found  (period=2d) (Yahoo error = "No data found, symbol may be delisted")
+2026-04-14 15:25:11,592 WARNING From C:\Users\SSD\AppData\Roaming\Python\Python313\site-packages\keras\src\backend\common\global_state.py:82: The name tf.reset_default_graph is deprecated. Please use tf.compat.v1.reset_default_graph instead.
+
+2026-04-14 15:29:56,623 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: TATAMOTORS.NS"}}}
+2026-04-14 15:30:08,412 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: TATAMOTORS.NS"}}}
+2026-04-14 15:30:09,134 ERROR $TATAMOTORS.NS: possibly delisted; no price data found  (period=2d) (Yahoo error = "No data found, symbol may be delisted")
+2026-04-14 15:30:10,210 WARNING From C:\Users\SSD\AppData\Roaming\Python\Python313\site-packages\keras\src\backend\common\global_state.py:82: The name tf.reset_default_graph is deprecated. Please use tf.compat.v1.reset_default_graph instead.
+
+2026-04-14 15:32:04,829 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: TATAMOTORS.NS"}}}
+2026-04-14 15:32:15,298 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: TATAMOTORS.NS"}}}
+2026-04-14 15:32:15,882 ERROR $TATAMOTORS.NS: possibly delisted; no price data found  (period=2d) (Yahoo error = "No data found, symbol may be delisted")
+2026-04-14 15:38:44,475 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: TATAMOTORS.NS"}}}
+2026-04-14 15:38:56,283 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: TATAMOTORS.NS"}}}
+2026-04-14 15:38:57,130 ERROR $TATAMOTORS.NS: possibly delisted; no price data found  (period=2d) (Yahoo error = "No data found, symbol may be delisted")
+2026-04-14 15:38:58,238 WARNING From C:\Users\SSD\AppData\Roaming\Python\Python313\site-packages\keras\src\backend\common\global_state.py:82: The name tf.reset_default_graph is deprecated. Please use tf.compat.v1.reset_default_graph instead.
+
+2026-04-14 15:44:11,633 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: TATAMOTORS.NS"}}}
+2026-04-14 15:44:25,091 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: TATAMOTORS.NS"}}}
+2026-04-14 15:44:25,897 ERROR $TATAMOTORS.NS: possibly delisted; no price data found  (period=2d) (Yahoo error = "No data found, symbol may be delisted")
+2026-04-14 15:44:26,844 WARNING From C:\Users\SSD\AppData\Roaming\Python\Python313\site-packages\keras\src\backend\common\global_state.py:82: The name tf.reset_default_graph is deprecated. Please use tf.compat.v1.reset_default_graph instead.
+
+2026-04-14 15:50:19,991 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: TATAMOTORS.NS"}}}
+2026-04-14 15:50:30,549 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: TATAMOTORS.NS"}}}
+2026-04-14 15:50:31,093 ERROR $TATAMOTORS.NS: possibly delisted; no price data found  (period=2d) (Yahoo error = "No data found, symbol may be delisted")
+2026-04-14 15:50:31,965 WARNING From C:\Users\SSD\AppData\Roaming\Python\Python313\site-packages\keras\src\backend\common\global_state.py:82: The name tf.reset_default_graph is deprecated. Please use tf.compat.v1.reset_default_graph instead.
+
+2026-04-14 22:48:26,704 ERROR 
+1 Failed download:
+2026-04-14 22:48:26,704 ERROR ['^NSEI']: TypeError("'NoneType' object is not subscriptable")
+2026-04-14 22:48:49,206 ERROR 
+1 Failed download:
+2026-04-14 22:48:49,206 ERROR ['^BSESN']: TypeError("'NoneType' object is not subscriptable")
+2026-04-14 22:48:59,223 ERROR 
+1 Failed download:
+2026-04-14 22:48:59,223 ERROR ['^NSEBANK']: TypeError("'NoneType' object is not subscriptable")
+2026-04-14 22:50:26,005 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: TATAMOTORS.NS"}}}
+2026-04-14 22:51:20,030 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: TATAMOTORS.NS"}}}
+2026-04-14 22:51:22,003 ERROR $TATAMOTORS.NS: possibly delisted; no price data found  (period=2d) (Yahoo error = "No data found, symbol may be delisted")
+2026-04-14 22:51:23,061 WARNING From C:\Users\SSD\AppData\Roaming\Python\Python313\site-packages\keras\src\backend\common\global_state.py:82: The name tf.reset_default_graph is deprecated. Please use tf.compat.v1.reset_default_graph instead.
+
+2026-04-14 22:56:00,213 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: TATAMOTORS.NS"}}}
+2026-04-14 22:56:44,315 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: TATAMOTORS.NS"}}}
+2026-04-14 22:56:45,479 ERROR $TATAMOTORS.NS: possibly delisted; no price data found  (period=2d) (Yahoo error = "No data found, symbol may be delisted")
+2026-04-14 22:56:46,780 WARNING From C:\Users\SSD\AppData\Roaming\Python\Python313\site-packages\keras\src\backend\common\global_state.py:82: The name tf.reset_default_graph is deprecated. Please use tf.compat.v1.reset_default_graph instead.
+
+2026-04-14 23:57:40,398 ERROR 
+1 Failed download:
+2026-04-14 23:57:40,398 ERROR ['^NSEI']: TypeError("'NoneType' object is not subscriptable")
+2026-04-14 23:57:40,436 ERROR 
+1 Failed download:
+2026-04-14 23:57:40,436 ERROR ['^BSESN']: TypeError("'NoneType' object is not subscriptable")
+2026-04-14 23:57:40,450 ERROR 
+1 Failed download:
+2026-04-14 23:57:40,450 ERROR ['^NSEBANK']: TypeError("'NoneType' object is not subscriptable")
+2026-04-14 23:57:40,469 ERROR 
+1 Failed download:
+2026-04-14 23:57:40,470 ERROR ['^CNX100']: TypeError("'NoneType' object is not subscriptable")
+2026-04-14 23:57:40,487 ERROR 
+1 Failed download:
+2026-04-14 23:57:40,487 ERROR ['^CNXIT']: TypeError("'NoneType' object is not subscriptable")
+2026-04-14 23:57:40,503 ERROR 
+1 Failed download:
+2026-04-14 23:57:40,503 ERROR ['^CNXPHARMA']: TypeError("'NoneType' object is not subscriptable")
+2026-04-14 23:57:41,056 ERROR Failed to get ticker 'TATAMOTORS.NS' reason: Failed to perform, curl: (6) Could not resolve host: query1.finance.yahoo.com. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+2026-04-14 23:57:41,336 WARNING From C:\Users\SSD\AppData\Roaming\Python\Python313\site-packages\keras\src\backend\common\global_state.py:82: The name tf.reset_default_graph is deprecated. Please use tf.compat.v1.reset_default_graph instead.
+
+2026-04-15 00:21:51,210 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: TATAMOTORS.NS"}}}
+2026-04-15 00:22:03,697 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: TATAMOTORS.NS"}}}
+2026-04-15 00:22:04,549 ERROR $TATAMOTORS.NS: possibly delisted; no price data found  (period=2d) (Yahoo error = "No data found, symbol may be delisted")
+2026-04-15 00:22:05,655 WARNING From C:\Users\SSD\AppData\Roaming\Python\Python313\site-packages\keras\src\backend\common\global_state.py:82: The name tf.reset_default_graph is deprecated. Please use tf.compat.v1.reset_default_graph instead.
+
+2026-04-15 00:23:18,767 INFO Initialize LSTM for NTPC.NS horizon=5 model=models/lstm_NTPC.NS_h5.keras
+2026-04-15 08:50:50,325 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: TATAMOTORS.NS"}}}
+2026-04-15 08:50:58,310 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: TATAMOTORS.NS"}}}
+2026-04-15 08:50:58,798 ERROR $TATAMOTORS.NS: possibly delisted; no price data found  (period=2d) (Yahoo error = "No data found, symbol may be delisted")
+2026-04-15 08:50:59,465 WARNING From C:\Users\SSD\AppData\Roaming\Python\Python313\site-packages\keras\src\backend\common\global_state.py:82: The name tf.reset_default_graph is deprecated. Please use tf.compat.v1.reset_default_graph instead.
+
+2026-04-15 08:51:30,637 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: TATAMOTORS.NS"}}}
+2026-04-15 10:09:43,566 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: TATAMOTORS.NS"}}}
+2026-04-15 10:09:55,155 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: TATAMOTORS.NS"}}}
+2026-04-15 10:09:56,596 ERROR $TATAMOTORS.NS: possibly delisted; no price data found  (period=2d) (Yahoo error = "No data found, symbol may be delisted")
+2026-04-15 10:09:57,745 WARNING From C:\Users\SSD\AppData\Roaming\Python\Python313\site-packages\keras\src\backend\common\global_state.py:82: The name tf.reset_default_graph is deprecated. Please use tf.compat.v1.reset_default_graph instead.
+
+2026-04-15 10:10:17,400 ERROR 
+1 Failed download:
+2026-04-15 10:10:17,400 ERROR ['^NSEI']: TypeError("'NoneType' object is not subscriptable")
+2026-04-15 10:10:25,422 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: TATAMOTORS.NS"}}}
+2026-04-15 10:10:40,185 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: TATAMOTORS.NS"}}}
+2026-04-15 10:10:53,252 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: TATAMOTORS.NS"}}}
+2026-04-15 10:10:53,976 ERROR $TATAMOTORS.NS: possibly delisted; no price data found  (period=2d) (Yahoo error = "No data found, symbol may be delisted")
+2026-04-15 10:11:33,531 ERROR HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: TATAMOTORS.NS"}}}
+2026-04-15 10:11:57,692 INFO Initialize LSTM for ICICIBANK.NS horizon=1 model=models/lstm_ICICIBANK.NS.keras
+2026-04-15 10:45:20,339 ERROR 
+1 Failed download:
+2026-04-15 10:45:20,340 ERROR ['^NSEI']: TypeError("'NoneType' object is not subscriptable")
+2026-04-15 10:45:50,389 ERROR 
+1 Failed download:
+2026-04-15 10:45:50,389 ERROR ['^BSESN']: TypeError("'NoneType' object is not subscriptable")
+2026-04-15 10:46:02,473 ERROR 
+1 Failed download:
+2026-04-15 10:46:02,474 ERROR ['^NSEBANK']: TypeError("'NoneType' object is not subscriptable")
+2026-04-15 10:46:14,545 ERROR 
+1 Failed download:
+2026-04-15 10:46:14,545 ERROR ['^CNX100']: TypeError("'NoneType' object is not subscriptable")
+2026-04-15 10:46:14,590 ERROR 
+1 Failed download:
+2026-04-15 10:46:14,591 ERROR ['^CNXIT']: TypeError("'NoneType' object is not subscriptable")
+2026-04-15 10:46:14,615 ERROR 
+1 Failed download:
+2026-04-15 10:46:14,616 ERROR ['^CNXPHARMA']: TypeError("'NoneType' object is not subscriptable")
+2026-04-15 10:46:14,978 ERROR Failed to get ticker 'TATAMOTORS.NS' reason: Failed to perform, curl: (6) Could not resolve host: query1.finance.yahoo.com. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+2026-04-15 10:46:15,391 WARNING From C:\Users\SSD\AppData\Roaming\Python\Python313\site-packages\keras\src\backend\common\global_state.py:82: The name tf.reset_default_graph is deprecated. Please use tf.compat.v1.reset_default_graph instead.
+
+2026-04-15 11:07:02,203 WARNING From C:\Users\SSD\AppData\Roaming\Python\Python313\site-packages\keras\src\backend\common\global_state.py:82: The name tf.reset_default_graph is deprecated. Please use tf.compat.v1.reset_default_graph instead.
+
+2026-04-15 11:10:10,845 INFO Initialize LSTM for SBIN.NS horizon=1 model=models/lstm_SBIN.NS.keras
+2026-04-15 11:38:41,934 INFO Initialize LSTM for ADANIPORTS.NS horizon=1 model=models/lstm_ADANIPORTS.NS.keras
+2026-04-15 12:10:55,291 INFO Initialize LSTM for LT.NS horizon=1 model=models/lstm_LT.NS.keras
+2026-04-15 12:11:15,516 INFO Initialize LSTM for LT.NS horizon=22 model=models/lstm_LT.NS_h22.keras
+2026-04-15 13:08:41,092 WARNING From C:\Users\SSD\AppData\Roaming\Python\Python313\site-packages\keras\src\backend\common\global_state.py:82: The name tf.reset_default_graph is deprecated. Please use tf.compat.v1.reset_default_graph instead.
+
+2026-04-15 13:19:25,456 INFO Initialize LSTM for COALINDIA.NS horizon=5 model=models/lstm_COALINDIA.NS_h5.keras
+2026-04-15 13:26:53,843 INFO Initialize LSTM for BAJAJFINSV.NS horizon=1 model=models/lstm_BAJAJFINSV.NS.keras
+2026-04-15 13:27:10,373 INFO Initialize LSTM for BAJAJFINSV.NS horizon=22 model=models/lstm_BAJAJFINSV.NS_h22.keras
+2026-04-15 13:44:43,905 INFO Initialize LSTM for WIPRO.NS horizon=1 model=models/lstm_WIPRO.NS.keras
+2026-04-15 13:45:04,226 INFO Initialize LSTM for WIPRO.NS horizon=5 model=models/lstm_WIPRO.NS_h5.keras
+2026-04-15 13:45:11,269 INFO Initialize LSTM for WIPRO.NS horizon=5 model=models/lstm_WIPRO.NS_h5.keras
+2026-04-28 23:27:00,906 WARNING From C:\Users\SSD\AppData\Roaming\Python\Python313\site-packages\keras\src\backend\common\global_state.py:82: The name tf.reset_default_graph is deprecated. Please use tf.compat.v1.reset_default_graph instead.
+
+2026-04-28 23:34:34,624 WARNING From C:\Users\SSD\AppData\Roaming\Python\Python313\site-packages\keras\src\backend\common\global_state.py:82: The name tf.reset_default_graph is deprecated. Please use tf.compat.v1.reset_default_graph instead.
+
+2026-04-29 09:24:24,277 WARNING From C:\Users\SSD\AppData\Roaming\Python\Python313\site-packages\keras\src\backend\common\global_state.py:82: The name tf.reset_default_graph is deprecated. Please use tf.compat.v1.reset_default_graph instead.
+
+2026-04-29 09:33:53,823 INFO Initialize LSTM for ITC.NS horizon=1 model=models/lstm_ITC.NS.keras
+2026-04-29 10:22:13,269 ERROR 
+1 Failed download:
+2026-04-29 10:22:13,271 ERROR 
+1 Failed download:
+2026-04-29 10:22:13,271 ERROR 
+1 Failed download:
+2026-04-29 10:22:13,271 ERROR ['^BSESN']: TypeError("'NoneType' object is not subscriptable")
+2026-04-29 10:22:13,272 ERROR 
+1 Failed download:
+2026-04-29 10:22:13,272 ERROR 
+1 Failed download:
+2026-04-29 10:22:13,273 ERROR ['^BSESN']: TypeError("'NoneType' object is not subscriptable")
+2026-04-29 10:22:13,277 ERROR ['^BSESN', '^NSEI', '^CNX100']: TypeError("'NoneType' object is not subscriptable")
+2026-04-29 10:22:13,300 ERROR ['^BSESN', '^NSEI', '^CNX100', '^NSEBANK', '^CNXIT']: TypeError("'NoneType' object is not subscriptable")
+2026-04-29 10:22:13,323 ERROR ['^BSESN', '^NSEI', '^CNX100', '^NSEBANK', '^CNXIT']: TypeError("'NoneType' object is not subscriptable")
+2026-04-29 10:38:32,043 INFO Initialize LSTM for AUBANK.NS horizon=1 model=models/lstm_AUBANK.NS.keras
+2026-05-22 16:39:41,572 WARNING From D:\Projects\Equimaster-Ai\.venv\Lib\site-packages\keras\src\backend\common\global_state.py:82: The name tf.reset_default_graph is deprecated. Please use tf.compat.v1.reset_default_graph instead.
+
+2026-08-19 14:52:21,380 WARNING From C:\Users\SSD\AppData\Roaming\Python\Python313\site-packages\keras\src\backend\common\global_state.py:82: The name tf.reset_default_graph is deprecated. Please use tf.compat.v1.reset_default_graph instead.
+

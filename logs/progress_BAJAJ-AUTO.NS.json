@@ -1,6 +1,6 @@
 {
-  "status": "done",
-  "step": "complete",
-  "message": "All done",
-  "last_updated": "2026-04-12T12:56:56.871337Z"
+  "status": "error",
+  "step": "exception",
+  "message": "[WinError 5] Access is denied: 'D:\\\\Projects\\\\Equimaster-Ai\\\\logs\\\\progress_BAJAJ-AUTO.NS.json.tmp' -> 'D:\\\\Projects\\\\Equimaster-Ai\\\\logs\\\\progress_BAJAJ-AUTO.NS.json'",
+  "last_updated": "2026-04-15T06:47:11.084230+00:00"
 }

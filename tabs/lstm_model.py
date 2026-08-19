@@ -15,15 +15,9 @@ from streamlit_lottie import st_lottie
 from utils import load_lottieurl
 
 
-def render_lstm_tab(df, ticker, MODEL_PATH, SCALER_PATH, CLOSE_COL_IDX=1):
-    st.markdown('<h2 class="section-title"><span class="accent">🧠 Deep Learning</span> Price Forecast</h2>', unsafe_allow_html=True)
-    
-    # Phase 2: Toggle for model mode + confidence level
-    col_mode, col_conf = st.columns([1, 2])
-    with col_mode:
-        use_iterative = st.toggle("🚀 Iterative Multi-Step", value=True, help="Use single-step model iteratively for longer horizons (more accurate)")
-    with col_conf:
-        confidence_level = st.slider("Confidence Bands", 70, 95, 85, help="Wider bands = higher confidence interval (mocked variance)")
+def render_lstm_tab(df, ticker, MODEL_PATH, SCALER_PATH):
+    st.markdown('<h2 class="section-title"><span clas' \
+    's="accent">Deep Learning</span> Price Forecast</h2>', unsafe_allow_html=True)
     
     # Layout: main chart + sidebar info
     colA, colB = st.columns([3, 1])
@@ -37,10 +31,10 @@ def render_lstm_tab(df, ticker, MODEL_PATH, SCALER_PATH, CLOSE_COL_IDX=1):
 
             # Enhanced horizon with confidence
             horizon = st.selectbox(
-                "Forecast Horizon", 
-                [1, 5, 22, 88], 
-                format_func=lambda x: f"{ {1: '1 Day', 5: '1 Week', 22: '1 Month', 88: '4 Months'}[x] } ({x} steps)",
-                help="Number of prediction steps ahead"
+                "Forecast Horizon",
+                [1, 5, 22, 88],
+                format_func=lambda x: {1: '1 Day', 5: '1 Week', 22: '1 Month', 88: '4 Months'}[x],
+                help="Prediction time horizon"
             )
 
         # determine model path for selected horizon
@@ -77,6 +71,8 @@ def render_lstm_tab(df, ticker, MODEL_PATH, SCALER_PATH, CLOSE_COL_IDX=1):
 
                         model, scaler = load_model_and_scaler(model_path_local, SCALER_PATH, model_mtime, scaler_mtime)
 
+                        # Compute Close column index dynamically from the DataFrame
+                        CLOSE_COL_IDX = df.columns.get_loc("Close") if "Close" in df.columns else 0
                         recent_data = df.tail(60).values
 
                         df_features = recent_data.shape[1]
@@ -99,7 +95,7 @@ def render_lstm_tab(df, ticker, MODEL_PATH, SCALER_PATH, CLOSE_COL_IDX=1):
                         if model_input_dim is not None and model_input_dim != scaler_features:
                             st.error(f"Model expects {model_input_dim} features but scaler provides {scaler_features}.")
                             if st.button(f"Retrain model for {ticker} now (single ticker)"):
-                                with st.spinner("Retraining model for this ticker..."):
+                                with st.spinner("Retrain model for this ticker..."):
                                     subprocess.run([sys.executable, "scripts/quick_run.py", "--ticker", ticker, "--epochs", "3"], check=False)
                                     st.success("Retrain command completed — refresh to load new model.")
                             raise RuntimeError("Feature mismatch between model and scaler")
@@ -220,20 +216,12 @@ def render_lstm_tab(df, ticker, MODEL_PATH, SCALER_PATH, CLOSE_COL_IDX=1):
                             prediction_scaled = model.predict(X_input)
                             preds = prediction_scaled.flatten()
 
-# Phase 2: Enhanced chart with confidence bands
-                        # Mock confidence intervals (± std dev based on confidence_level)
-                        conf_std = (100 - confidence_level) / 100 * 0.05  # Mock volatility factor
-                        
                         # inverse transform predictions to price units
                         dummy = np.zeros((len(preds), n_features))
                         for i, p in enumerate(preds):
                             dummy[i, CLOSE_COL_IDX] = p
                         inv = scaler.inverse_transform(dummy)[:, CLOSE_COL_IDX]
                         
-                        # Mock confidence bands
-                        upper_band = inv * (1 + conf_std)
-                        lower_band = inv * (1 - conf_std)
-
                         current_price = df['Close'].iloc[-1]
 
                         # Build forecast index
@@ -267,18 +255,6 @@ def render_lstm_tab(df, ticker, MODEL_PATH, SCALER_PATH, CLOSE_COL_IDX=1):
                             marker=dict(size=8, color='#FFBE5C')
                         ))
                         
-                        # Confidence bands (Phase 2)
-                        fig.add_trace(go.Scatter(
-                            x=future_idx, y=upper_band, fill=None,
-                            line=dict(color='rgba(255,190,92,0.2)', width=0),
-                            showlegend=False, hovertemplate=None
-                        ))
-                        fig.add_trace(go.Scatter(
-                            x=future_idx+[future_idx[-1]], y=upper_band+[lower_band[-1]],
-                            fill='tonexty', fillcolor='rgba(255,190,92,0.15)',
-                            line=dict(color='rgba(255,255,255,0)'), name=f'{confidence_level}% Confidence'
-                        ))
-                        
                         # Vertical divider
                         if last_idx:
                             fig.add_vline(x=last_idx, line_dash='dot', line_color='gray', name='Now')
@@ -297,65 +273,63 @@ def render_lstm_tab(df, ticker, MODEL_PATH, SCALER_PATH, CLOSE_COL_IDX=1):
                             st.plotly_chart(fig, use_container_width=True, theme="streamlit")
                         
                         # Reset zoom button
-                        if st.button("🔄 Reset Chart View", key="reset_chart"):
+                        if st.button("Reset Chart View", key="reset_chart"):
                             st.cache_data.clear()
                             st.rerun()
 
                         # Primary forecast metric (enhanced)
                         pred_val = float(inv[-1]) if horizon > 1 else float(inv[0])
-                        metric_label = f"🎯 Predicted Close T+{horizon}"
+                        metric_label = f"Predicted Close T+{horizon}"
                         change = pred_val - current_price
                         change_pct = (change / current_price) * 100
                         st.metric(metric_label, f"₹{pred_val:,.2f}", f"{change:,.1f} ({change_pct:.1f}%)")
 
                         # Signal badge
-                        signal_color = "🟢 BULLISH" if change > 0 else "🔴 BEARISH"
-                        st.markdown(f"**LSTM Signal:** {signal_color} 🚀")
+                        signal_color = "BULLISH" if change > 0 else "BEARISH"
+                        st.markdown(f"**LSTM Signal:** {signal_color}")
+
+                        # Compute simple confidence bands (±2 std of recent Close volatility)
+                        recent_close = df['Close'].tail(60).values
+                        volatility = np.std(np.diff(recent_close))
+                        upper_band = [inv[i] + 2 * volatility * np.sqrt(i + 1) for i in range(len(inv))]
+                        lower_band = [inv[i] - 2 * volatility * np.sqrt(i + 1) for i in range(len(inv))]
 
                         # Phase 2: Interactive forecast table
                         forecast_df = pd.DataFrame({
                             'Step': [f'T+{i+1}' for i in range(len(inv))],
                             'Forecast': [f'₹{v:,.1f}' for v in inv],
                             'Upper CI': [f'₹{u:,.1f}' for u in upper_band],
-                            'Lower CI': [f'₹{l:,.1f}' for l in lower_band],
-                            'Change %': [f'{((v - current_price)/current_price*100):+.1f}%' for v in inv]
+                            'Lower CI': [f'₹{l:,.1f}' for l in lower_band]
                         })
                         
-                        with st.expander(f"📋 Detailed Forecast Table ({len(inv)} steps)", expanded=False):
+                        with st.expander(f"Detailed Forecast Table ({len(inv)} steps)", expanded=False):
                             st.dataframe(
-                                forecast_df, 
-                                use_container_width=True, 
+                                forecast_df,
+                                use_container_width=True,
                                 column_config={
                                     "Forecast": st.column_config.TextColumn("Forecast Price"),
                                     "Upper CI": st.column_config.TextColumn("Upper Confidence"),
-                                    "Lower CI": st.column_config.TextColumn("Lower Confidence"),
-                                    "Change %": st.column_config.NumberColumn("Δ%", format="%.1f%%")
+                                    "Lower CI": st.column_config.TextColumn("Lower Confidence")
                                 },
                                 hide_index=True
                             )
                             st.download_button(
-                                "📥 Export CSV", 
+                                "Export CSV", 
                                 forecast_df.to_csv(index=False), 
                                 f"{ticker}_lstm_forecast.csv",
                                 "text/csv"
                             )
                         
-                        # Historical accuracy mock stats (Phase 2)
-                        with st.expander("📈 Model Performance History", expanded=False):
-                            st.markdown("""
-                            **Backtest Metrics (Mock - Last 30 predictions):**
-                            - **Hit Rate:** 67.8% (within ±2% of actual)
-                            - **MAE:** ₹14.2 
-                            - **MAPE:** 1.8%
-                            - **Avg Horizon:** 22 days
-                            """)
+                        # Historical accuracy stats (placeholder until backtest is implemented)
+                        with st.expander("Model Performance History", expanded=False):
+                            st.caption("Backtest not yet implemented. Metrics below are placeholders.")
                             col_acc1, col_acc2, col_acc3 = st.columns(3)
                             with col_acc1:
-                                st.metric("✅ Hit Rate", "67.8%", "↑ 2.1%")
+                                st.metric("Hit Rate", "N/A")
                             with col_acc2:
-                                st.metric("📏 MAE", "₹14.2")
+                                st.metric("MAE", "N/A")
                             with col_acc3:
-                                st.metric("📊 MAPE", "1.8%")
+                                st.metric("MAPE", "N/A")
                     except Exception as e:
                         st.error(f"Engine failed to compute: {e}")
                         st.text(traceback.format_exc())
@@ -363,6 +337,5 @@ def render_lstm_tab(df, ticker, MODEL_PATH, SCALER_PATH, CLOSE_COL_IDX=1):
             st.warning("LSTM Brain offline. Model files not found.")
 
     with colB:
-        st.info("**Architecture:** Analyzes 60-day non-linear sequences of OHLCV and RSI data to output a continuous price probability.")
         st.markdown("---")
-        st.info("Bulk training and model-conversion controls have been moved to a dedicated page: 'Training Manager' (see the app Pages/sidebar).")
+

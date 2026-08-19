@@ -33,7 +33,16 @@ def preprocess_one(ticker):
         return out_path
 
     print(f"Preprocessing {raw_path} -> {out_path} ...")
-    df = pd.read_csv(raw_path, skiprows=3, names=["Date","Close","High","Low","Open","Volume"], parse_dates=[0], index_col=0)
+    # Auto-detect CSV format: some raw files have a 3-line metadata header (from fetch_nifty.py),
+    # while others (from update_data.py) are standard yfinance CSVs with a header row.
+    with open(raw_path, 'r', encoding='utf-8') as f:
+        first_line = f.readline().strip()
+    if first_line.startswith("Price,"):
+        # 3-line metadata header format (fetch_nifty.py output)
+        df = pd.read_csv(raw_path, skiprows=3, names=["Date","Close","High","Low","Open","Volume"], parse_dates=[0], index_col=0)
+    else:
+        # Standard yfinance CSV format (update_data.py / data_loader.py output)
+        df = pd.read_csv(raw_path, index_col=0, parse_dates=True)
     df.insert(0, "Adj Close", df["Close"])
     df = add_technical_indicators(df)
     df = df.dropna()

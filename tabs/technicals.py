@@ -91,4 +91,5 @@ def render_technicals(df: pd.DataFrame, ticker: str):
     st.markdown('</div>', unsafe_allow_html=True)
 
     # small hover info
-    st.markdown('<div class="info-tooltip">ⓘ<span class="info-text">Hover over candles for OHLCV details. Use resolution selector to resample candles.</span></div>', unsafe_allow_html=True)
+    st.markdown('<div class="info-tooltip"><span class="info-text">Hover over candles for OHLCV details. Use resolution selector to resample candles.</span></div>', unsafe_allow_html=True)
+

@@ -2,5 +2,5 @@
   "status": "error",
   "step": "exception",
   "message": "Found array with 0 sample(s) (shape=(0, 18)) while a minimum of 1 is required by MinMaxScaler.",
-  "last_updated": "2026-04-12T13:13:18.506217Z"
+  "last_updated": "2026-04-14T04:14:55.542772+00:00"
 }

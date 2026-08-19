@@ -92,15 +92,15 @@ def process_and_train_ticker(ticker, horizons, window_size, epochs, only_missing
         # 1: single-step
         train_tasks = []
         # determine if we need to train (only_missing check)
-        # single-step model path
-        msingle = os.path.join(MODELS_DIR, f'lstm_{ticker}.h5')
+        # single-step model path (check for .keras since that's what we save)
+        msingle = os.path.join(MODELS_DIR, f'lstm_{ticker}.keras')
         if not (only_missing and os.path.exists(msingle)):
             train_tasks.append((1, os.path.join(TRAIN_DIR, f'X_train_{ticker}.npy'), os.path.join(TRAIN_DIR, f'y_train_{ticker}.npy')))
 
         for h in horizons:
             if h <= 1:
                 continue
-            mpath = os.path.join(MODELS_DIR, f'lstm_{ticker}_h{h}.h5')
+            mpath = os.path.join(MODELS_DIR, f'lstm_{ticker}_h{h}.keras')
             if only_missing and os.path.exists(mpath):
                 continue
             xfile = os.path.join(TRAIN_DIR, f'X_train_{ticker}_h{h}.npy')

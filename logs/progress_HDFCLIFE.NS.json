@@ -1,6 +1,6 @@
 {
-  "status": "done",
-  "step": "complete",
-  "message": "All done",
-  "last_updated": "2026-04-12T13:02:57.186850Z"
+  "status": "error",
+  "step": "exception",
+  "message": "[WinError 5] Access is denied: 'D:\\\\Projects\\\\Equimaster-Ai\\\\logs\\\\progress_HDFCLIFE.NS.json.tmp' -> 'D:\\\\Projects\\\\Equimaster-Ai\\\\logs\\\\progress_HDFCLIFE.NS.json'",
+  "last_updated": "2026-04-15T06:47:12.631772+00:00"
 }

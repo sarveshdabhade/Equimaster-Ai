@@ -1,6 +1,7 @@
 import os
 import sys
 import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 # Fix Windows console encoding so emoji/Unicode print correctly
 if sys.stdout.encoding and "utf" not in sys.stdout.encoding.lower():
@@ -18,55 +19,52 @@ import pandas as pd
 # 1. Define the directory to save data
 DATA_DIR = "data"
 os.makedirs(DATA_DIR, exist_ok=True)
+os.makedirs(f"{DATA_DIR}/raw", exist_ok=True)
 
-# 2. Define stocks to download — NIFTY 50 + BANK NIFTY (NSE)
-# We use ".NS" because these are on the National Stock Exchange of India
-# Nifty 50 constituents (check NSE for latest)
-NIFTY_50 = [
-    "ADANIENT.NS", "ASIANPAINT.NS", "AXISBANK.NS", "BAJAJ-AUTO.NS",
-    "BAJAJFINSV.NS", "BAJFINANCE.NS", "BHARTIARTL.NS", "BPCL.NS",
-    "BRITANNIA.NS", "CIPLA.NS", "COALINDIA.NS", "DRREDDY.NS",
-    "EICHERMOT.NS", "GRASIM.NS", "HCLTECH.NS", "HDFCBANK.NS",
-    "HDFCLIFE.NS", "HEROMOTOCO.NS", "HINDALCO.NS", "HINDUNILVR.NS",
-    "ICICIBANK.NS", "INDUSINDBK.NS", "INFY.NS", "ITC.NS",
-    "JSWSTEEL.NS", "KOTAKBANK.NS", "LT.NS", "M&M.NS",
-    "MARUTI.NS", "NESTLEIND.NS", "NTPC.NS", "ONGC.NS",
-    "POWERGRID.NS", "RELIANCE.NS", "SBILIFE.NS", "SBIN.NS",
-    "SUNPHARMA.NS", "TATAMOTORS.NS", "TATASTEEL.NS", "TCS.NS",
-    "TECHM.NS", "TITAN.NS", "ULTRACEMCO.NS", "WIPRO.NS",
-    "LICI.NS", "ADANIPORTS.NS", "APOLLOHOSP.NS", "DIVISLAB.NS",
-    "LTIM.NS", "TATACONSUM.NS",
-]
-# Bank Nifty (Nifty Bank) — 12 constituents; overlap with Nifty 50 merged below
-BANK_NIFTY = [
-    "HDFCBANK.NS", "ICICIBANK.NS", "KOTAKBANK.NS", "AXISBANK.NS",
-    "SBIN.NS", "INDUSINDBK.NS", "BANKBARODA.NS", "PNB.NS",
-    "FEDERALBNK.NS", "IDFCFIRSTB.NS", "BANDHANBNK.NS", "AUBANK.NS",
-]
-# Combined, no duplicates (order: Nifty 50 first, then Bank Nifty-only tickers)
-TICKERS = list(dict.fromkeys(NIFTY_50 + BANK_NIFTY))
+# Import centralized ticker configuration
+ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+if ROOT not in sys.path:
+    sys.path.insert(0, ROOT)
+from config import ALL_DOWNLOAD_TICKERS as TICKERS
 
-def download_data():
-    print(f"Starting download for {len(TICKERS)} stocks...")
+def _download_single_ticker(ticker):
+    """Download data for a single ticker."""
+    try:
+        # Fetch 10 years of data
+        df = yf.download(ticker, period="10y", interval="1d", progress=False)
 
-    for ticker in TICKERS:
-        print(f"Downloading {ticker}...")
+        # Save to CSV (to raw directory, consistent with update_data.py)
+        file_path = f"{DATA_DIR}/raw/{ticker}.csv"
+        df.to_csv(file_path)
 
-        try:
-            # Fetch 10 years of data
-            df = yf.download(ticker, period="10y", interval="1d", progress=False)
+        return (ticker, len(df), None)
+    except Exception as e:
+        return (ticker, 0, str(e))
 
-            # Save to CSV
-            file_path = f"{DATA_DIR}/{ticker}.csv"
-            df.to_csv(file_path)
+def download_data(max_workers=3):
+    """Download data for all tickers in parallel."""
+    print(f"Starting parallel download for {len(TICKERS)} stocks (workers={max_workers})...")
 
-            print(f"Saved {ticker} to {file_path} ({len(df)} rows)")
-            time.sleep(0.5)  # avoid rate limiting
+    success_count = 0
+    error_count = 0
+    
+    with ThreadPoolExecutor(max_workers=max_workers) as executor:
+        futures = {executor.submit(_download_single_ticker, ticker): ticker for ticker in TICKERS}
+        
+        for future in as_completed(futures):
+            ticker, row_count, error = future.result()
+            
+            if error:
+                print(f"[ERROR] {ticker}: {error}")
+                error_count += 1
+            else:
+                print(f"[OK] {ticker}: {row_count} rows")
+                success_count += 1
+            
+            # Small delay to be nice to the API
+            time.sleep(0.1)
 
-        except Exception as e:
-            print(f"Error downloading {ticker}: {e}")
-
-    print("\nAll downloads complete!")
+    print(f"\nDownloads complete! Success: {success_count}, Errors: {error_count}")
 
 if __name__ == "__main__":
     download_data()
