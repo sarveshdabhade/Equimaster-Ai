@@ -1,341 +1,291 @@
+import json
 import os
-import subprocess
-import sys
-import traceback
-import joblib
+from pathlib import Path
+from datetime import datetime, time, timedelta, timezone
 import numpy as np
 import pandas as pd
-import json
-import streamlit as st
-import logging
-import tensorflow as tf
 import plotly.graph_objects as go
-from src.preprocessor import add_technical_indicators
-from streamlit_lottie import st_lottie
-from utils import load_lottieurl
+import streamlit as st
+from config import FUSION_SHADOW_VERSION_ENV, HORIZONS, HORIZON_LABELS, horizon_description
+from components.layout import CHART_STYLE, CHART_TEMPLATE
+from src.artifacts import resolve_artifact, canonical_ticker
+from src.forecast import predict_forecast
+from src.fusion_artifacts import load_fusion_artifact
+from src.fusion_model import predict_fused_forecast
+from src.market_context import build_market_context
+from src.news.sentiment import analyze_ticker_sentiment
+from src.prediction_contract import forecast_signal, combined_signal, classify_signal
 
 
-def render_lstm_tab(df, ticker, MODEL_PATH, SCALER_PATH):
-    st.markdown('<h2 class="section-title"><span clas' \
-    's="accent">Deep Learning</span> Price Forecast</h2>', unsafe_allow_html=True)
-    
-    # Layout: main chart + sidebar info
-    colA, colB = st.columns([3, 1])
+def _run_fusion_shadow(df, forecast, artifact, ticker, horizon, shadow_version):
+    if not shadow_version:
+        return None
+    if artifact["legacy"] or not artifact["metadata"].get("version"):
+        return {"status": "unavailable", "detail": "A versioned LSTM artifact is required."}
 
-    with colA:
-        # Enhanced micro animation
-        if MODEL_PATH and os.path.exists(MODEL_PATH):
-            lottie = load_lottieurl("https://assets9.lottiefiles.com/temp/lf20_UKH0om.json")
-            if lottie:
-                st_lottie(lottie, height=72, key=f"lstm_{ticker}_anim")
+    session_date = pd.Timestamp(df.index[-1]).date()
+    as_of = datetime.combine(
+        session_date,
+        time(15, 30),
+        tzinfo=timezone(timedelta(hours=5, minutes=30)),
+    )
+    sentiment = analyze_ticker_sentiment(
+        ticker,
+        max_articles=5,
+        as_of=as_of,
+        include_llm=True,
+    )
+    synthesis = sentiment.get("llm_synthesis")
+    if not synthesis or sentiment.get("llm_synthesis_status") != "generated":
+        return {
+            "status": "unavailable",
+            "detail": sentiment.get("llm_synthesis_error")
+            or f"Timestamped archived evidence/LLM synthesis unavailable ({sentiment.get('llm_synthesis_status', 'unknown')}).",
+        }
 
-            # Enhanced horizon with confidence
-            horizon = st.selectbox(
-                "Forecast Horizon",
-                [1, 5, 22, 88],
-                format_func=lambda x: {1: '1 Day', 5: '1 Week', 22: '1 Month', 88: '4 Months'}[x],
-                help="Prediction time horizon"
-            )
+    cited_ids = list(synthesis.get("summary_evidence_ids") or [])
+    for claim in synthesis.get("claims", []):
+        cited_ids.extend(claim.get("evidence_ids") or [])
+    cited_ids = list(dict.fromkeys(cited_ids))
+    sources = synthesis.get("citation_sources", {})
+    evidence = [
+        {"evidence_id": evidence_id, **sources[evidence_id]}
+        for evidence_id in cited_ids
+        if evidence_id in sources
+    ]
+    request = {
+        "ticker": ticker,
+        "as_of": as_of.isoformat(),
+        "horizon": horizon,
+        "current_close": float(df["Close"].iloc[-1]),
+        "lstm_predicted_close": float(forecast["prices"][-1]),
+        "news_sentiment_score": float(sentiment["overall_score"]),
+        "llm_stance": synthesis["stance"],
+        "llm_evidence_ids": cited_ids,
+        "llm_model_id": synthesis["llm_model_id"],
+        "lstm_model_id": artifact["metadata"]["version"],
+        "evidence": evidence,
+    }
+    fusion_artifact = load_fusion_artifact(shadow_version)
+    prediction = predict_fused_forecast(fusion_artifact, request)
+    return {
+        **prediction,
+        "status": "shadow_candidate",
+        "inference_status": prediction["status"],
+    }
 
-        # determine model path for selected horizon
-        model_path_local = MODEL_PATH
-        if horizon and horizon > 1:
-            # prefer native Keras format, fall back to legacy h5
-            candidate_keras = f"models/lstm_{ticker}_h{horizon}.keras"
-            candidate_h5 = f"models/lstm_{ticker}_h{horizon}.h5"
-            if os.path.exists(candidate_keras):
-                model_path_local = candidate_keras
-            else:
-                model_path_local = candidate_h5
 
-        # Ensure we have enough historical rows to build the 60-day window
-        has_history = df is not None and len(df) >= 60
+def _forecast_chart(df, result, window_size, horizon_label):
+    history = pd.to_numeric(df["Close"], errors="coerce").dropna().tail(window_size)
+    if history.empty:
+        raise ValueError("Historical closing prices are unavailable for the forecast chart.")
 
-        if not has_history:
-            st.warning("Not enough historical rows to form a 60-day window. Need at least 60 rows.")
+    history_x = np.linspace(0, 50, len(history))
+    prices = np.asarray(result["prices"], dtype=float)
+    forecast_x = np.linspace(50, 100, len(prices) + 1)
+    forecast_y = np.concatenate(([float(history.iloc[-1])], prices))
 
-        if has_history and model_path_local and os.path.exists(model_path_local) and SCALER_PATH and os.path.exists(SCALER_PATH):
-            if st.button("Initialize LSTM Sequence", use_container_width=True):
-                with st.spinner("Neural Network processing sequence..."):
-                    try:
-                        # Log which ticker/horizon we're building for (helps debug in multi-worker runs)
-                        logger = logging.getLogger(__name__)
-                        logger.info(f"Initialize LSTM for {ticker} horizon={horizon} model={model_path_local}")
-                        st.info(f"Building model for {ticker} — Horizon: {horizon}")
-                        model_mtime = os.path.getmtime(model_path_local) if os.path.exists(model_path_local) else None
-                        scaler_mtime = os.path.getmtime(SCALER_PATH) if os.path.exists(SCALER_PATH) else None
+    chart = go.Figure()
+    chart.add_trace(go.Scatter(
+        x=history_x,
+        y=history.to_numpy(dtype=float),
+        name="Historical close",
+        mode="lines",
+        line={"color": "#91A4BD", "width": 2},
+        hovertemplate="Historical close: INR %{y:,.2f}<extra></extra>",
+    ))
+    chart.add_trace(go.Scatter(
+        x=forecast_x,
+        y=forecast_y,
+        name="Direct forecast",
+        mode="lines+markers",
+        line={"color": "#00C9FF", "width": 3},
+        marker={"size": 6},
+        hovertemplate="Forecast path: INR %{y:,.2f}<extra></extra>",
+    ))
 
-                        @st.cache_resource
-                        def load_model_and_scaler(m_path, s_path, mtime, stime):
-                            return tf.keras.models.load_model(m_path), joblib.load(s_path)
+    if result["lower"] is not None:
+        lower = np.asarray(result["lower"], dtype=float)
+        upper = np.asarray(result["upper"], dtype=float)
+        chart.add_trace(go.Scatter(
+            x=forecast_x,
+            y=np.concatenate(([forecast_y[0]], upper)),
+            mode="lines",
+            line={"width": 0},
+            name="Upper interval",
+            showlegend=True,
+            hoverinfo="skip",
+        ))
+        chart.add_trace(go.Scatter(
+            x=forecast_x,
+            y=np.concatenate(([forecast_y[0]], lower)),
+            mode="lines",
+            line={"width": 0},
+            fill="tonexty",
+            fillcolor="rgba(0,201,255,.16)",
+            name="Lower interval",
+            showlegend=True,
+            hoverinfo="skip",
+        ))
 
-                        model, scaler = load_model_and_scaler(model_path_local, SCALER_PATH, model_mtime, scaler_mtime)
+    chart.add_vrect(x0=0, x1=50, fillcolor="rgba(145,164,189,.035)", line_width=0, layer="below")
+    chart.add_vrect(x0=50, x1=100, fillcolor="rgba(0,201,255,.035)", line_width=0, layer="below")
+    chart.add_vline(x=50, line_dash="dash", line_color="#718096", line_width=1)
+    chart.add_annotation(x=25, y=1.08, yref="paper", text="HISTORICAL PRICE",
+                         showarrow=False, font={"size": 11, "color": "#BAC7DA"})
+    chart.add_annotation(x=75, y=1.08, yref="paper", text="DIRECT FORECAST",
+                         showarrow=False, font={"size": 11, "color": "#7CE6FF"})
+    chart.update_layout(
+        xaxis={
+            "title": "Trading-session timeline",
+            "range": [0, 100],
+            "tickmode": "array",
+            "tickvals": [0, 25, 50, 75, 100],
+            "ticktext": [
+                f"-{len(history)} sessions",
+                "Recent history",
+                "Last close",
+                "Mid-horizon",
+                horizon_label,
+            ],
+        },
+        yaxis_title="Close (INR)",
+        template=CHART_TEMPLATE,
+        **CHART_STYLE,
+        height=430,
+        margin={"l": 15, "r": 20, "t": 48, "b": 20},
+        hovermode="x unified",
+        legend={"orientation": "h", "y": 1.16, "x": 1, "xanchor": "right"},
+    )
+    return chart
 
-                        # Compute Close column index dynamically from the DataFrame
-                        CLOSE_COL_IDX = df.columns.get_loc("Close") if "Close" in df.columns else 0
-                        recent_data = df.tail(60).values
 
-                        df_features = recent_data.shape[1]
-                        scaler_features = getattr(scaler, 'n_features_in_', None)
-                        model_input_dim = None
-                        try:
-                            model_input_dim = model.input_shape[2]
-                        except Exception:
-                            model_input_dim = None
-
-                        if scaler_features is not None and scaler_features != df_features:
-                            st.error(f"Feature mismatch: processed CSV has {df_features} columns but scaler expects {scaler_features}.")
-                            st.info("This usually happens when indicators changed and the model needs retraining.")
-                            if st.button(f"Retrain model for {ticker} now (single ticker)"):
-                                with st.spinner("Retraining model for this ticker..."):
-                                    subprocess.run([sys.executable, "scripts/quick_run.py", "--ticker", ticker, "--epochs", "3"], check=False)
-                                    st.success("Retrain command completed — refresh to load new model.")
-                            raise RuntimeError("Feature mismatch between processed data and scaler")
-
-                        if model_input_dim is not None and model_input_dim != scaler_features:
-                            st.error(f"Model expects {model_input_dim} features but scaler provides {scaler_features}.")
-                            if st.button(f"Retrain model for {ticker} now (single ticker)"):
-                                with st.spinner("Retrain model for this ticker..."):
-                                    subprocess.run([sys.executable, "scripts/quick_run.py", "--ticker", ticker, "--epochs", "3"], check=False)
-                                    st.success("Retrain command completed — refresh to load new model.")
-                            raise RuntimeError("Feature mismatch between model and scaler")
-
-                        recent_data_scaled = scaler.transform(recent_data)
-                        n_features = scaler.n_features_in_
-
-                        # If horizon > 1, prefer to build multi-step forecast by
-                        # iterating the single-step (T+1) model so predictions
-                        # are consistent prefixes across horizons. If the
-                        # single-step model is missing, fall back to the
-                        # horizon-specific model (if available).
-                        preds = None
-
-                        # prefer .keras model if present, fallback to .h5
-                        single_model_keras = os.path.join('models', f'lstm_{ticker}.keras')
-                        single_model_h5 = os.path.join('models', f'lstm_{ticker}.h5')
-                        single_model_path = single_model_keras if os.path.exists(single_model_keras) else single_model_h5
-                        horizon_model_path = model_path_local
-
-                        if horizon > 1 and os.path.exists(single_model_path):
-                            # iterative multi-step forecast using single-step model
-                            # We'll update the full feature window each step by
-                            # appending the predicted raw Close, recomputing
-                            # technical indicators, then scaling the window.
-                            single_model = tf.keras.models.load_model(single_model_path)
-
-                            # Work with raw DataFrame window (last 60 rows)
-                            raw_window = df.tail(60).copy()
-                            step_preds = []
-
-                            for _step in range(horizon):
-                                # Build scaled input from current raw_window
-                                try:
-                                    window_vals = raw_window.values
-                                    scaled_window = scaler.transform(window_vals)
-                                except Exception:
-                                    # if scaler can't transform (column mismatch), abort
-                                    raise
-
-                                X_in = np.expand_dims(scaled_window, axis=0)
-                                p_scaled = single_model.predict(X_in)
-                                p_val_scaled = p_scaled.flatten()[0]
-
-                                # convert scaled prediction to raw price
-                                dummy = np.zeros((1, n_features))
-                                dummy[0, CLOSE_COL_IDX] = p_val_scaled
-                                p_raw = scaler.inverse_transform(dummy)[0, CLOSE_COL_IDX]
-
-                                step_preds.append(p_val_scaled)
-
-                                # create a new raw row for next step: set price columns
-                                last_row = raw_window.iloc[-1].to_dict()
-                                new_row = last_row.copy()
-                                # set numeric price fields to predicted raw close
-                                for col in ['Adj Close', 'Open', 'High', 'Low', 'Close']:
-                                    if col in raw_window.columns:
-                                        new_row[col] = p_raw
-                                # keep volume same as last
-                                if 'Volume' in raw_window.columns:
-                                    new_row['Volume'] = raw_window['Volume'].iloc[-1]
-                                # append and recompute indicators on extended df
-                                # create a new index for the appended row to avoid duplicate index labels
-                                try:
-                                    last_idx = raw_window.index[-1]
-                                    if pd.api.types.is_datetime64_any_dtype(raw_window.index):
-                                        new_idx = last_idx + pd.tseries.offsets.BDay(1)
-                                    else:
-                                        # numeric or other index types: pick next integer
-                                        try:
-                                            new_idx = last_idx + 1
-                                        except Exception:
-                                            new_idx = None
-                                except Exception:
-                                    new_idx = None
-
-                                if new_idx is not None:
-                                    new_row_df = pd.DataFrame([new_row], index=[new_idx])
-                                    temp_df = pd.concat([raw_window, new_row_df])
-                                else:
-                                    # fallback: ignore index so pandas assigns a fresh RangeIndex
-                                    temp_df = pd.concat([raw_window.reset_index(drop=True), pd.DataFrame([new_row])], ignore_index=True)
-
-                                temp_df = add_technical_indicators(temp_df)
-
-                                # Re-align columns to match the original processed DataFrame
-                                # Deduplicate expected columns (preserve order) to avoid
-                                # errors if the original DataFrame had repeated names.
-                                expected_cols = list(dict.fromkeys(df.columns))
-
-                                # If temp_df has duplicate column labels (can happen when
-                                # indicators are concatenated repeatedly), drop duplicate
-                                # columns keeping the first occurrence so reindex works.
-                                if temp_df.columns.duplicated().any():
-                                    temp_df = temp_df.loc[:, ~temp_df.columns.duplicated()]
-
-                                temp_df = temp_df.reindex(columns=expected_cols)
-
-                                # Fill any NaNs introduced by indicator calculation:
-                                # forward-fill, then backfill, then finally use last_row values or 0
-                                # use .ffill()/.bfill() to avoid pandas compatibility issues
-                                temp_df = temp_df.ffill()
-                                temp_df = temp_df.bfill()
-                                for col in expected_cols:
-                                    if temp_df[col].isnull().any():
-                                        if col in last_row:
-                                            temp_df[col] = temp_df[col].fillna(last_row[col])
-                                        else:
-                                            temp_df[col] = temp_df[col].fillna(0)
-
-                                # take last 60 rows for the next iteration
-                                raw_window = temp_df.tail(60).copy()
-
-                            preds = np.array(step_preds)
-                        else:
-                            # use the loaded model (could be single-step or multi-output)
-                            X_input = np.array([recent_data_scaled])
-                            prediction_scaled = model.predict(X_input)
-                            preds = prediction_scaled.flatten()
-
-                        # inverse transform predictions to price units
-                        dummy = np.zeros((len(preds), n_features))
-                        for i, p in enumerate(preds):
-                            dummy[i, CLOSE_COL_IDX] = p
-                        inv = scaler.inverse_transform(dummy)[:, CLOSE_COL_IDX]
-                        
-                        current_price = df['Close'].iloc[-1]
-
-                        # Build forecast index
-                        last_idx = None
-                        try:
-                            last_idx = pd.to_datetime(df.index[-1])
-                        except:
-                            last_idx = None
-
-                        if last_idx is not None:
-                            future_idx = pd.bdate_range(start=last_idx + pd.Timedelta(days=1), periods=len(inv))
-                            hist_idx = df.index[-120:] if len(df) >= 120 else df.index
-                        else:
-                            future_idx = [f"T+{i+1}" for i in range(len(inv))]
-                            hist_idx = df.index[-60:]
-
-                        # Enhanced Plotly chart with bands
-                        fig = go.Figure()
-                        # Historical
-                        fig.add_trace(go.Scatter(
-                            x=hist_idx, y=df['Close'].tail(len(hist_idx)), 
-                            mode='lines', name='Historical Close', 
-                            line=dict(color='#61E5FF', width=3)
-                        ))
-                        
-                        # Forecast line
-                        fig.add_trace(go.Scatter(
-                            x=future_idx, y=inv, mode='lines+markers', 
-                            name=f'Forecast T+{horizon}', 
-                            line=dict(color='#FFBE5C', width=3), 
-                            marker=dict(size=8, color='#FFBE5C')
-                        ))
-                        
-                        # Vertical divider
-                        if last_idx:
-                            fig.add_vline(x=last_idx, line_dash='dot', line_color='gray', name='Now')
-
-                        fig.update_layout(
-                            template='plotly_dark', 
-                            height=580, 
-                            margin=dict(l=20, r=20, t=30, b=40),
-                            hovermode='x unified',
-                            legend=dict(yanchor="top", y=0.99, xanchor="left", x=0.01)
-                        )
-
-                        # Interactive chart with zoom/reset
-                        chart_container = st.container()
-                        with chart_container:
-                            st.plotly_chart(fig, use_container_width=True, theme="streamlit")
-                        
-                        # Reset zoom button
-                        if st.button("Reset Chart View", key="reset_chart"):
-                            st.cache_data.clear()
-                            st.rerun()
-
-                        # Primary forecast metric (enhanced)
-                        pred_val = float(inv[-1]) if horizon > 1 else float(inv[0])
-                        metric_label = f"Predicted Close T+{horizon}"
-                        change = pred_val - current_price
-                        change_pct = (change / current_price) * 100
-                        st.metric(metric_label, f"₹{pred_val:,.2f}", f"{change:,.1f} ({change_pct:.1f}%)")
-
-                        # Signal badge
-                        signal_color = "BULLISH" if change > 0 else "BEARISH"
-                        st.markdown(f"**LSTM Signal:** {signal_color}")
-
-                        # Compute simple confidence bands (±2 std of recent Close volatility)
-                        recent_close = df['Close'].tail(60).values
-                        volatility = np.std(np.diff(recent_close))
-                        upper_band = [inv[i] + 2 * volatility * np.sqrt(i + 1) for i in range(len(inv))]
-                        lower_band = [inv[i] - 2 * volatility * np.sqrt(i + 1) for i in range(len(inv))]
-
-                        # Phase 2: Interactive forecast table
-                        forecast_df = pd.DataFrame({
-                            'Step': [f'T+{i+1}' for i in range(len(inv))],
-                            'Forecast': [f'₹{v:,.1f}' for v in inv],
-                            'Upper CI': [f'₹{u:,.1f}' for u in upper_band],
-                            'Lower CI': [f'₹{l:,.1f}' for l in lower_band]
-                        })
-                        
-                        with st.expander(f"Detailed Forecast Table ({len(inv)} steps)", expanded=False):
-                            st.dataframe(
-                                forecast_df,
-                                use_container_width=True,
-                                column_config={
-                                    "Forecast": st.column_config.TextColumn("Forecast Price"),
-                                    "Upper CI": st.column_config.TextColumn("Upper Confidence"),
-                                    "Lower CI": st.column_config.TextColumn("Lower Confidence")
-                                },
-                                hide_index=True
-                            )
-                            st.download_button(
-                                "Export CSV", 
-                                forecast_df.to_csv(index=False), 
-                                f"{ticker}_lstm_forecast.csv",
-                                "text/csv"
-                            )
-                        
-                        # Historical accuracy stats (placeholder until backtest is implemented)
-                        with st.expander("Model Performance History", expanded=False):
-                            st.caption("Backtest not yet implemented. Metrics below are placeholders.")
-                            col_acc1, col_acc2, col_acc3 = st.columns(3)
-                            with col_acc1:
-                                st.metric("Hit Rate", "N/A")
-                            with col_acc2:
-                                st.metric("MAE", "N/A")
-                            with col_acc3:
-                                st.metric("MAPE", "N/A")
-                    except Exception as e:
-                        st.error(f"Engine failed to compute: {e}")
-                        st.text(traceback.format_exc())
+def render_lstm_tab(df, ticker, MODEL_PATH=None, SCALER_PATH=None):
+    st.subheader("Deep Learning Price Forecast")
+    ticker = canonical_ticker(ticker)
+    horizon = st.selectbox("Forecast Period", HORIZONS, format_func=HORIZON_LABELS.__getitem__)
+    st.caption(
+        "Day = 1 session · Week = 5 · Month = 22 · Quarter = 88 "
+        "(current quarter model spans approximately four months)."
+    )
+    try:
+        artifact = resolve_artifact(ticker, horizon)
+    except FileNotFoundError:
+        st.warning("LSTM Brain offline. Model files not found.")
+        return
+    metadata = artifact["metadata"]
+    if artifact["legacy"]:
+        st.warning("Legacy model: training dates and evaluation are unavailable. Retrain with the backend training pipeline.")
+    else:
+        st.caption(f"Model trained {metadata['trained_at']} | Training dataset through {metadata['data_end']}")
+    shadow_version = os.getenv(FUSION_SHADOW_VERSION_ENV, "").strip()
+    signature = (
+        ticker, horizon, str(artifact["model"]),
+        str(df.index[-1]) if df is not None and len(df) else None,
+        shadow_version,
+    )
+    st.caption(
+        "Direct forecast: the selected horizon's model predicts the full path in one pass. "
+        "Historical holdout metrics below show measured accuracy for this ticker and period."
+    )
+    if st.button("Generate Direct Forecast", type="primary"):
+        try:
+            with st.spinner("Computing forecast and news context..."):
+                forecast = predict_forecast(df, ticker, horizon)
+                context = build_market_context(ticker, horizon)
+            shadow = None
+            if shadow_version:
+                try:
+                    shadow = _run_fusion_shadow(
+                        df, forecast, artifact, ticker, horizon, shadow_version
+                    )
+                except Exception as exc:
+                    shadow = {"status": "error", "detail": str(exc)}
+            st.session_state["forecast_result"] = (signature, forecast, context, shadow)
+        except Exception as exc:
+            st.error(f"Unable to forecast: {exc}")
+    stored = st.session_state.get("forecast_result")
+    if stored and len(stored) == 4 and stored[0] == signature:
+        _, result, context, shadow = stored
+        prices = result["prices"]
+        current = float(df["Close"].iloc[-1])
+        predicted_return = float(prices[-1] / current - 1)
+        sentiment = float(context.get("sentiment", {}).get("overall_score", 0))
+        signal = combined_signal(predicted_return, sentiment)
+        a, b, c = st.columns(3)
+        a.metric(f"Predicted Close · {HORIZON_LABELS[horizon]}", f"INR {prices[-1]:,.2f}", f"{predicted_return:+.2%}")
+        b.metric("Combined Signal", f"{signal:+.2f}", classify_signal(signal))
+        c.metric("News Evidence", len(context.get("sentiment", {}).get("evidence", [])))
+        if shadow_version:
+            with st.expander("Experimental LLM + LSTM shadow forecast"):
+                st.caption(
+                    "Shadow-only: this candidate does not change the LSTM forecast, "
+                    "combined signal, chart, or exported CSV."
+                )
+                if shadow and shadow.get("status") == "shadow_candidate":
+                    fused_close = float(shadow["fused_predicted_close"])
+                    st.metric(
+                        f"Fusion candidate close · {HORIZON_LABELS[horizon]}",
+                        f"INR {fused_close:,.2f}",
+                        f"{fused_close / float(prices[-1]) - 1:+.2%} vs LSTM",
+                    )
+                    st.caption(
+                        f"Fusion artifact {shadow.get('fusion_model_version')} · "
+                        f"LLM {shadow.get('llm_model_id')} · "
+                        f"LSTM {shadow.get('lstm_model_id')} · "
+                        f"status: {shadow.get('status')}"
+                    )
+                elif shadow:
+                    st.warning(
+                        f"Shadow forecast unavailable ({shadow.get('status')}): "
+                        f"{shadow.get('detail', 'No additional details.')}"
+                    )
+                else:
+                    st.info("Shadow forecast has not been generated for this result.")
+        steps = list(range(1, len(prices) + 1))
+        st.caption(
+            f"Selected period: {horizon_description(horizon)}. "
+            "The left half shows recent closing prices; the right half shows the direct forecast."
+        )
+        chart = _forecast_chart(
+            df,
+            result,
+            int(artifact["metadata"].get("window_size", 60)),
+            HORIZON_LABELS[horizon],
+        )
+        table = pd.DataFrame({"Step": steps, "Forecast": prices})
+        if result["lower"] is not None:
+            chart.add_trace(go.Scatter(x=steps, y=result["upper"], mode="lines", line_width=0, name="Upper interval"))
+            chart.add_trace(go.Scatter(x=steps, y=result["lower"], mode="lines", line_width=0,
+                                      fill="tonexty", fillcolor="rgba(0,201,255,.18)", name="Lower interval"))
+            table["Lower interval"] = result["lower"]
+            table["Upper interval"] = result["upper"]
+            st.caption("90% empirical validation intervals; test coverage is shown below. Coverage is not guaranteed.")
         else:
-            st.warning("LSTM Brain offline. Model files not found.")
-
-    with colB:
-        st.markdown("---")
-
+            st.caption("Calibrated prediction intervals are unavailable for this model.")
+        st.plotly_chart(chart, width="stretch", theme=None)
+        st.dataframe(table, hide_index=True)
+        st.download_button("Export Forecast CSV", table.to_csv(index=False), f"{ticker}_forecast.csv", "text/csv")
+    with st.expander(f"Direct Model Holdout Performance · {HORIZON_LABELS[horizon]}", expanded=True):
+        entry = artifact["evaluation"]
+        metrics = entry.get("metrics")
+        if not metrics:
+            st.info("No measured performance available; train a versioned model.")
+        else:
+            baseline = entry["baseline"]
+            if metrics["mae"] >= baseline["mae"]:
+                st.warning("This model did not beat the persistence baseline on held-out MAE.")
+            a, b, c = st.columns(3)
+            a.metric("Held-out directional accuracy", f"{metrics['lstm_directional_accuracy']:.1%}")
+            b.metric("Held-out MAE", f"INR {metrics['mae']:,.2f}")
+            c.metric("Held-out MAPE", f"{metrics['mape']:.2f}%")
+            st.write(f"Persistence baseline MAE: INR {baseline['mae']:,.2f}; held-out samples: {metrics['sample_count']}.")
+            st.write(f"Empirical interval test coverage: {entry['interval']['test_coverage']:.1%} (90% nominal target).")
+            st.caption(
+                f"Chronological held-out evaluation for {horizon_description(horizon)}; "
+                "overlapping target dates were purged at fit/validation/test boundaries. "
+                "Directional accuracy is a historical hit rate, not a probability or guarantee."
+            )
+            backtest = artifact["model"].parent / f"backtest_h{horizon}.csv"
+            if backtest.exists():
+                st.download_button("Export Historical Predictions", backtest.read_bytes(), backtest.name, "text/csv")

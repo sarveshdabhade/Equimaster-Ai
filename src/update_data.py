@@ -1,5 +1,6 @@
 import yfinance as yf
 import pandas as pd
+import numpy as np
 import os
 import datetime
 import time
@@ -16,11 +17,20 @@ if sys.stdout.encoding and "utf" not in sys.stdout.encoding.lower():
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if ROOT not in sys.path:
     sys.path.insert(0, ROOT)
-from config import UPDATE_TICKERS as TICKERS
+from config import UPDATE_TICKERS as TICKERS, provider_symbol
 
-RAW_DIR = "data/raw"  
+RAW_DIR = os.path.join(ROOT, "data", "raw")
+yf.set_tz_cache_location(os.path.join(ROOT, "data", ".yf_cache"))
 
 os.makedirs(RAW_DIR, exist_ok=True)
+
+
+def equivalent_history(previous, current):
+    """Ignore provider floating-point noise while retaining material corrections."""
+    if not previous.index.equals(current.index) or set(previous.columns) != set(current.columns):
+        return False
+    return bool(np.allclose(previous.reindex(columns=current.columns).to_numpy(dtype=float),
+                            current.to_numpy(dtype=float), rtol=5e-7, atol=1e-6, equal_nan=True))
 
 
 def _latest_date(path: str):
@@ -61,8 +71,8 @@ def _update_single_ticker(ticker):
     """Update data for a single ticker."""
     try:
         # We download the last 5 years of data up to TODAY
-        stock = yf.Ticker(ticker)
-        df = stock.history(period="5y", interval="1d")
+        stock = yf.Ticker(provider_symbol(ticker))
+        df = stock.history(period="5y", interval="1d", timeout=20)
         
         if not df.empty:
             # Remove timezone to keep it clean
@@ -74,11 +84,17 @@ def _update_single_ticker(ticker):
             save_path = f"{RAW_DIR}/{safe_ticker}.csv"
 
             prev_max_date = _latest_date(save_path)
+            if os.path.exists(save_path):
+                previous = pd.read_csv(save_path, index_col=0, parse_dates=True)
+                if equivalent_history(previous, df):
+                    return (ticker, True, False, None)
             
-            df.to_csv(save_path)
+            temporary = save_path + ".tmp"
+            df.to_csv(temporary)
+            os.replace(temporary, save_path)
 
             new_max_date = _latest_date(save_path)
-            has_new_data = prev_max_date is None or (new_max_date is not None and new_max_date > prev_max_date)
+            has_new_data = True  # New dates or a material historical correction.
 
             return (ticker, True, has_new_data, None)
         else:
@@ -117,6 +133,8 @@ def update_all_stocks(skip_downstream: bool = False, skip_training: bool = False
             time.sleep(0.1)
             
     print(f"\nAll CSVs updated! Success: {success_count}, Errors: {error_count}, New data: {tickers_with_new_rows}")
+    if error_count:
+        raise RuntimeError(f"Market refresh failed for {error_count} ticker(s); existing files retained for failures.")
 
     if tickers_with_new_rows > 0 and not skip_downstream:
         print(f"Detected new rows in {tickers_with_new_rows} ticker files. Running downstream pipeline...")

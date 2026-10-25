@@ -10,6 +10,7 @@ import numpy as np
 import pandas as pd
 import joblib  
 from sklearn.preprocessing import MinMaxScaler
+from config import HORIZON_LABELS
 
 # 1. Config
 PROCESSED_DIR = "data/processed"
@@ -44,6 +45,25 @@ def create_multi_step_sequences(data, window_size, horizon, close_col_idx):
         Y.append(ys)
     return np.array(X), np.array(Y)
 
+def chronological_split_index(row_count, window_size=60, train_fraction=0.8):
+    split = window_size + int((row_count - window_size) * train_fraction)
+    if not window_size < split < row_count:
+        raise ValueError("Not enough rows for non-empty training and test sets")
+    return split
+
+
+def split_sequences(data, window_size, horizon, close_col_idx, split_row):
+    """Keep training targets strictly before the first test target date."""
+    X, y = create_multi_step_sequences(data, window_size, horizon, close_col_idx)
+    train_count = split_row - window_size - horizon + 1
+    test_start = split_row - window_size
+    if train_count <= 0 or test_start >= len(X):
+        raise ValueError(f"Not enough rows for disjoint horizon={horizon} targets")
+    if horizon == 1:
+        y = y[:, 0]
+    return X[:train_count], y[:train_count], X[test_start:], y[test_start:]
+
+
 def process_and_save_all():
     files = glob.glob(f"{PROCESSED_DIR}/*_processed.csv")
     print(f"Starting Sequence Generation for {len(files)} stocks...")
@@ -72,18 +92,17 @@ def process_and_save_all():
 
             # 2. SCALE
             scaler = MinMaxScaler(feature_range=(0, 1))
-            scaled_data = scaler.fit_transform(dataset)
+            split_row = chronological_split_index(len(dataset), WINDOW_SIZE)
+            scaler.fit(dataset[:split_row])
+            scaled_data = scaler.transform(dataset)
 
             # Save a unique Scaler for THIS stock
             joblib.dump(scaler, f"{TRAIN_DIR}/scaler_{ticker}.pkl")
 
             # 3. SEQUENCE (single-step)
-            X, y = create_sequences(scaled_data, WINDOW_SIZE, close_col_idx)
-
-            # 4. SPLIT (single-step)
-            split_idx = int(len(X) * 0.8)
-            X_train, X_test = X[:split_idx], X[split_idx:]
-            y_train, y_test = y[:split_idx], y[split_idx:]
+            X_train, y_train, X_test, y_test = split_sequences(
+                scaled_data, WINDOW_SIZE, 1, close_col_idx, split_row
+            )
 
             # 5. SAVE TENSORS (single-step)
             np.save(f"{TRAIN_DIR}/X_train_{ticker}.npy", X_train)
@@ -92,23 +111,20 @@ def process_and_save_all():
             np.save(f"{TRAIN_DIR}/y_test_{ticker}.npy", y_test)
 
             # Also prepare multi-horizon sequences for common horizons
-            horizons = [5, 22, 88]  # 1 week, 1 month (~22 trading days), 4 months (~88)
+            horizons = [5, 22, 88]  # Week, Month, and legacy Quarter display horizon (~4 months).
             for h in horizons:
                 try:
-                    Xm, Ym = create_multi_step_sequences(scaled_data, WINDOW_SIZE, h, close_col_idx)
-                    if Xm.size == 0 or Ym.size == 0:
-                        continue
-                    split_m = int(len(Xm) * 0.8)
-                    X_train_m, X_test_m = Xm[:split_m], Xm[split_m:]
-                    y_train_m, y_test_m = Ym[:split_m], Ym[split_m:]
+                    X_train_m, y_train_m, X_test_m, y_test_m = split_sequences(
+                        scaled_data, WINDOW_SIZE, h, close_col_idx, split_row
+                    )
 
                     np.save(f"{TRAIN_DIR}/X_train_{ticker}_h{h}.npy", X_train_m)
                     np.save(f"{TRAIN_DIR}/y_train_{ticker}_h{h}.npy", y_train_m)
                     np.save(f"{TRAIN_DIR}/X_test_{ticker}_h{h}.npy", X_test_m)
                     np.save(f"{TRAIN_DIR}/y_test_{ticker}_h{h}.npy", y_test_m)
-                except Exception:
-                    # skip horizon if any error (not enough rows etc.)
-                    continue
+                except ValueError as exc:
+                    label = HORIZON_LABELS.get(h, f"h{h}")
+                    print(f"Skipped {ticker} {label} ({h} sessions): {exc}")
 
             print(f"Ready: {ticker}")
 

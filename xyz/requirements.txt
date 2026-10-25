@@ -1,0 +1,2 @@
+# Compatibility path; install the maintained root requirements instead.
+-r ../requirements.txt

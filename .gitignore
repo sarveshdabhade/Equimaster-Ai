@@ -18,3 +18,13 @@ notebooks/audit_plot.png
 # Cursor/VS Code settings
 .vscode/
 .cursorrules
+
+# Runtime artifacts and test caches
+.pytest_cache/
+.cache/
+logs/
+*.log
+models/versions/
+models/active_*.json
+*.keras
+images/prediction_*.png

@@ -1,144 +1,212 @@
-"""Stock Analyzer Page - Detailed stock analysis with all tabs"""
+"""Company research workspace with a compact quote header and lazy section navigation."""
+from html import escape
+from pathlib import Path
 import streamlit as st
-import os
-from tabs import overview, technicals, lstm_model, news_sentinel, fundamentals
+from components.layout import render_shell, render_footer, research_card
 from utils import load_data, fetch_stock_snapshot
+from config import resolve_app_path, provider_symbol, ALL_DOWNLOAD_TICKERS
+from src.artifacts import canonical_ticker, resolve_artifact
+from src.dashboard_data import data_fingerprint, load_dashboard_rows
+from src.fundamentals import read_cached_details, format_value, assess_metric
 
+st.set_page_config(page_title="Stock analysis | Equimaster AI", page_icon="E", layout="wide", initial_sidebar_state="expanded")
+render_shell("Stock analysis")
+files = sorted(Path(resolve_app_path("data", "processed")).glob("*_processed.csv"))
+options = ["NIFTY 50"] + [p.name.removesuffix("_processed.csv") for p in files if not p.name.startswith("NSEI_")]
+if not files:
+    options += list(ALL_DOWNLOAD_TICKERS)
+requested = st.query_params.get("ticker")
+if requested:
+    requested = "NIFTY 50" if requested.upper() in ("NSEI", "NIFTY 50", "^NSEI") else requested.upper()
+    if requested in options:
+        st.session_state.selected_ticker = requested
+    else:
+        st.warning("That symbol is outside the current research coverage. Select a company below.")
+        st.session_state.selected_ticker = None
+ticker = st.session_state.get("selected_ticker")
+if ticker and ticker not in options:
+    st.session_state.selected_ticker = None
+    ticker = None
 
-def _resolve_yf_symbol(ticker: str) -> str:
-    """Map app-internal ticker names to valid Yahoo Finance symbols."""
-    if ticker == "NIFTY 50":
-        return "^NSEI"
-    if ticker == "NSEI":
-        return "^NSEI"
-    if ".NS" in ticker or ticker.startswith("^"):
-        return ticker
-    return f"{ticker}.NS"
-
-st.set_page_config(page_title="Stock Analyzer | Equimaster-Ai", page_icon=None, layout="wide")
-
-# Get ticker from session state
-ticker = st.session_state.get("selected_ticker", None)
+st.markdown(
+    '<section class="home-hero">'
+    '<h1 class="home-brand">Equimaster-Ai</h1>'
+    '<p>Multi-Modal Deep Learning Platform for Financial Time-Series</p>'
+    '</section><div class="home-divider"></div>',
+    unsafe_allow_html=True,
+)
 
 if not ticker:
-    # Show search interface when no stock selected
-    st.markdown('<h2 style="color: #00C9FF; margin-bottom: 20px;">Stock Search Terminal</h2>', unsafe_allow_html=True)
+    coverage = load_dashboard_rows(data_fingerprint())
+    records = coverage.set_index("Ticker", drop=False).to_dict("index") if not coverage.empty else {}
+    stocks = [
+        records.get(option, {
+            "Ticker": option,
+            "Symbol": option.removesuffix(".NS"),
+            "Company": option.removesuffix(".NS"),
+            "Sector": "Unclassified",
+            "Price": None,
+            "Change %": None,
+            "As of": None,
+        })
+        for option in options if option != "NIFTY 50"
+    ]
+    sectors = sorted({stock["Sector"] for stock in stocks if stock.get("Sector") and stock["Sector"] != "Unclassified"})
 
-    processed_dir = "data/processed"
-    local_files = [f.replace("_processed.csv", "") for f in os.listdir(processed_dir) if f.endswith("_processed.csv")] if os.path.exists(processed_dir) else []
-    search_options = ["Select a stock..."] + ["NIFTY 50"] + sorted(local_files)
+    st.markdown(
+        '<section class="research-start-hero">'
+        '<div class="eyebrow">COMPANY RESEARCH · NSE COVERAGE</div>'
+        '<h1>Turn a ticker into a research brief.</h1>'
+        '<p>Search a company or symbol to explore its price history, fundamentals, news and model forecasts.</p>'
+        '</section>',
+        unsafe_allow_html=True,
+    )
+    count, sector_count, date = st.columns(3)
+    count.metric("COMPANIES IN COVERAGE", len(stocks))
+    sector_count.metric("SECTORS", len(sectors))
+    latest_date = coverage["As of"].max() if not coverage.empty else "No saved prices"
+    date.metric("LATEST SAVED CLOSE", latest_date)
 
-    selected = st.selectbox("Search Stock", search_options, index=0, label_visibility="collapsed")
+    search_col, sector_col = st.columns([2.2, 1])
+    with search_col:
+        search_term = st.text_input(
+            "Search companies",
+            placeholder="Try “Tata”, “TCS” or another NSE ticker",
+            key="research_company_search",
+        ).strip().casefold()
+    with sector_col:
+        selected_sector = st.selectbox("Filter by sector", ["All sectors"] + sectors, key="research_sector_filter")
 
-    if selected != "Select a stock...":
-        st.session_state.selected_ticker = selected
-        st.rerun()
-
-    st.caption("Or go back to home page")
-    if st.button("< Back to Home", use_container_width=True):
-        st.switch_page("app.py")
-    st.stop()
-
-# Determine paths based on ticker
-if ticker == "NIFTY 50":
-    DATA_PATH = f"data/processed/NSEI_processed.csv"
-    candidate_keras = f"models/lstm_NSEI.keras"
-    candidate_h5 = f"models/lstm_NSEI.h5"
-    if os.path.exists(candidate_keras):
-        MODEL_PATH = candidate_keras
-    elif os.path.exists(candidate_h5):
-        MODEL_PATH = candidate_h5
+    matches = [
+        stock for stock in stocks
+        if (selected_sector == "All sectors" or stock.get("Sector") == selected_sector)
+        and (not search_term or search_term in f"{stock.get('Company', '')} {stock.get('Ticker', '')} {stock.get('Sector', '')}".casefold())
+    ]
+    if search_term:
+        matches.sort(key=lambda stock: str(stock.get("Company", "")).casefold())
+        section_title = f"Matching companies · {len(matches)}"
     else:
-        MODEL_PATH = None
-    SCALER_PATH = f"data/train_data/scaler_NSEI.pkl"
-else:
-    DATA_PATH = f"data/processed/{ticker}_processed.csv"
-    candidate_keras = f"models/lstm_{ticker}.keras"
-    candidate_h5 = f"models/lstm_{ticker}.h5"
-    MODEL_PATH = candidate_keras if os.path.exists(candidate_keras) else candidate_h5
-    SCALER_PATH = f"data/train_data/scaler_{ticker}.pkl"
-
-# Header with Search
-header_col1, header_col2 = st.columns([2, 1])
-with header_col1:
-    st.markdown(f'<h1 style="color: #00C9FF; margin:0;">{ticker}</h1>', unsafe_allow_html=True)
-
-with header_col2:
-    # Search bar on stock analyzer page
-    processed_dir = "data/processed"
-    local_files = [f.replace("_processed.csv", "") for f in os.listdir(processed_dir) if f.endswith("_processed.csv")] if os.path.exists(processed_dir) else []
-    search_options = ["Search another stock..."] + ["NIFTY 50"] + local_files
-    
-    # Pre-select current ticker in dropdown
-    current_index = search_options.index(ticker) if ticker in search_options else 0
-    new_selection = st.selectbox("Search Stock", search_options, index=current_index, label_visibility="collapsed")
-    
-    if new_selection != "Search another stock..." and new_selection != ticker:
-        st.session_state.selected_ticker = new_selection
-        st.rerun()
-
-# Show live price snapshot
-try:
-    snapshot = fetch_stock_snapshot(_resolve_yf_symbol(ticker))
-    if snapshot:
-        col_left, col_right = st.columns([4, 1])
-        price_val = f"₹{snapshot['last']:,.2f}"
-        price_delta = f"{snapshot['delta']:,.2f} ({snapshot['pct']:.2f}%)"
-        with col_left:
-            st.markdown(
-                f"<div style='display:flex;align-items:center;gap:14px'>"
-                f"<div style='font-size:28px;font-weight:800;color:#61E5FF'>{price_val}<div style=\"font-size:12px;color:#FFB86B;font-weight:700;\">{price_delta}</div></div>"
-                f"<div>"
-                f"<div style='font-size:22px;font-weight:800'>{snapshot['name']}</div>"
-                f"<div style='font-size:13px;color:#C7D2E0'>{snapshot['symbol']}</div>"
-                f"</div>"
-                f"</div>",
-                unsafe_allow_html=True,
-            )
-        with col_right:
-            st.info("AI Brain Connected")
-except Exception:
-    pass
-
-st.divider()
-
-# Load data — use a stable fingerprint so cache isn't defeated on every rerun
-if DATA_PATH and os.path.exists(DATA_PATH):
-    _stat = os.stat(DATA_PATH)
-    _fingerprint = f"{_stat.st_size}_{int(_stat.st_mtime) // 60}"
-else:
-    _fingerprint = None
-df = load_data(ticker, DATA_PATH, _fingerprint)
-
-if df is None or df.empty:
-    st.error(f"Unable to load data for {ticker}")
+        matches.sort(key=lambda stock: abs(float(stock.get("Change %") or 0)), reverse=True)
+        section_title = "Worth a closer look"
+    st.markdown(
+        f'<div class="research-results-heading"><h2>{escape(section_title)}</h2>'
+        f'<span>{"Search by company or ticker" if search_term else "Largest saved-session moves · a quick place to start"}</span></div>',
+        unsafe_allow_html=True,
+    )
+    if not matches:
+        st.info("No covered companies match those filters. Try a broader search or choose another sector.")
+    else:
+        if not search_term:
+            matches = matches[:9]
+        for start in range(0, len(matches), 3):
+            columns = st.columns(3)
+            for column, stock in zip(columns, matches[start:start + 3]):
+                with column, st.container(border=True, key=f"research_pick_{stock['Ticker'].replace('.', '_')}"):
+                    ticker_label = escape(str(stock.get("Symbol") or stock["Ticker"]))
+                    company_label = escape(str(stock.get("Company") or ticker_label))
+                    sector_label = escape(str(stock.get("Sector") or "Sector unavailable"))
+                    st.markdown(
+                        f'<div class="research-stock-symbol">{ticker_label}</div>'
+                        f'<div class="research-stock-name">{company_label}</div>'
+                        f'<div class="research-stock-sector">{sector_label}</div>',
+                        unsafe_allow_html=True,
+                    )
+                    price = stock.get("Price")
+                    change = stock.get("Change %")
+                    if price is not None:
+                        tone = "positive" if float(change or 0) >= 0 else "negative"
+                        st.markdown(
+                            f'<div class="research-stock-price">₹{float(price):,.2f}'
+                            f'<span class="{tone}"> {float(change or 0):+.2f}%</span></div>'
+                            f'<div class="research-stock-date">Saved close · {escape(str(stock.get("As of") or "Date unavailable"))}</div>',
+                            unsafe_allow_html=True,
+                        )
+                    else:
+                        st.caption("Price history unavailable")
+                    if st.button("Open research →", key=f"open_research_{stock['Ticker']}", use_container_width=True):
+                        st.session_state.selected_ticker = stock["Ticker"]
+                        st.query_params["ticker"] = stock["Ticker"]
+                        st.rerun()
+    st.page_link("app.py", label="← Back to markets")
     st.stop()
-
-# Stock Analysis Tabs
-tab1, tab2, tab3, tab4, tab5 = st.tabs([
-    "Overview",
-    "Technical Chart",
-    "LSTM Model",
-    "News Sentiment",
-    "Fundamentals"
-])
-
-with tab1:
-    overview.render_overview_tab(df, ticker)
-
-with tab2:
-    technicals.render_technicals(df, ticker)
-
-with tab3:
-    lstm_model.render_lstm_tab(df, ticker, MODEL_PATH, SCALER_PATH)
-
-with tab4:
-    news_sentinel.render_news_tab(ticker)
-
-with tab5:
-    fundamentals.render_fundamentals_tab(ticker)
-
-# Back button
-st.divider()
-if st.button("< Back to Home", use_container_width=True):
-    st.switch_page("app.py")
+symbol = canonical_ticker(ticker)
+if not requested:
+    st.query_params["ticker"] = ticker
+path = Path(resolve_app_path("data", "processed", f"{symbol}_processed.csv"))
+fingerprint = f"{path.stat().st_size}_{path.stat().st_mtime_ns}" if path.exists() else None
+df = load_data(ticker, str(path), fingerprint)
+if df is None or df.empty:
+    st.error(f"Historical data is unavailable for {ticker}.")
+    st.stop()
+details = read_cached_details(symbol) or {}
+metrics = details.get("metrics", {})
+try:
+    snapshot = fetch_stock_snapshot(provider_symbol(symbol))
+except Exception:
+    snapshot = None
+close = float(df["Close"].iloc[-1])
+previous = float(df["Close"].iloc[-2]) if len(df) > 1 else close
+price = float(snapshot["last"]) if snapshot else close
+change = float(snapshot["delta"]) if snapshot else close - previous
+pct = float(snapshot["pct"]) if snapshot else (close / previous - 1) * 100 if previous else 0
+as_of = snapshot.get("as_of") if snapshot else str(df.index[-1])[:10]
+company = details.get("Company") or (snapshot.get("name") if snapshot else None) or ticker
+tone = "positive" if change >= 0 else "negative"
+try:
+    artifact = resolve_artifact(symbol, 1)
+    model_path, scaler_path = str(artifact["model"]), str(artifact["scaler"])
+    model_label = "Model available"
+except (FileNotFoundError, KeyError, ValueError):
+    model_path, scaler_path, model_label = None, None, "Model unavailable"
+with st.container(border=True, key="company_quote"):
+    heading, search = st.columns([3.6, 2])
+    with heading:
+        st.markdown(f'<div class="stock-symbol">NSE · {escape(symbol.removesuffix(".NS"))} <span class="pill">{escape(model_label)}</span></div>'
+                    f'<div class="company-name">{escape(company)}</div>'
+                    f'<span class="quote-price">{price:,.2f}</span><span class="quote-change {tone}">{change:+,.2f} ({pct:+.2f}%)</span>'
+                    f'<div class="stock-meta">{"Latest provider quote" if snapshot else "Saved closing price"} · {escape(str(as_of or "Date unavailable"))} · {escape(details.get("Sector") or "Indian equities")}</div>', unsafe_allow_html=True)
+    with search:
+        selected = st.selectbox("Search Stock", options, index=options.index(ticker) if ticker in options else 0, label_visibility="collapsed", key="company_search")
+        if selected != ticker:
+            st.session_state.selected_ticker = selected
+            st.query_params["ticker"] = selected
+            st.rerun()
+        st.caption("INR" if symbol != "NSEI" else "Index points")
+quality, valuation, momentum = st.columns(3)
+roe, margin, pe, pb = (metrics.get(k, {}) for k in ("roe", "net_margin", "pe", "pb"))
+with quality:
+    research_card("Financial snapshot", f"{format_value(roe.get('value'), 'percent')} ROE",
+                  f"Net margin {format_value(margin.get('value'), 'percent')} · published fundamentals", "green")
+with valuation:
+    assessment = assess_metric("pe", pe, details)
+    research_card("Valuation context", f"{format_value(pe.get('value'), 'multiple')} P/E",
+                  f"{assessment['assessment']} · P/B {format_value(pb.get('value'), 'multiple')}", "amber")
+with momentum:
+    return_1m = (close / float(df["Close"].iloc[-22]) - 1) * 100 if len(df) >= 22 and df["Close"].iloc[-22] else None
+    rsi = float(df["RSI"].iloc[-1]) if "RSI" in df else None
+    research_card("Price momentum", format_value(return_1m, "percent"),
+                  f"21-session return · RSI {f'{rsi:.1f}' if rsi is not None else 'N/A'}")
+with st.container(key="research_nav"):
+    section = st.radio("Research sections", ["Overview", "Technical Chart", "LSTM Model", "News Sentiment", "Fundamentals", "Market Summary"],
+                       horizontal=True, label_visibility="collapsed", key="research_section")
+with st.container(border=True, key="research_content"):
+    if section == "Overview":
+        from tabs import overview
+        overview.render_overview_tab(df, ticker)
+    elif section == "Technical Chart":
+        from tabs import technicals
+        technicals.render_technicals(df, ticker)
+    elif section == "LSTM Model":
+        from tabs import lstm_model
+        lstm_model.render_lstm_tab(df, ticker, model_path, scaler_path)
+    elif section == "News Sentiment":
+        from tabs import news_sentinel
+        news_sentinel.render_news_tab(ticker)
+    elif section == "Fundamentals":
+        from tabs import fundamentals
+        fundamentals.render_fundamentals_tab(ticker)
+    else:
+        from tabs import market_overview
+        market_overview.render_market_overview(ticker)
+st.caption(f"Chart/model history through {df.index[-1]:%d %b %Y}. Quote and financial reporting dates may differ.")
+render_footer()

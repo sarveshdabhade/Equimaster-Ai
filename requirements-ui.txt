@@ -1,0 +1,2 @@
+# Optional browser verification; not needed to run the Streamlit application.
+playwright==1.64.1

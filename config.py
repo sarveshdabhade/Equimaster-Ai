@@ -1,4 +1,40 @@
-"""Centralized configuration — single source of truth for ticker lists and constants."""
+"""Centralized configuration - single source of truth for ticker lists and constants."""
+
+from pathlib import Path
+
+PROJECT_ROOT = Path(__file__).resolve().parent
+PROVIDER_SYMBOLS = {"LTIM.NS": "LTM.NS", "NSEI": "^NSEI", "NIFTY 50": "^NSEI"}
+
+
+def provider_symbol(ticker: str) -> str:
+    return PROVIDER_SYMBOLS.get(ticker, ticker)
+
+
+def get_project_root() -> Path:
+    """Return the repository root as an absolute path."""
+    return PROJECT_ROOT
+
+
+def resolve_app_path(*parts: str) -> str:
+    """Resolve a path relative to the project root, not the current working directory."""
+    return str(PROJECT_ROOT.joinpath(*parts))
+
+
+def ensure_runtime_directories() -> None:
+    """Create all runtime directories used by the app and training pipeline."""
+    directories = [
+        "data",
+        "data/processed",
+        "data/raw",
+        "data/train_data",
+        "data/news_cache",
+        "images",
+        "logs",
+        "models",
+    ]
+    for rel_path in directories:
+        Path(resolve_app_path(rel_path)).mkdir(parents=True, exist_ok=True)
+
 
 # ─── NIFTY 50 Constituents (NSE .NS tickers) ───
 NIFTY_50_TICKERS = [
@@ -25,7 +61,7 @@ BANK_NIFTY_TICKERS = [
 ]
 
 # Combined NIFTY 50 + Bank Nifty (no duplicates, Nifty 50 first)
-ALL_DOWNLOAD_TICKERS = list(dict.fromkeys(NIFTY_50_TICKERS + BANK_NIFTY_TICKERS))
+ALL_DOWNLOAD_TICKERS = list(dict.fromkeys(NIFTY_50_TICKERS + BANK_NIFTY_TICKERS + ["LICI.NS"]))
 
 # ─── Index tickers for the scrolling ticker strip ───
 INDEX_TICKERS = {
@@ -104,9 +140,77 @@ MARKET_MOVERS_TICKERS = {
 }
 
 # ─── Update data tickers (includes ^NSEI index) ───
-UPDATE_TICKERS = ["^NSEI"] + NIFTY_50_TICKERS
+UPDATE_TICKERS = ["^NSEI"] + ALL_DOWNLOAD_TICKERS
 
 # ─── Shared constants ───
 WINDOW_SIZE = 60
 CLOSE_COL_IDX = 1  # default; overridden dynamically where possible
 HORIZONS = [1, 5, 22, 88]
+HORIZON_LABELS = {1: "Day", 5: "Week", 22: "Month", 88: "Quarter"}
+
+
+def horizon_description(horizon: int) -> str:
+    """Return the UI-friendly forecast period and its model session count."""
+    session_word = "session" if horizon == 1 else "sessions"
+    return f"{HORIZON_LABELS[horizon]} ({horizon} trading {session_word})"
+
+
+HORIZON_CHOICES_DESCRIPTION = ", ".join(horizon_description(horizon) for horizon in HORIZONS)
+
+
+FORECAST_TARGET_COLUMN = "Close"
+FORECAST_TARGET_KIND = "future_close"
+FORECAST_CUTOFF = "after_close"
+FORECAST_BASELINE = "persistence"
+FORECAST_EVALUATION_METRICS = ("mae", "rmse", "mape", "lstm_directional_accuracy")
+
+# News/RAG settings. API keys are read from the environment at runtime.
+NEWS_API_KEY_ENV = "NEWS_API_KEY"
+MODEL_STORAGE_PATH_ENV = "EQUIMASTER_MODEL_PATH"
+NEWS_CACHE_PATH_ENV = "EQUIMASTER_NEWS_CACHE_PATH"
+FUSION_SHADOW_VERSION_ENV = "EQUIMASTER_FUSION_SHADOW_VERSION"
+NEWS_CACHE_TTL_HOURS = 1
+NEWS_MAX_ARTICLES = 8
+NEWS_RECENCY_DAYS = 2
+NEWS_RETRY_ATTEMPTS = 3
+TRUSTED_NEWS_DOMAINS = [
+    "reuters.com",
+    "bloomberg.com",
+    "cnbc.com",
+    "ft.com",
+    "wsj.com",
+    "economictimes.indiatimes.com",
+    "moneycontrol.com",
+    "livemint.com",
+    "business-standard.com",
+    "thehindubusinessline.com",
+    "business-today.in",
+    "ndtvprofit.com",
+    "finance.yahoo.com",
+    "indiashippingnews.com",
+    "etinfra.com",
+    "newindianexpress.com",
+    "theweek.in",
+    "timesofindia.indiatimes.com",
+    "rediff.com",
+    "samco.in",
+    "scanx.trade",
+    "marketsmojo.com",
+    "barandbench.com",
+    "etedge-insights.com",
+    "investmentguruindia.com",
+    "economictimes.com",
+    "marketwatch.com",
+    "thehindu.com",
+    "cnbctv18.com",
+    "zeebiz.com",
+    "autocarpro.in",
+    "businessline.com",
+]
+NEWS_MODEL_NAME = "ProsusAI/finbert"
+RAG_QUERY_PATTERNS = {
+    "recent sentiment": "recent sentiment earnings outlook",
+    "negative catalysts": "negative catalysts risk concern downgrade",
+    "bullish momentum": "bullish momentum growth upgrade demand",
+    "risk events": "risk events volatility loss pressure uncertainty",
+}

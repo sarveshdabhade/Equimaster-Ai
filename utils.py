@@ -15,7 +15,7 @@ except Exception:
 
 def load_lottieurl(url: str):
     try:
-        r = requests.get(url)
+        r = requests.get(url, timeout=5)
         if r.status_code != 200:
             return None
         return r.json()
@@ -32,31 +32,49 @@ if ROOT not in sys.path:
 from config import INDEX_TICKERS
 
 
+def _extract_close_series(hist, symbol):
+    """Return the close series for one ticker from yfinance output, even when DataFrame columns are multi-indexed or symbol mismatched."""
+    if hist is None or hist.empty:
+        return pd.Series(dtype=float)
+
+    close_data = hist.get("Close")
+    if close_data is None:
+        return pd.Series(dtype=float)
+
+    close_data = close_data.dropna()
+    if isinstance(close_data, pd.DataFrame):
+        if symbol in close_data.columns:
+            close_series = close_data[symbol]
+        elif isinstance(close_data.columns, pd.MultiIndex):
+            try:
+                close_series = close_data.xs(symbol, level=-1, axis=1)
+            except Exception:
+                close_series = close_data.iloc[:, 0]
+        else:
+            close_series = close_data.iloc[:, 0]
+    else:
+        close_series = close_data
+
+    close_series = pd.to_numeric(close_series, errors="coerce").dropna()
+    return close_series
+
+
 def _fetch_single_index(label_symbol):
     """Fetch data for a single index."""
     label, symbol = label_symbol
     try:
         import yfinance as yf
-        hist = yf.download(symbol, period="5d", interval="1d", progress=False)
-        if not hist.empty:
-            close_data = hist["Close"].dropna()
+        hist = yf.download(symbol, period="5d", interval="1d", progress=False, auto_adjust=False)
+        close_series = _extract_close_series(hist, symbol)
 
-            if isinstance(close_data, pd.DataFrame):
-                if symbol in close_data.columns:
-                    close_series = close_data[symbol].dropna()
-                else:
-                    close_series = close_data.iloc[:, 0].dropna()
-            else:
-                close_series = close_data
+        if close_series.empty:
+            return None
 
-            if close_series.empty:
-                return None
-
-            last_val = float(close_series.iloc[-1])
-            prev_val = float(close_series.iloc[-2]) if len(close_series) > 1 else last_val
-            delta = last_val - prev_val
-            pct = (delta / prev_val * 100.0) if prev_val != 0 else 0.0
-            return (label, {"last": last_val, "delta": delta, "pct": pct})
+        last_val = float(close_series.iloc[-1])
+        prev_val = float(close_series.iloc[-2]) if len(close_series) > 1 else last_val
+        delta = last_val - prev_val
+        pct = (delta / prev_val * 100.0) if prev_val != 0 else 0.0
+        return (label, {"last": last_val, "delta": delta, "pct": pct, "as_of": str(close_series.index[-1])[:10]})
     except Exception:
         pass
     return None
@@ -65,14 +83,15 @@ def _fetch_single_index(label_symbol):
 def fetch_index_snapshot():
     """Fetch all index data in parallel."""
     snapshot = {}
-    
-    with ThreadPoolExecutor(max_workers=5) as executor:
-        futures = {executor.submit(_fetch_single_index, item): item for item in INDEX_TICKERS.items()}
-        for future in as_completed(futures):
-            result = future.result()
-            if result:
-                label, data = result
-                snapshot[label] = data
+
+    # yfinance can cross-contaminate values when multiple symbols are downloaded
+    # concurrently in the same process; sequential fetches keep each index tied to
+    # its own symbol and avoid duplicated price deltas across the ticker strip.
+    for item in INDEX_TICKERS.items():
+        result = _fetch_single_index(item)
+        if result:
+            label, data = result
+            snapshot[label] = data
     
     return snapshot
 
@@ -107,7 +126,7 @@ def fetch_stock_snapshot(symbol: str):
         except Exception:
             name = None
 
-        return {"symbol": symbol, "name": name or symbol, "last": last_val, "delta": delta, "pct": pct}
+        return {"symbol": symbol, "name": name or symbol, "last": last_val, "delta": delta, "pct": pct, "as_of": str(close_series.index[-1])[:10]}
     except Exception:
         return None
 

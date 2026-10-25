@@ -1,0 +1,4 @@
+# Optional neural news backends. Disabled unless explicitly enabled in environment.
+torch==2.13.0
+transformers==5.15.0
+# Embedding dependencies must be added for the target Python/platform before enabling EQUIMASTER_EMBEDDINGS.

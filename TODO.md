@@ -1,9 +1,12 @@
-# TODO: Remove Emojis from Code Files
+# Project status
 
-## Plan Steps:
-- [x] Step 1: Edit pages/training_manager.py (12 emoji removals) ✅ Complete
-- [x] Step 2: Edit tabs/lstm_model.py (10 emoji removals) ✅ Complete
-- [x] Step 3: Edit app.py (13 emoji removals) ✅ Complete
-- [x] Step 4: Verify no emojis remain (search_files) 
-- [x] Step 5: Complete task ✅ All emojis removed from code files
+The previous emoji/UI checklist is superseded by TODO_UI.md and README.md.
+Implemented: chronological training, model bundles, shared fusion formula, baseline
+and backtest metrics, empirical intervals, fundamentals, market summary, technical
+chart controls, provider failure tests, news evaluation tooling and scheduled refresh.
 
+Remaining research, not claimed as complete:
+- Collect an independently annotated, timestamped Indian-market corpus. The FinancialPhraseBank sentence benchmark is implemented separately.
+- Measure historical sentiment/fusion performance after enough archived observations exist.
+- Evaluate refitted walk-forward strategies and improve models that fail to beat persistence.
+- Calibrate news confidence and validate interval coverage on additional periods.

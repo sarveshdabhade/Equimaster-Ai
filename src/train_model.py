@@ -5,17 +5,22 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import LSTM, Dense, Dropout, Input
 import os
 import sys
+import logging
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from config import MODEL_STORAGE_PATH_ENV, resolve_app_path, ensure_runtime_directories
 
 # Fix Windows console encoding so emoji/Unicode print correctly
 if sys.stdout.encoding and "utf" not in sys.stdout.encoding.lower():
     sys.stdout.reconfigure(encoding="utf-8")
 
 # 1. Config
-TRAIN_DIR = "data/train_data"
-MODELS_DIR = "models"
+ensure_runtime_directories()
+TRAIN_DIR = resolve_app_path("data", "train_data")
+MODELS_DIR = os.getenv(MODEL_STORAGE_PATH_ENV, resolve_app_path("models"))
+MODELS_DIR = os.path.abspath(MODELS_DIR)
 os.makedirs(MODELS_DIR, exist_ok=True)
 
-def build_model(input_shape, output_size=1):
+def build_model(input_shape, output_size=1, close_index=None):
     """
     Creates the LSTM Neural Network Architecture.
     """
@@ -37,7 +42,18 @@ def build_model(input_shape, output_size=1):
     model.add(Dense(units=25))
     
     # Layer 4: Output (The Price or multi-step vector)
-    model.add(Dense(units=output_size))
+    model.add(Dense(units=output_size, kernel_initializer="zeros" if close_index is not None else "glorot_uniform"))
+
+    if close_index is not None:
+        # Learn a correction to the last close rather than relearning its level.
+        inputs = tf.keras.Input(shape=input_shape)
+        last_row = tf.keras.layers.Cropping1D((input_shape[0] - 1, 0))(inputs)
+        last_row = tf.keras.layers.Flatten()(last_row)
+        weights = np.zeros((input_shape[1], output_size), dtype="float32")
+        weights[close_index, :] = 1.0
+        baseline = tf.keras.layers.Dense(output_size, use_bias=False, trainable=False,
+                                         kernel_initializer=tf.keras.initializers.Constant(weights))(last_row)
+        model = tf.keras.Model(inputs, tf.keras.layers.Add()([baseline, model(inputs)]))
 
     # Compile the brain
     model.compile(optimizer='adam', loss='mean_squared_error')
@@ -45,47 +61,18 @@ def build_model(input_shape, output_size=1):
     return model
 
 def train_all():
-    # Find all training files
-    # Look for files like "X_train_RELIANCE.NS.npy"
-    files = glob.glob(f"{TRAIN_DIR}/X_train_*.npy")
-    # DEBUG: print(f"Found {len(files)} datasets to train on...")
-
-    for file_path in files:
+    from src.training import train_ticker
+    from config import HORIZONS
+    failures = {}
+    for file_path in glob.glob(resolve_app_path("data", "processed", "*_processed.csv")):
+        ticker = os.path.basename(file_path).removesuffix("_processed.csv")
         try:
-            # Extract ticker from filename "data/train_data\X_train_TCS.NS.npy"
-            ticker = file_path.split("X_train_")[-1].replace(".npy", "")
-
-            # DEBUG: print(f"\nTraining for: {ticker}")
-
-            # 1. Load THIS stock's data
-            X_train = np.load(f"{TRAIN_DIR}/X_train_{ticker}.npy")
-            y_train = np.load(f"{TRAIN_DIR}/y_train_{ticker}.npy")
-            X_test = np.load(f"{TRAIN_DIR}/X_test_{ticker}.npy")
-            y_test = np.load(f"{TRAIN_DIR}/y_test_{ticker}.npy")
-
-            # 2. Build Fresh Model (output size depends on y_train shape)
-            out_size = 1
-            if len(y_train.shape) == 1:
-                out_size = 1
-            else:
-                out_size = y_train.shape[1]
-            model = build_model((X_train.shape[1], X_train.shape[2]), output_size=out_size)
-
-            # 3. Train with validation split to detect overfitting
-            history = model.fit(
-                X_train, y_train,
-                epochs=10, batch_size=32, verbose=0,
-                validation_split=0.1,
-            )
-
-            # 4. Save Unique Model (use native Keras format)
-            model_path = os.path.join(MODELS_DIR, f"lstm_{ticker}.keras")
-            model.save(model_path)
-            # DEBUG: print(f"Saved: {os.path.basename(model_path)}")
-
-        except Exception:
-            # DEBUG: print(f"Failed {ticker}: {e}")
-            pass
+            train_ticker(ticker, HORIZONS)
+        except Exception as exc:
+            logging.getLogger(__name__).exception("Training failed for %s", ticker)
+            failures[ticker] = str(exc)
+    if failures:
+        raise RuntimeError(f"Training failed for {len(failures)} dataset(s): {failures}")
 
 
 if __name__ == "__main__":
