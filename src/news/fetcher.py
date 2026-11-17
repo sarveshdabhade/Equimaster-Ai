@@ -253,6 +253,7 @@ NEWS_ALIASES = {
     "ETERNAL.NS": ["Eternal", "Zomato"],
     "FEDERALBNK.NS": ["Federal Bank"], "HDFCLIFE.NS": ["HDFC Life"],
     "GRASIM.NS": ["Grasim Industries", "Grasim"],
+    "HCLTECH.NS": ["HCL Technologies", "HCLTech"],
     "HEROMOTOCO.NS": ["Hero MotoCorp"],
     "HINDALCO.NS": ["Hindalco Industries", "Hindalco"],
     "HINDUNILVR.NS": ["Hindustan Unilever", "HUL"], "IDFCFIRSTB.NS": ["IDFC First"],
@@ -475,10 +476,11 @@ def _google_news_articles(ticker: str, max_articles: int):
             # Publisher-specific searches recover stories hidden by Google's
             # broad ranking. Apply the same identity, publisher, age and
             # deduplication checks; never pad a training batch with duplicates.
-            identity = _company_search_name(ticker) or ticker.removesuffix(".NS")
+            aliases = list(dict.fromkeys([*_company_name_aliases(ticker), ticker.removesuffix(".NS")]))
+            identity = '(' + ' OR '.join(f'"{alias}"' for alias in aliases) + ')'
             domains = ("economictimes.indiatimes.com", "moneycontrol.com", "livemint.com",
                        "business-standard.com", "financialexpress.com", "cnbctv18.com")
-            focused = [f'"{identity}" site:{domain} when:{NEWS_RECENCY_DAYS}d' for domain in domains]
+            focused = [f'{identity} site:{domain} when:{NEWS_RECENCY_DAYS}d' for domain in domains]
             with ThreadPoolExecutor(max_workers=3) as executor:
                 for batch in executor.map(search, focused):
                     records.extend(batch)
@@ -487,12 +489,13 @@ def _google_news_articles(ticker: str, max_articles: int):
             # Separate weekly windows avoid repeatedly receiving only the same
             # top-ranked headlines. The final freshness filter is unchanged.
             end_date = datetime.now(timezone.utc).date()
-            identity = _company_search_name(ticker) or ticker.removesuffix(".NS")
+            aliases = list(dict.fromkeys([*_company_name_aliases(ticker), ticker.removesuffix(".NS")]))
+            identity = '(' + ' OR '.join(f'"{alias}"' for alias in aliases) + ')'
             dated_queries = []
             for offset in range(0, NEWS_RECENCY_DAYS, 7):
                 stop = end_date - timedelta(days=offset)
                 start = end_date - timedelta(days=min(offset + 7, NEWS_RECENCY_DAYS))
-                dated_queries.append(f'"{identity}" after:{start.isoformat()} before:{(stop + timedelta(days=1)).isoformat()}')
+                dated_queries.append(f'{identity} after:{start.isoformat()} before:{(stop + timedelta(days=1)).isoformat()}')
             with ThreadPoolExecutor(max_workers=3) as executor:
                 for batch in executor.map(search, dated_queries):
                     records.extend(batch)
