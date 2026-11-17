@@ -3,14 +3,33 @@ from html import escape
 import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
+import yfinance as yf
+from config import provider_symbol
 from components.layout import section_title, CHART_STYLE, CHART_TEMPLATE
 from src.artifacts import canonical_ticker
 from src.fundamentals import read_cached_details, format_value
 
 
+@st.cache_data(ttl=86400, show_spinner=False)
+def _fetch_company_summary(ticker):
+    try:
+        info = yf.Ticker(provider_symbol(canonical_ticker(ticker))).get_info()
+    except Exception:
+        return ""
+    summary = info.get("longBusinessSummary") if isinstance(info, dict) else None
+    return summary.strip() if isinstance(summary, str) else ""
+
+
 def render_overview_tab(df, ticker):
     details = read_cached_details(canonical_ticker(ticker)) or {}
     metrics = details.get("metrics", {})
+    summary = details.get("Summary") or details.get("Business summary") or _fetch_company_summary(ticker)
+    with st.container(border=True):
+        section_title("Company overview")
+        if summary:
+            st.write(summary)
+        else:
+            st.caption("A company summary is not available from the saved or current public profile.")
     chart, facts = st.columns([2, 1])
     with chart:
         section_title("Price performance", "Historical closing prices · INR" if canonical_ticker(ticker) != "NSEI" else "Historical closing levels · points")

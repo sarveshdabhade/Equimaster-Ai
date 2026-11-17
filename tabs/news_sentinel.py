@@ -8,6 +8,7 @@ from components.layout import section_title
 from src.market_context import build_market_context
 from src.news.sentiment import analyze_ticker_sentiment
 from src.news.fetcher import fetch_ticker_articles
+from config import NEWS_MAX_ARTICLES, NEWS_RECENCY_DAYS
 
 
 def _format_published_at(value):
@@ -19,19 +20,19 @@ def _format_published_at(value):
         return "Publication time unavailable"
 
 
-def render_news_tab(ticker):
+def _render_news_tab_content(ticker):
     heading, refresh = st.columns([4, 1])
     with heading:
-        section_title("News & sentiment", "Yahoo Finance, Google News, publisher feeds · dates retained")
+        section_title("News & sentiment", f"Provider refresh every 5 minutes while open · last {NEWS_RECENCY_DAYS} days")
     if refresh.button("Refresh feed", width="stretch"):
         with st.spinner("Checking live news providers for this company..."):
-            articles = fetch_ticker_articles(ticker, max_articles=10, force_refresh=True)
+            articles = fetch_ticker_articles(ticker, max_articles=NEWS_MAX_ARTICLES, force_refresh=True)
         if articles:
             st.success(f"Refreshed {len(articles)} recent verified articles.")
         else:
             st.warning("Refresh completed, but no fresh verified articles matched this company.")
     with st.spinner("Reading recent company evidence..."):
-        result = analyze_ticker_sentiment(ticker, max_articles=10, include_llm=True)
+        result = analyze_ticker_sentiment(ticker, max_articles=NEWS_MAX_ARTICLES, include_llm=True)
         context = build_market_context(ticker, horizon=5, sentiment=result)
     evidence = result.get("evidence", [])
     synthesis_status = result.get("llm_synthesis_status", "not_requested")
@@ -46,7 +47,7 @@ def render_news_tab(ticker):
         with st.container(border=True):
             st.markdown(f"**LLM evidence synthesis · {synthesis['stance'].capitalize()}**")
             st.write(synthesis["summary"])
-            st.caption("This synthesis is separate from the sentiment score and forecast signal.")
+            st.caption("This synthesis is separate from the sentiment score shown here.")
             summary_sources = [
                 synthesis["citation_sources"].get(evidence_id, {}).get("title") or evidence_id
                 for evidence_id in synthesis["summary_evidence_ids"]
@@ -75,18 +76,20 @@ def render_news_tab(ticker):
     columns[1].metric("Sentiment score", f"{result.get('overall_score', 0):+.2f}" if has_evidence else "N/A")
     columns[2].metric("Verified articles", len(evidence))
     columns[3].metric("Combined context", f"{context.get('combined_score', 0):+.2f}" if has_evidence else "N/A")
+    if has_evidence:
+        st.info(result.get("summary", "News sentiment summary is unavailable."))
     st.caption("Confidence and impact are screening heuristics, not calibrated probabilities. Publication dates show article freshness.")
     if not evidence:
         providers = (
-            "Yahoo Finance, Google News (trusted publishers including India Shipping News and ET Infra), "
-            "Economic Times, CNBC, "
+            "Yahoo Finance, multi-query Google News (trusted publishers including India Shipping News and ET Infra), "
+            "Economic Times, CNBC, Financial Express, "
             "Business Standard, LiveMint, and Hindu BusinessLine"
         )
         if not os.getenv("NEWS_API_KEY"):
             providers += "; NewsAPI.org is not enabled (set NEWS_API_KEY in the app's environment for additional coverage)"
         st.info(
-            f"Sentiment is unavailable because no fresh, verified company-matched news was found in the recent-news window from {providers}. "
-            "Publisher feeds do not cover every company or publish a story every day, so this cannot guarantee "
+            f"Sentiment is unavailable because no verified company-matched news was found in the last {NEWS_RECENCY_DAYS} days from {providers}. "
+            "Publisher feeds do not cover every company or publish a story every month, so this cannot guarantee "
             "an article for every ticker. Use Refresh feed to query providers again."
         )
         return
@@ -107,3 +110,11 @@ def render_news_tab(ticker):
             url = str(article.get("url") or "")
             if url.startswith(("https://", "http://")):
                 st.link_button("Read source", url)
+
+
+@st.fragment(run_every="5m")
+def render_news_tab(ticker):
+    # This container is created inside the fragment so each timed refresh
+    # replaces the news panel instead of appending another copy below it.
+    with st.container(border=True, key="news_auto_refresh_panel"):
+        _render_news_tab_content(ticker)
