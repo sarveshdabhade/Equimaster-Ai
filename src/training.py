@@ -21,22 +21,29 @@ from config import (
     FORECAST_TARGET_KIND,
     HORIZONS,
     HORIZON_LABELS,
+    NEWS_MAX_ARTICLES,
+    PIPELINE_VERSION,
     resolve_app_path,
 )
 from src.artifacts import atomic_json, model_directory, sha256, canonical_ticker
 from src.data_sequencer import chronological_split_index, split_sequences
 from src.evaluate_predictions import evaluate_predictions
+from src.news.fetcher import fetch_ticker_articles
 from src.train_model import build_model
-
-PIPELINE_VERSION = 3
-
 
 def inverse_close(values, scaler, close_index):
     values = np.asarray(values)
     return values * scaler.data_range_[close_index] + scaler.data_min_[close_index]
 
 
-def train_ticker(ticker, horizons=None, epochs=10, window_size=60, only_missing=False):
+def train_ticker(
+    ticker,
+    horizons=None,
+    epochs=10,
+    window_size=60,
+    only_missing=False,
+    news_validation=None,
+):
     ticker = canonical_ticker(ticker)
     horizons = HORIZONS if horizons is None else horizons
     source = Path(resolve_app_path("data", "processed", f"{ticker}_processed.csv"))
@@ -54,7 +61,10 @@ def train_ticker(ticker, horizons=None, epochs=10, window_size=60, only_missing=
         old = json.loads(pointer.read_text())
         old_meta = json.loads((root / old["bundle"] / "metadata.json").read_text())
         requested = set(horizons)
-        horizons = sorted(requested | {int(h) for h in old_meta.get("horizons", {})})
+        supported = set(HORIZONS)
+        # Preserve supported horizons during targeted retrains, but retire any
+        # horizon removed from the active product contract (88 -> 63).
+        horizons = sorted(requested | ({int(h) for h in old_meta.get("horizons", {})} & supported))
         old_bundle = root / old["bundle"]
         artifacts_intact = (
             (old_bundle / "scaler.pkl").exists()
@@ -69,6 +79,26 @@ def train_ticker(ticker, horizons=None, epochs=10, window_size=60, only_missing=
             old_meta.get("data_sha256") == source_hash and
             all(str(h) in old_meta["horizons"] for h in horizons) and artifacts_intact):
             return old_meta
+    if news_validation is None:
+        articles = fetch_ticker_articles(
+            ticker,
+            max_articles=NEWS_MAX_ARTICLES,
+            force_refresh=True,
+            require_live=True,
+        )
+        news_validation = {
+            "article_count": len(articles),
+            "fetched_at": datetime.now(timezone.utc).isoformat(),
+        }
+    try:
+        article_count = int(news_validation["article_count"])
+    except (KeyError, TypeError, ValueError) as exc:
+        raise ValueError(f"Invalid training news validation for {ticker}") from exc
+    if article_count < NEWS_MAX_ARTICLES:
+        raise RuntimeError(
+            f"Training blocked for {ticker}: requires {NEWS_MAX_ARTICLES} fresh "
+            f"verified news articles; received {article_count}."
+        )
     test_start = chronological_split_index(len(df), window_size)
     calibration_start = chronological_split_index(test_start, window_size, 0.85)
     scaler = MinMaxScaler().fit(df.iloc[:calibration_start].to_numpy())
@@ -80,7 +110,7 @@ def train_ticker(ticker, horizons=None, epochs=10, window_size=60, only_missing=
     (bundle / "processed.csv").write_bytes(source_bytes)
     joblib.dump(scaler, bundle / "scaler.pkl")
     metadata = {"pipeline_version": PIPELINE_VERSION, "ticker": ticker, "version": version,
-                "architecture": "residual_lstm_last_close", "training_source": "processed.csv",
+                "architecture": "residual_lstm_last_close_calibrated_weights", "training_source": "processed.csv",
                 "forecast_contract": {
                     "target_column": FORECAST_TARGET_COLUMN,
                     "target_kind": FORECAST_TARGET_KIND,
@@ -91,6 +121,10 @@ def train_ticker(ticker, horizons=None, epochs=10, window_size=60, only_missing=
                 },
                 "tensorflow_version": tf.__version__, "numpy_version": np.__version__,
                 "trained_at": datetime.now(timezone.utc).isoformat(), "features": list(df.columns),
+                "training_news": {
+                    "article_count": article_count,
+                    "fetched_at": str(news_validation.get("fetched_at") or ""),
+                },
                 "data_sha256": source_hash, "scaler_sha256": sha256(bundle / "scaler.pkl"),
                 "data_start": str(df.index[0]), "data_end": str(df.index[-1]),
                 "fit_end": str(df.index[calibration_start - 1]),
@@ -120,19 +154,32 @@ def train_ticker(ticker, horizons=None, epochs=10, window_size=60, only_missing=
         # so intervals are empirical validation intervals, not guaranteed conformal coverage.
         cal_pred = inverse_close(model.predict(dataset(x_cal), verbose=0), scaler, close_index)
         predictions = inverse_close(model.predict(dataset(x_test), verbose=0), scaler, close_index)
+        cal_actual = inverse_close(y_cal, scaler, close_index)
         actual = inverse_close(y_test, scaler, close_index)
+        cal_current = inverse_close(x_cal[:, -1, close_index], scaler, close_index)
         current = inverse_close(x_test[:, -1, close_index], scaler, close_index)
+        cal_return = cal_pred / cal_current[:, None] - 1.0
+        actual_cal_return = cal_actual / cal_current[:, None] - 1.0
+        shrinkage_grid = np.linspace(0.0, 1.0, 51)
+        shrinkage_losses = [
+            float(np.mean(np.abs(actual_cal_return - alpha * cal_return)))
+            for alpha in shrinkage_grid
+        ]
+        return_shrinkage = float(shrinkage_grid[int(np.argmin(shrinkage_losses))])
+        cal_pred = cal_current[:, None] + return_shrinkage * (cal_pred - cal_current[:, None])
+        predictions = current[:, None] + return_shrinkage * (predictions - current[:, None])
         metrics = evaluate_predictions(current, predictions[:, -1], actual[:, -1])
         baseline = evaluate_predictions(current, current, actual[:, -1])
         residual = inverse_close(y_cal, scaler, close_index) - cal_pred
         lower, upper = np.quantile(residual, [0.05, 0.95], axis=0)
         covered = (actual >= predictions + lower) & (actual <= predictions + upper)
-        name = f"h{horizon}.keras"
-        model.save(bundle / name)
+        name = f"h{horizon}.weights.h5"
+        model.save_weights(bundle / name)
         metadata["horizons"][str(horizon)] = {
             "model": name, "model_sha256": sha256(bundle / name), "metrics": metrics,
             "baseline_name": FORECAST_BASELINE, "baseline": baseline,
             "mae_improvement_vs_persistence": baseline["mae"] - metrics["mae"],
+            "return_shrinkage": return_shrinkage,
             "interval": {"nominal_coverage": 0.9, "lower_residual": lower.tolist(),
                          "upper_residual": upper.tolist(), "test_coverage": float(covered.mean()),
                          "calibration_samples": len(x_cal)},

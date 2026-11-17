@@ -201,7 +201,8 @@ def test_google_news_query_uses_ticker_and_company_aliases():
 def test_all_configured_nifty_stocks_have_searchable_company_aliases():
     from config import NIFTY_50_TICKERS
 
-    assert len(NIFTY_50_TICKERS) == 49
+    assert len(NIFTY_50_TICKERS) == 50
+    assert len(set(NIFTY_50_TICKERS)) == 50
     assert all(news_fetcher._company_name_aliases(ticker) for ticker in NIFTY_50_TICKERS)
     assert '"Royal Enfield"' in news_fetcher._google_news_query("EICHERMOT.NS")
 
@@ -400,10 +401,78 @@ def test_stale_published_articles_are_not_reused_from_fresh_file_cache():
     assert news_fetcher._read_cache(ticker) == []
 
 
+def test_forced_training_refresh_does_not_count_cached_news_as_live(monkeypatch, tmp_path):
+    ticker = "TESTTICKER"
+    monkeypatch.setattr(news_fetcher, "NEWS_CACHE_DIR", tmp_path / "cache")
+    monkeypatch.setattr(news_fetcher, "NEWS_ARCHIVE_DIR", tmp_path / "archive")
+    monkeypatch.setattr(news_fetcher, "_newsapi_articles", lambda *args, **kwargs: [])
+    monkeypatch.setattr(news_fetcher, "_yahoo_articles", lambda *args, **kwargs: [])
+    monkeypatch.setattr(news_fetcher, "_rss_articles", lambda *args, **kwargs: [])
+    monkeypatch.setattr(news_fetcher, "_google_news_articles", lambda *args, **kwargs: [])
+    article = normalize_article({
+        "title": "TESTTICKER earnings growth",
+        "source": "Reuters",
+        "url": "https://www.reuters.com/markets/test-cached",
+        "published_at": datetime.now(timezone.utc).isoformat(),
+    }, ticker)
+    cache_path = news_fetcher._cache_path_for_ticker(ticker)
+    cache_path.parent.mkdir(parents=True)
+    cache_path.write_text(json.dumps([article]), encoding="utf-8")
+
+    articles = fetch_ticker_articles(
+        ticker, max_articles=20, force_refresh=True, require_live=True
+    )
+
+    assert articles == []
+
+
 def test_keyword_sentiment_recognizes_common_word_forms_without_substring_matches():
     assert _keyword_score("The company expands operations and revenue grows") > 0
     assert _keyword_score("Shares fall after earnings misses") < 0
+    assert _keyword_score("Shares jump as the stock rallies") > 0
+    assert _keyword_score("The merger was called off") < 0
     assert _keyword_score("Glossary includes no market direction") == 0
+
+
+def test_sentiment_ignores_google_news_html_and_publisher_attribution():
+    article = {
+        "title": "Max Life-HDFC Life Merger Called Off - NDTV Profit",
+        "summary": (
+            '<a href="https://news.google.com/story">Max Life-HDFC Life Merger Called Off</a> '
+            '<font color="#6f6f6f">NDTV Profit</font>'
+        ),
+        "source": "NDTV Profit",
+        "published_at": datetime.now(timezone.utc).isoformat(),
+        "url": "https://www.ndtvprofit.com/markets/test-merger",
+    }
+
+    result = analyze_ticker_sentiment("HDFCLIFE.NS", articles=[article])
+
+    assert result["label"] in {"Bearish", "Risk-off"}
+    assert result["articles"][0]["score"] < 0
+    assert "NDTV Profit" not in result["articles"][0]["text"]
+    assert "<a " not in result["articles"][0]["text"]
+
+
+def test_training_news_refresh_requires_twenty_for_each_ticker(monkeypatch, tmp_path):
+    import scripts.refresh_all_news as news_refresh
+
+    monkeypatch.setattr(news_refresh, "ROOT", tmp_path)
+    monkeypatch.setattr(
+        news_refresh,
+        "fetch_ticker_articles",
+        lambda ticker, **kwargs: [{}] * (20 if ticker == "COMPLETE.NS" else 19),
+    )
+
+    results = news_refresh.refresh_news_for_tickers(
+        ["COMPLETE.NS", "SHORT.NS"], required_articles=20
+    )
+    report = json.loads((tmp_path / "logs" / "news_refresh.json").read_text(encoding="utf-8"))
+
+    assert len(results) == 2
+    assert report["results"][0]["ok"] is True
+    assert report["results"][1]["ok"] is False
+    assert report["results"][1]["articles"] == 19
 
 
 def test_named_query_and_market_context_contract():

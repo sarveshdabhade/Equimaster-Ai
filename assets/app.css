@@ -98,6 +98,7 @@ input::placeholder,textarea::placeholder {color:#A4B4CB!important;opacity:1!impo
 .index-name {font-size:.74rem;font-weight:600;color:var(--muted);letter-spacing:.035em;margin-bottom:5px}
 .index-value {font-size:1.17rem;font-weight:700;letter-spacing:-.025em;color:var(--ink);font-variant-numeric:tabular-nums}
 .index-change {font-size:.78rem;margin-top:4px;font-weight:550}
+.index-update {font-size:.62rem;color:var(--muted);margin-top:3px;font-variant-numeric:tabular-nums}
 .index-change.positive {color:#69C58B!important;background:transparent}
 .index-change.negative {color:#D9828B!important;background:transparent}
 .stock-symbol {font-size:.76rem;letter-spacing:.045em;font-weight:650;color:var(--muted)}

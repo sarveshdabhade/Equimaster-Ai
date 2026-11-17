@@ -18,6 +18,7 @@ ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if ROOT not in sys.path:
     sys.path.insert(0, ROOT)
 from config import UPDATE_TICKERS as TICKERS, provider_symbol
+from src.market_data import merge_history_without_window_loss, remove_incomplete_current_daily_bar
 
 RAW_DIR = os.path.join(ROOT, "data", "raw")
 yf.set_tz_cache_location(os.path.join(ROOT, "data", ".yf_cache"))
@@ -73,6 +74,7 @@ def _update_single_ticker(ticker):
         # We download the last 5 years of data up to TODAY
         stock = yf.Ticker(provider_symbol(ticker))
         df = stock.history(period="5y", interval="1d", timeout=20)
+        df = remove_incomplete_current_daily_bar(df)
         
         if not df.empty:
             # Remove timezone to keep it clean
@@ -86,6 +88,13 @@ def _update_single_ticker(ticker):
             prev_max_date = _latest_date(save_path)
             if os.path.exists(save_path):
                 previous = pd.read_csv(save_path, index_col=0, parse_dates=True)
+                if previous.index.tz is not None:
+                    previous.index = previous.index.tz_localize(None)
+
+                # `period="5y"` advances its start date each day. Preserve any
+                # older rows that fall just outside the refreshed provider window.
+                df = merge_history_without_window_loss(previous, df)
+
                 if equivalent_history(previous, df):
                     return (ticker, True, False, None)
             
@@ -98,7 +107,7 @@ def _update_single_ticker(ticker):
 
             return (ticker, True, has_new_data, None)
         else:
-            return (ticker, False, False, "No data found")
+            return (ticker, False, False, "No complete daily data found (today's bar may still be in progress)")
                 
     except Exception as e:
         return (ticker, False, False, str(e))

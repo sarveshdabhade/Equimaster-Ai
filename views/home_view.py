@@ -93,18 +93,73 @@ def _company_table(frame, key):
                                 "ROE %": st.column_config.NumberColumn("ROE (%)", format="%.2f")})
 
 
+@st.fragment(run_every="30s")
+def _render_live_index_cards(fingerprint):
+    indices = _live_index_snapshot()
+    live_available = bool(indices)
+    if not indices:
+        history = index_history(fingerprint)
+        if len(history) >= 2:
+            close, previous = float(history["Close"].iloc[-1]), float(history["Close"].iloc[-2])
+            indices = {"NIFTY 50": {"last": close, "delta": close - previous,
+                                    "pct": (close / previous - 1) * 100,
+                                    "as_of": f"Saved close · {history.index[-1]:%d %b %Y}"}}
+    render_indices_ticker(indices)
+    if not live_available:
+        st.caption("Live index quotes are unavailable; the NIFTY 50 card shows the latest saved close.")
+
+
+@st.fragment(run_every="30s")
 def _benchmark(history):
     with st.container(border=True, key="benchmark_panel"):
         heading, controls = st.columns([2, 3])
         with heading:
-            section_title("NIFTY 50", "Benchmark performance · saved closes")
+            section_title("NIFTY 50", "Benchmark performance · latest quote + saved history")
         with controls:
             period = st.radio("Benchmark period", ["1M", "3M", "6M", "1Y"], index=1, horizontal=True, label_visibility="collapsed")
         if history.empty:
             st.info("Benchmark history is unavailable.")
             return
         subset = history.tail({"1M": 22, "3M": 66, "6M": 126, "1Y": 252}[period])
+        subset = subset[["Close"]].copy()
+        quote = _live_index_snapshot().get("NIFTY 50")
+        quote_used = False
+        quote_label = None
+        if quote and quote.get("last") is not None and quote.get("as_of"):
+            quote_time = pd.to_datetime(quote["as_of"], errors="coerce")
+            if not pd.isna(quote_time):
+                if quote_time.tzinfo is not None:
+                    quote_time = quote_time.tz_convert(INDIA_TZ).tz_localize(None)
+                quote_date = quote_time.normalize()
+                history_dates = pd.DatetimeIndex(pd.to_datetime(subset.index))
+                if history_dates.tz is not None:
+                    history_dates = history_dates.tz_convert(INDIA_TZ).tz_localize(None)
+                latest_history_date = history_dates[-1].normalize()
+                current_time = datetime.now(INDIA_TZ)
+                is_open = market_session_status(current_time)[0] == "OPEN"
+                quote_is_current = not is_open or quote_date.date() == current_time.date()
+                if quote_date >= latest_history_date and quote_is_current:
+                    live_close = float(quote["last"])
+                    if live_close > 0:
+                        quote_day_matches_history = quote_date == latest_history_date
+                        point_time = quote_time
+                        if quote_day_matches_history:
+                            subset.index = history_dates
+                            subset.iloc[-1, subset.columns.get_loc("Close")] = live_close
+                            if point_time > subset.index[-1]:
+                                subset.index = subset.index[:-1].append(pd.DatetimeIndex([point_time]))
+                        else:
+                            subset.index = history_dates
+                            subset.loc[point_time, "Close"] = live_close
+                        subset = subset.sort_index()
+                        quote_used = True
+                        quote_label = quote_time.strftime("%d %b %H:%M IST")
+        subset["Close"] = pd.to_numeric(subset["Close"], errors="coerce")
+        subset = subset.dropna(subset=["Close"])
         close = subset["Close"]
+        if close.empty:
+            st.info("Benchmark history is unavailable.")
+            return
         change = (float(close.iloc[-1]) / float(close.iloc[0]) - 1) * 100 if close.iloc[0] else 0
         tone = "positive" if change >= 0 else "negative"
         chart_color, fill_color = ("#00D47E", "rgba(0,212,126,.10)") if change >= 0 else ("#FF7187", "rgba(255,113,135,.10)")
@@ -115,6 +170,10 @@ def _benchmark(history):
                              xaxis={"showgrid": False}, yaxis={"side": "right", "range": [float(close.min()) * .994, float(close.max()) * 1.006]},
                              showlegend=False, hovermode="x unified")
         st.plotly_chart(figure, width="stretch", theme=None, config={"displayModeBar": False})
+        if quote_used:
+            st.caption(f"Latest provider quote: {quote_label} · polled every 30 seconds; earlier points use saved daily closes.")
+        else:
+            st.caption("Live quote unavailable or stale; showing saved daily closes.")
 
 
 def _breadth(frame):
@@ -163,6 +222,21 @@ def _news_panel(limit=5, show_all=True):
                         f'<a href="{url}" target="_blank" rel="noopener noreferrer">{title}</a></div>', unsafe_allow_html=True)
 
 
+def _live_index_snapshot():
+    cached = st.session_state.get("_live_index_snapshot")
+    if cached is None:
+        current = fetch_index_snapshot()
+        st.session_state["_live_index_snapshot"] = current
+        return current
+    if market_session_status()[0] == "OPEN":
+        current = fetch_index_snapshot()
+        if current:
+            st.session_state["_live_index_snapshot"] = current
+            return current
+        return {}
+    return cached or {}
+
+
 def render_home_view():
     fingerprint = data_fingerprint()
     frame = load_dashboard_rows(fingerprint)
@@ -184,14 +258,7 @@ def render_home_view():
         unsafe_allow_html=True,
     )
 
-    indices = fetch_index_snapshot()
-    if not indices:
-        history = index_history(fingerprint)
-        if len(history) >= 2:
-            close, previous = float(history["Close"].iloc[-1]), float(history["Close"].iloc[-2])
-            indices = {"NIFTY 50": {"last": close, "delta": close - previous, "pct": (close / previous - 1) * 100,
-                                    "as_of": f"Saved close · {history.index[-1]:%d %b %Y}"}}
-    render_indices_ticker(indices)
+    _render_live_index_cards(fingerprint)
     render_sensex_ticker()
 
     search, refresh = st.columns([3, 1])
@@ -215,6 +282,8 @@ def render_home_view():
         if st.button("Refresh", key="market_refresh", width="stretch"):
             fetch_index_snapshot.clear()
             load_dashboard_rows.clear()
+            index_history.clear()
+            st.session_state.pop("_live_index_snapshot", None)
             st.rerun()
     section = st.radio(
         "Dashboard section",

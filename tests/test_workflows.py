@@ -341,7 +341,115 @@ def test_unchanged_bundle_is_reused_without_fitting(tmp_path, monkeypatch):
     (bundle / "h1.keras").unlink()
     monkeypatch.setattr(training, "build_model", lambda *args, **kwargs: (_ for _ in ()).throw(RuntimeError("retraining required")))
     with pytest.raises(RuntimeError, match="retraining required"):
-        training.train_ticker("TEST", horizons=(1,), only_missing=True)
+        training.train_ticker(
+            "TEST",
+            horizons=(1,),
+            only_missing=True,
+            news_validation={"article_count": 20, "fetched_at": "2026-01-01T00:00:00+00:00"},
+        )
+
+
+def test_train_manager_uses_current_universe_and_checks_bundle_integrity(tmp_path):
+    import hashlib
+    from config import ALL_DOWNLOAD_TICKERS, HORIZONS, PIPELINE_VERSION
+    from scripts.train_manager import active_bundle_matches_data, configured_model_tickers
+
+    assert configured_model_tickers() == list(dict.fromkeys([*ALL_DOWNLOAD_TICKERS, "NSEI"]))
+
+    data_dir = tmp_path / "processed"
+    model_root = tmp_path / "models"
+    bundle = model_root / "versions" / "TEST.NS" / "v1"
+    data_dir.mkdir()
+    bundle.mkdir(parents=True)
+    source = data_dir / "TEST.NS_processed.csv"
+    source.write_bytes(b"processed snapshot")
+    (bundle / "processed.csv").write_bytes(source.read_bytes())
+    (bundle / "scaler.pkl").write_bytes(b"scaler")
+    entries = {}
+    for horizon in HORIZONS:
+        filename = f"h{horizon}.weights.h5"
+        model = bundle / filename
+        model.write_bytes(f"weights-{horizon}".encode())
+        entries[str(horizon)] = {
+            "model": filename,
+            "model_sha256": hashlib.sha256(model.read_bytes()).hexdigest(),
+        }
+    metadata = {
+        "pipeline_version": PIPELINE_VERSION,
+        "data_sha256": hashlib.sha256(source.read_bytes()).hexdigest(),
+        "scaler_sha256": hashlib.sha256((bundle / "scaler.pkl").read_bytes()).hexdigest(),
+        "horizons": entries,
+    }
+    (bundle / "metadata.json").write_text(json.dumps(metadata), encoding="utf-8")
+    (model_root / "active_TEST.NS.json").write_text(
+        json.dumps({"bundle": "versions/TEST.NS/v1"}), encoding="utf-8"
+    )
+
+    assert active_bundle_matches_data("TEST.NS", HORIZONS, data_dir, model_root)
+    (bundle / "h22.weights.h5").write_bytes(b"corrupted weights")
+    assert not active_bundle_matches_data("TEST.NS", HORIZONS, data_dir, model_root)
+
+
+def test_training_blocks_a_ticker_without_twenty_fresh_news_items(tmp_path, monkeypatch):
+    from src import training
+
+    processed = tmp_path / "TEST_processed.csv"
+    pd.DataFrame(
+        {"Close": np.arange(300, dtype=float) + 100},
+        index=pd.date_range("2025-01-01", periods=300),
+    ).to_csv(processed)
+    monkeypatch.setattr(training, "resolve_app_path", lambda *args: str(processed))
+    monkeypatch.setattr(training, "model_directory", lambda: tmp_path / "models")
+    monkeypatch.setattr(training, "fetch_ticker_articles", lambda *args, **kwargs: [{}] * 19)
+
+    with pytest.raises(RuntimeError, match="requires 20 fresh verified news articles"):
+        training.train_ticker("TEST", horizons=(1,))
+
+
+def test_training_manager_trains_eligible_stocks_and_blocks_short_news(monkeypatch):
+    from scripts import train_manager
+
+    started_training = []
+    monkeypatch.setattr(train_manager, "write_progress", lambda *args, **kwargs: None)
+    monkeypatch.setattr(
+        train_manager,
+        "refresh_news_for_tickers",
+        lambda tickers, required_articles: [
+            {"ticker": "FIRST.NS", "articles": required_articles, "ok": True, "fetched_at": "now"},
+            {"ticker": "SECOND.NS", "articles": required_articles - 1, "ok": False, "fetched_at": "now"},
+        ],
+    )
+    monkeypatch.setattr(
+        train_manager,
+        "process_and_train_ticker",
+        lambda *args, **kwargs: (started_training.append(args[0]) or {"ticker": args[0], "ok": True}),
+    )
+
+    with pytest.raises(RuntimeError, match="Training incomplete"):
+        train_manager.main(tickers=["FIRST.NS", "SECOND.NS"])
+
+    assert started_training == ["FIRST.NS"]
+
+
+def test_panel_training_blocks_before_fit_if_any_ticker_lacks_twenty_news(monkeypatch):
+    from src import panel_training
+
+    monkeypatch.setattr(
+        panel_training,
+        "_load_panel",
+        lambda tickers: ({"FIRST.NS": object(), "SECOND.NS": object()}, {}),
+    )
+    monkeypatch.setattr(
+        panel_training, "fetch_ticker_articles", lambda *args, **kwargs: [{}] * 19
+    )
+    monkeypatch.setattr(
+        panel_training,
+        "_date_boundaries",
+        lambda frames: pytest.fail("Training must stop before model fitting"),
+    )
+
+    with pytest.raises(RuntimeError, match="Panel training blocked before fitting any stock"):
+        panel_training.train_panel_model()
 
 
 def test_invalid_raw_history_does_not_replace_existing_processed_data(tmp_path, monkeypatch):
@@ -355,3 +463,75 @@ def test_invalid_raw_history_does_not_replace_existing_processed_data(tmp_path, 
     with pytest.raises(RuntimeError, match="Missing required price columns"):
         preprocessor.process_all_files()
     assert output.read_bytes() == b"existing valid processed data"
+
+
+def test_recursive_forecast_loads_one_step_weights(monkeypatch):
+    import src.forecast as forecast
+
+    frame = pd.DataFrame({
+        "Open": np.arange(100, 160, dtype=float),
+        "High": np.arange(101, 161, dtype=float),
+        "Low": np.arange(99, 159, dtype=float),
+        "Close": np.arange(100, 160, dtype=float),
+        "Volume": np.full(60, 1000.0),
+    })
+    built = []
+
+    class Scaler:
+        data_range_ = np.array([1.0, 1.0, 1.0, 100.0, 1.0])
+        data_min_ = np.array([0.0, 0.0, 0.0, 100.0, 0.0])
+
+        def transform(self, values):
+            return np.asarray(values, dtype=float)
+
+    class Model:
+        def load_weights(self, _path):
+            return None
+
+        def __call__(self, _values, training=False):
+            return np.array([[0.1]], dtype=float)
+
+    artifact = {
+        "metadata": {"features": list(frame.columns), "window_size": 60,
+                     "architecture": "residual_lstm_last_close_calibrated_weights",
+                     "forecast_contract": {"target_column": "Close"}},
+        "model": "weights.h5", "scaler": "scaler.pkl", "evaluation": {},
+    }
+    monkeypatch.setattr(forecast, "resolve_artifact", lambda *args, **kwargs: artifact)
+    monkeypatch.setattr(forecast.joblib, "load", lambda _path: Scaler())
+    monkeypatch.setattr(
+        "src.train_model.build_model",
+        lambda shape, horizon, **kwargs: (built.append(horizon) or Model()),
+    )
+
+    result = forecast.predict_forecast(frame, "TEST.NS", 5, recursive=True)
+
+    assert built == [1]
+    assert len(result["prices"]) == 5
+    assert np.isfinite(result["prices"]).all()
+
+
+def test_news_annotation_batch_deduplicates_and_requires_both_timestamps(tmp_path):
+    from datetime import timedelta
+    from scripts.export_news_annotation_batch import build_annotation_rows
+
+    archive = tmp_path / "news_archive" / "TEST_NS"
+    archive.mkdir(parents=True)
+    published = "2026-10-25T10:00:00+00:00"
+    observed = "2026-10-25T11:00:00+00:00"
+    article = {
+        "title": "Company reports quarterly results", "summary": "Revenue increased.",
+        "source": "Example News", "published_at": published, "observed_at": observed,
+        "url": "https://example.com/story?utm_source=feed",
+    }
+    (archive / "one.json").write_text(json.dumps([article, article, {
+        **article, "url": "https://example.com/untimed", "observed_at": None,
+    }]), encoding="utf-8")
+    until = datetime(2026, 10, 26, tzinfo=timezone.utc)
+
+    rows = build_annotation_rows(tmp_path / "news_archive", ["TEST.NS"], until - timedelta(days=30), until)
+
+    assert len(rows) == 1
+    assert rows[0]["sentiment_label"] == ""
+    assert rows[0]["annotator_id"] == ""
+    assert rows[0]["published_at"] == published

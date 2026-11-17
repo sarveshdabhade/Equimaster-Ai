@@ -2,30 +2,32 @@
 from html import escape
 from pathlib import Path
 import streamlit as st
-from components.layout import render_shell, render_footer, research_card
+from components.layout import render_shell, render_footer
 from utils import load_data, fetch_stock_snapshot
 from config import resolve_app_path, provider_symbol, ALL_DOWNLOAD_TICKERS
 from src.artifacts import canonical_ticker, resolve_artifact
 from src.dashboard_data import data_fingerprint, load_dashboard_rows
-from src.fundamentals import read_cached_details, format_value, assess_metric
+from src.fundamentals import read_cached_details
 
-st.set_page_config(page_title="Stock analysis | Equimaster AI", page_icon="E", layout="wide", initial_sidebar_state="expanded")
+st.set_page_config(page_title="Stock analysis | Equimaster AI", page_icon="E", layout="wide", initial_sidebar_state="auto")
 render_shell("Stock analysis")
-files = sorted(Path(resolve_app_path("data", "processed")).glob("*_processed.csv"))
-options = ["NIFTY 50"] + [p.name.removesuffix("_processed.csv") for p in files if not p.name.startswith("NSEI_")]
-if not files:
-    options += list(ALL_DOWNLOAD_TICKERS)
+options = ["NIFTY 50"] + list(ALL_DOWNLOAD_TICKERS)
 requested = st.query_params.get("ticker")
+ticker = None
 if requested:
     requested = "NIFTY 50" if requested.upper() in ("NSEI", "NIFTY 50", "^NSEI") else requested.upper()
     if requested in options:
         st.session_state.selected_ticker = requested
+        ticker = requested
     else:
         st.warning("That symbol is outside the current research coverage. Select a company below.")
-        st.session_state.selected_ticker = None
-ticker = st.session_state.get("selected_ticker")
+        st.session_state.pop("selected_ticker", None)
+else:
+    # Sidebar navigation opens the analyzer landing page. Detail views are
+    # entered only through a ticker link or an explicit in-page selection.
+    st.session_state.pop("selected_ticker", None)
 if ticker and ticker not in options:
-    st.session_state.selected_ticker = None
+    st.session_state.pop("selected_ticker", None)
     ticker = None
 
 st.markdown(
@@ -130,8 +132,6 @@ if not ticker:
     st.page_link("app.py", label="← Back to markets")
     st.stop()
 symbol = canonical_ticker(ticker)
-if not requested:
-    st.query_params["ticker"] = ticker
 path = Path(resolve_app_path("data", "processed", f"{symbol}_processed.csv"))
 fingerprint = f"{path.stat().st_size}_{path.stat().st_mtime_ns}" if path.exists() else None
 df = load_data(ticker, str(path), fingerprint)
@@ -139,7 +139,6 @@ if df is None or df.empty:
     st.error(f"Historical data is unavailable for {ticker}.")
     st.stop()
 details = read_cached_details(symbol) or {}
-metrics = details.get("metrics", {})
 try:
     snapshot = fetch_stock_snapshot(provider_symbol(symbol))
 except Exception:
@@ -172,41 +171,25 @@ with st.container(border=True, key="company_quote"):
             st.query_params["ticker"] = selected
             st.rerun()
         st.caption("INR" if symbol != "NSEI" else "Index points")
-quality, valuation, momentum = st.columns(3)
-roe, margin, pe, pb = (metrics.get(k, {}) for k in ("roe", "net_margin", "pe", "pb"))
-with quality:
-    research_card("Financial snapshot", f"{format_value(roe.get('value'), 'percent')} ROE",
-                  f"Net margin {format_value(margin.get('value'), 'percent')} · published fundamentals", "green")
-with valuation:
-    assessment = assess_metric("pe", pe, details)
-    research_card("Valuation context", f"{format_value(pe.get('value'), 'multiple')} P/E",
-                  f"{assessment['assessment']} · P/B {format_value(pb.get('value'), 'multiple')}", "amber")
-with momentum:
-    return_1m = (close / float(df["Close"].iloc[-22]) - 1) * 100 if len(df) >= 22 and df["Close"].iloc[-22] else None
-    rsi = float(df["RSI"].iloc[-1]) if "RSI" in df else None
-    research_card("Price momentum", format_value(return_1m, "percent"),
-                  f"21-session return · RSI {f'{rsi:.1f}' if rsi is not None else 'N/A'}")
 with st.container(key="research_nav"):
-    section = st.radio("Research sections", ["Overview", "Technical Chart", "LSTM Model", "News Sentiment", "Fundamentals", "Market Summary"],
+    section = st.radio("Research sections", ["Overview", "Technical Chart", "LSTM Model", "News Sentiment", "Fundamentals"],
                        horizontal=True, label_visibility="collapsed", key="research_section")
-with st.container(border=True, key="research_content"):
-    if section == "Overview":
-        from tabs import overview
-        overview.render_overview_tab(df, ticker)
-    elif section == "Technical Chart":
-        from tabs import technicals
-        technicals.render_technicals(df, ticker)
-    elif section == "LSTM Model":
-        from tabs import lstm_model
-        lstm_model.render_lstm_tab(df, ticker, model_path, scaler_path)
-    elif section == "News Sentiment":
-        from tabs import news_sentinel
-        news_sentinel.render_news_tab(ticker)
-    elif section == "Fundamentals":
-        from tabs import fundamentals
-        fundamentals.render_fundamentals_tab(ticker)
-    else:
-        from tabs import market_overview
-        market_overview.render_market_overview(ticker)
+if section == "News Sentiment":
+    from tabs import news_sentinel
+    news_sentinel.render_news_tab(ticker)
+else:
+    with st.container(border=True, key="research_content"):
+        if section == "Overview":
+            from tabs import overview
+            overview.render_overview_tab(df, ticker)
+        elif section == "Technical Chart":
+            from tabs import technicals
+            technicals.render_technicals(df, ticker)
+        elif section == "LSTM Model":
+            from tabs import lstm_model
+            lstm_model.render_lstm_tab(df, ticker, model_path, scaler_path)
+        elif section == "Fundamentals":
+            from tabs import fundamentals
+            fundamentals.render_fundamentals_tab(ticker, current_price=price, price_history=df)
 st.caption(f"Chart/model history through {df.index[-1]:%d %b %Y}. Quote and financial reporting dates may differ.")
 render_footer()

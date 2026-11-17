@@ -25,6 +25,7 @@ notebooks/audit_plot.png
 logs/
 *.log
 models/versions/
+models/fundamental_ml/
 models/active_*.json
 *.keras
 images/prediction_*.png

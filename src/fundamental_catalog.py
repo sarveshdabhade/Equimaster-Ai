@@ -56,6 +56,8 @@ group("Balance sheet", "money", [
 group("Cash flow", "money", [
     ("revenue", "Revenue (TTM)"), ("profit", "Net profit (TTM)"), ("ebitda", "EBITDA (TTM)"),
     ("cfo", "Operating cash flow (annual)", "positive"), ("fcf", "Free cash flow (annual)", "positive"),
+    ("net_borrowing", "Net debt borrowing (annual)"),
+    ("fcfe", "Free cash flow to equity (annual)", "positive"),
     ("capex", "Capital expenditure (annual outflow)"), ("investing_cf", "Investing cash flow (annual)"),
     ("financing_cf", "Financing cash flow (annual)"),
 ])
@@ -115,5 +117,5 @@ RANGES = {
 FINANCIAL_EXCLUSIONS = {
     "debt_equity", "debt_assets", "net_debt_ebitda", "interest_cover", "current_ratio", "quick_ratio", "cash_ratio",
     "roa", "roce", "roce_annual", "roic", "gross_margin", "operating_margin", "ebitda_margin", "net_margin", "fcf_margin",
-    "cfo", "fcf", "cfo_profit", "dividend_cover", "ev_ebitda", "ev_sales", "ps", "price_cfo", "price_fcf", "fcf_yield",
+    "cfo", "fcf", "net_borrowing", "fcfe", "cfo_profit", "dividend_cover", "ev_ebitda", "ev_sales", "ps", "price_cfo", "price_fcf", "fcf_yield",
 }

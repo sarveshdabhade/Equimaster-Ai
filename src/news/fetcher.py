@@ -3,7 +3,7 @@ from difflib import SequenceMatcher
 import os
 import re
 import time
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from pathlib import Path
 from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
 from email.utils import parsedate_to_datetime
@@ -11,6 +11,7 @@ import xml.etree.ElementTree as ET
 import html
 import logging
 from functools import lru_cache
+from concurrent.futures import ThreadPoolExecutor
 
 import requests
 
@@ -21,7 +22,7 @@ except Exception:
 
 from config import (
     NEWS_API_KEY_ENV,
-    NEWS_CACHE_TTL_HOURS,
+    NEWS_CACHE_TTL_MINUTES,
     NEWS_RETRY_ATTEMPTS,
     NEWS_RECENCY_DAYS,
     MARKET_MOVERS_TICKERS,
@@ -55,6 +56,7 @@ FINANCE_TERMS = {
     "stock", "share", "shares", "market", "earnings", "revenue", "profit", "loss",
     "guidance", "investor", "analyst", "dividend", "quarter", "ipo", "merger", "acquisition",
     "trading", "equity", "valuation", "margin", "demand", "sector", "finance", "financial",
+    "insurance", "insurer", "premium", "lending",
 }
 
 
@@ -222,8 +224,11 @@ def is_finance_relevant(article: dict, ticker: str) -> bool:
         normalized_alias = re.sub(r"[^a-z0-9]+", " ", str(alias).lower()).strip()
         return bool(normalized_alias and f" {normalized_alias} " in normalized_text)
 
-    if any(matches(alias) for alias in company_aliases if alias):
-        return True
+    for alias in company_aliases:
+        if matches(alias):
+            letters = re.sub(r"[^a-z0-9]", "", alias.lower())
+            if len(letters) > 4 or FINANCE_TERMS.intersection(re.findall(r"[a-z]+", text)):
+                return True
     if any(matches(alias) for alias in ticker_aliases if alias):
         symbol_text = re.sub(r"[^a-z0-9]", "", symbol)
         if len(symbol_text) <= 4:
@@ -233,8 +238,11 @@ def is_finance_relevant(article: dict, ticker: str) -> bool:
 
 
 NEWS_ALIASES = {
+    "NSEI": ["Nifty 50", "Indian stock market"],
     "ADANIENT.NS": ["Adani Enterprises"], "ADANIPORTS.NS": ["Adani Ports"],
     "APOLLOHOSP.NS": ["Apollo Hospitals"], "AUBANK.NS": ["AU Small Finance"],
+    "BEL.NS": ["Bharat Electronics", "Bharat Electronics Limited"],
+    "BSE.NS": ["BSE Limited", "BSE India"],
     "BAJAJ-AUTO.NS": ["Bajaj Auto"], "BAJAJFINSV.NS": ["Bajaj Finserv"],
     "BANDHANBNK.NS": ["Bandhan Bank"], "BANKBARODA.NS": ["Bank of Baroda"],
     "BPCL.NS": ["Bharat Petroleum"], "BRITANNIA.NS": ["Britannia"],
@@ -242,17 +250,25 @@ NEWS_ALIASES = {
     "DIVISLAB.NS": ["Divi's Laboratories", "Divis Laboratories", "Divi's Labs", "Divis Labs"],
     "DRREDDY.NS": ["Dr Reddy", "Dr. Reddy"],
     "EICHERMOT.NS": ["Eicher Motors", "Royal Enfield"],
+    "ETERNAL.NS": ["Eternal", "Zomato"],
     "FEDERALBNK.NS": ["Federal Bank"], "HDFCLIFE.NS": ["HDFC Life"],
     "GRASIM.NS": ["Grasim Industries", "Grasim"],
-    "HEROMOTOCO.NS": ["Hero MotoCorp"], "HINDALCO.NS": ["Hindalco Industries", "Hindalco"],
+    "HEROMOTOCO.NS": ["Hero MotoCorp"],
+    "HINDALCO.NS": ["Hindalco Industries", "Hindalco"],
     "HINDUNILVR.NS": ["Hindustan Unilever", "HUL"], "IDFCFIRSTB.NS": ["IDFC First"],
+    "INDIGO.NS": ["IndiGo", "InterGlobe Aviation"],
     "ITC.NS": ["ITC Limited", "ITC Ltd"],
-    "LICI.NS": ["Life Insurance Corporation"], "LTIM.NS": ["LTM Limited", "LTIMindtree"],
+    "JIOFIN.NS": ["Jio Financial Services", "Jio Financial", "JioFinance"],
+    "LICI.NS": ["Life Insurance Corporation", "LIC India", "LIC"],
+    "LTIM.NS": ["LTM Limited", "LTIMindtree"],
+    "MAXHEALTH.NS": ["Max Healthcare", "Max Healthcare Institute"],
     "ONGC.NS": ["Oil and Natural Gas Corporation", "Oil & Natural Gas Corporation", "ONGC"],
     "POWERGRID.NS": ["Power Grid Corporation of India", "Power Grid", "PGCIL"],
     "SBILIFE.NS": ["SBI Life"], "SHRIRAMFIN.NS": ["Shriram Finance"],
     "SBIN.NS": ["State Bank of India"], "TATACONSUM.NS": ["Tata Consumer", "Tata Consumer Products"],
-    "TITAN.NS": ["Titan Company"], "ULTRACEMCO.NS": ["UltraTech Cement", "Ultratech"],
+    "SUNPHARMA.NS": ["Sun Pharma", "Sun Pharmaceutical Industries", "Sun Pharmaceuticals"],
+    "TITAN.NS": ["Titan Company"], "TMPV.NS": ["Tata Motors Passenger Vehicles", "Tata Motors PV"],
+    "TRENT.NS": ["Trent"], "ULTRACEMCO.NS": ["UltraTech Cement", "Ultratech"],
     "M&M.NS": ["Mahindra & Mahindra"],
 }
 
@@ -264,7 +280,7 @@ _RSS_FEEDS = {
     "Hindu BusinessLine": "https://www.thehindubusinessline.com/feeder/default.rss",
 }
 _RSS_FEED_CACHE: dict[str, tuple[float, list[dict]]] = {}
-_RSS_CACHE_SECONDS = 300
+_RSS_CACHE_SECONDS = 240
 _GOOGLE_NEWS_CACHE: dict[str, tuple[float, list[dict]]] = {}
 
 
@@ -310,6 +326,23 @@ def _google_news_query(ticker: str) -> str:
     return f'{" OR ".join(terms)} when:{NEWS_RECENCY_DAYS}d'
 
 
+def _google_news_search_queries(ticker: str) -> list[str]:
+    """Build independent searches so one broad query does not hide company news."""
+    symbol = ticker.removesuffix(".NS").removesuffix(".BO")
+    aliases = [
+        re.sub(r"\b(limited|ltd|incorporated|inc)\b\.?$", "", alias, flags=re.IGNORECASE).strip()
+        for alias in _company_name_aliases(ticker)
+    ]
+    queries = [_google_news_query(ticker)]
+    # Search the company identity and exchange-listed symbol separately. Google
+    # can return more useful results for these focused searches than one long OR.
+    if aliases:
+        queries.append(f'"{aliases[0]}" (stock OR shares OR NSE OR BSE) when:{NEWS_RECENCY_DAYS}d')
+    if symbol:
+        queries.append(f'"{symbol}" (stock OR shares OR NSE OR BSE) when:{NEWS_RECENCY_DAYS}d')
+    return list(dict.fromkeys(queries))
+
+
 def _matches_recent_window(article: dict) -> bool:
     published_at = _normalize_timestamp(article.get("published_at"))
     if not published_at:
@@ -322,7 +355,7 @@ def _matches_recent_window(article: dict) -> bool:
 def _rss_articles(ticker: str, max_articles: int):
     """Merge fresh, direct-link articles from available financial publishers."""
     records = []
-    for source, url in _RSS_FEEDS.items():
+    def load_feed(source, url):
         fetched_at, cached_records = _RSS_FEED_CACHE.get(source, (0.0, []))
         if time.time() - fetched_at > _RSS_CACHE_SECONDS:
             try:
@@ -376,6 +409,14 @@ def _rss_articles(ticker: str, max_articles: int):
                 logger.warning("Publisher RSS fetch failed for %s (%s)", source, type(exc).__name__)
                 _RSS_FEED_CACHE[source] = (time.time(), [])
                 cached_records = []
+        return cached_records
+
+    # Feed hosts can be slow independently. Fetch them concurrently so one
+    # unavailable publisher does not make the complete stock news view lag.
+    with ThreadPoolExecutor(max_workers=min(8, len(_RSS_FEEDS) or 1)) as executor:
+        futures = [executor.submit(load_feed, source, url) for source, url in _RSS_FEEDS.items()]
+        feed_results = [future.result() for future in futures]
+    for cached_records in feed_results:
         for record in cached_records:
             article = normalize_article(record, ticker)
             if (article and _is_trusted_article(article) and _matches_recent_window(article)
@@ -388,17 +429,20 @@ def _google_news_articles(ticker: str, max_articles: int):
     """Search Google News RSS, retaining only results attributed to trusted publishers."""
     cached_at, records = _GOOGLE_NEWS_CACHE.get(ticker, (0.0, []))
     if time.time() - cached_at > _RSS_CACHE_SECONDS:
-        query = _google_news_query(ticker)
-        try:
-            response = requests.get(
-                "https://news.google.com/rss/search",
-                params={"q": query, "hl": "en-IN", "gl": "IN", "ceid": "IN:en"},
-                timeout=8,
-                headers={"User-Agent": "Equimaster-AI/1.0 news reader"},
-            )
-            response.raise_for_status()
-            feed = ET.fromstring(response.content)
-            records = []
+        def search(query):
+            try:
+                response = requests.get(
+                    "https://news.google.com/rss/search",
+                    params={"q": query, "hl": "en-IN", "gl": "IN", "ceid": "IN:en"},
+                    timeout=8,
+                    headers={"User-Agent": "Equimaster-AI/1.0 news reader"},
+                )
+                response.raise_for_status()
+                feed = ET.fromstring(response.content)
+            except (OSError, ValueError, ET.ParseError, requests.RequestException) as exc:
+                logger.warning("Google News RSS fetch failed for %s (%s)", ticker, type(exc).__name__)
+                return []
+            results = []
             for item in feed.findall(".//item"):
                 fields = {
                     child.tag.rsplit("}", 1)[-1].lower(): child
@@ -419,12 +463,41 @@ def _google_news_articles(ticker: str, max_articles: int):
                 }, ticker)
                 if (record and _is_trusted_article(record) and _matches_recent_window(record)
                         and is_finance_relevant(record, ticker)):
-                    records.append(record)
-            _GOOGLE_NEWS_CACHE[ticker] = (time.time(), records)
-        except (OSError, ValueError, ET.ParseError, requests.RequestException) as exc:
-            logger.warning("Google News RSS fetch failed for %s (%s)", ticker, type(exc).__name__)
-            _GOOGLE_NEWS_CACHE[ticker] = (time.time(), [])
-            records = []
+                    results.append(record)
+            return results
+
+        queries = _google_news_search_queries(ticker)
+        with ThreadPoolExecutor(max_workers=len(queries) or 1) as executor:
+            futures = [executor.submit(search, query) for query in queries]
+            records = [article for future in futures for article in future.result()]
+        records = deduplicate_articles(records)
+        if len(records) < max_articles:
+            # Publisher-specific searches recover stories hidden by Google's
+            # broad ranking. Apply the same identity, publisher, age and
+            # deduplication checks; never pad a training batch with duplicates.
+            identity = _company_search_name(ticker) or ticker.removesuffix(".NS")
+            domains = ("economictimes.indiatimes.com", "moneycontrol.com", "livemint.com",
+                       "business-standard.com", "financialexpress.com", "cnbctv18.com")
+            focused = [f'"{identity}" site:{domain} when:{NEWS_RECENCY_DAYS}d' for domain in domains]
+            with ThreadPoolExecutor(max_workers=3) as executor:
+                for batch in executor.map(search, focused):
+                    records.extend(batch)
+            records = deduplicate_articles(records)
+        if len(records) < max_articles:
+            # Separate weekly windows avoid repeatedly receiving only the same
+            # top-ranked headlines. The final freshness filter is unchanged.
+            end_date = datetime.now(timezone.utc).date()
+            identity = _company_search_name(ticker) or ticker.removesuffix(".NS")
+            dated_queries = []
+            for offset in range(0, NEWS_RECENCY_DAYS, 7):
+                stop = end_date - timedelta(days=offset)
+                start = end_date - timedelta(days=min(offset + 7, NEWS_RECENCY_DAYS))
+                dated_queries.append(f'"{identity}" after:{start.isoformat()} before:{(stop + timedelta(days=1)).isoformat()}')
+            with ThreadPoolExecutor(max_workers=3) as executor:
+                for batch in executor.map(search, dated_queries):
+                    records.extend(batch)
+            records = deduplicate_articles(records)
+        _GOOGLE_NEWS_CACHE[ticker] = (time.time(), records)
     return sorted(deduplicate_articles(records), key=_published_timestamp, reverse=True)[:max_articles]
 
 
@@ -448,8 +521,8 @@ def _read_cache(ticker: str):
     path = _cache_path_for_ticker(ticker)
     if not path.exists():
         return []
-    age_hours = (datetime.now(timezone.utc).timestamp() - path.stat().st_mtime) / 3600
-    if age_hours > NEWS_CACHE_TTL_HOURS:
+    age_minutes = (datetime.now(timezone.utc).timestamp() - path.stat().st_mtime) / 60
+    if age_minutes > NEWS_CACHE_TTL_MINUTES:
         return []
     try:
         with path.open("r", encoding="utf-8") as handle:
@@ -465,6 +538,11 @@ def _read_cache(ticker: str):
         return deduplicate_articles(filtered)
     except (OSError, ValueError, TypeError):
         return []
+
+
+def read_cached_ticker_articles(ticker: str):
+    """Read recent verified news from the local cache without contacting providers."""
+    return _read_cache(ticker)
 
 
 def _write_cache(ticker: str, articles):
@@ -611,10 +689,21 @@ def fetch_ticker_articles(
     max_articles: int = 10,
     force_refresh: bool = False,
     api_key: str | None = None,
+    refresh_shared_sources: bool = True,
+    require_live: bool = False,
 ):
     ticker = _normalize_ticker(ticker)
     if not ticker or max_articles < 1:
         return []
+
+    if force_refresh:
+        # Bypass the per-ticker Google cache on every forced refresh. A batch
+        # refresh can reuse publisher RSS results across tickers by disabling
+        # the shared-source invalidation after the first ticker.
+        _GOOGLE_NEWS_CACHE.pop(ticker, None)
+        if refresh_shared_sources:
+            for source, (_, records) in list(_RSS_FEED_CACHE.items()):
+                _RSS_FEED_CACHE[source] = (0.0, records)
 
     cached = _read_cache(ticker)
     if cached and not force_refresh:
@@ -622,15 +711,28 @@ def fetch_ticker_articles(
 
     # Merge every configured live source; a partial provider response must not
     # prevent newer articles from the other sources from being considered.
+    providers = [
+        ("NewsAPI", lambda: _newsapi_articles(ticker, max_articles)
+         if api_key is None else _newsapi_articles(ticker, max_articles, api_key)),
+        ("Yahoo Finance", lambda: _yahoo_articles(ticker, max_articles)),
+        ("publisher RSS", lambda: _rss_articles(ticker, max_articles)),
+        ("Google News", lambda: _google_news_articles(ticker, max_articles)),
+    ]
     live_articles = []
-    if api_key is None:
-        live_articles.extend(_newsapi_articles(ticker, max_articles))
-    else:
-        live_articles.extend(_newsapi_articles(ticker, max_articles, api_key))
-    live_articles.extend(_yahoo_articles(ticker, max_articles))
-    live_articles.extend(_rss_articles(ticker, max_articles))
-    live_articles.extend(_google_news_articles(ticker, max_articles))
-    source_articles = live_articles or cached
+    # Providers are independent. Run them concurrently so slow or rate-limited
+    # services do not block successful results from faster sources.
+    with ThreadPoolExecutor(max_workers=len(providers)) as executor:
+        futures = [(name, executor.submit(fetch)) for name, fetch in providers]
+        for name, future in futures:
+            try:
+                live_articles.extend(future.result())
+            except Exception:
+                logger.exception("News provider %s failed for %s", name, ticker)
+    if require_live:
+        # An undated story cannot demonstrate freshness for the training gate.
+        live_articles = [article for article in live_articles
+                         if article.get("published_at") and _matches_recent_window(article)]
+    source_articles = live_articles if require_live else live_articles or cached
     articles = sorted(deduplicate_articles(source_articles), key=_published_timestamp, reverse=True)[:max_articles]
     if live_articles:
         articles = _write_cache(ticker, articles)

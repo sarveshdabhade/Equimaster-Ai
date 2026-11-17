@@ -31,9 +31,12 @@ def build_market_context(
     ticker: str,
     horizon: int = 5,
     sentiment: dict[str, Any] | None = None,
+    include_llm: bool = False,
 ) -> dict[str, Any]:
     ticker = (ticker or "").strip().upper()
-    sentiment = sentiment if sentiment is not None else analyze_ticker_sentiment(ticker, max_articles=5)
+    sentiment = sentiment if sentiment is not None else analyze_ticker_sentiment(
+        ticker, max_articles=5, include_llm=include_llm
+    )
     path = _data_path(ticker)
     dataframe = None
     if os.path.exists(path):

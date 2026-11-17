@@ -4,22 +4,27 @@ from pathlib import Path
 import json
 import pandas as pd
 import streamlit as st
-from config import resolve_app_path
+from config import ALL_DOWNLOAD_TICKERS, resolve_app_path
 from src.fundamentals import read_cached_details
 
 
 def data_fingerprint():
-    files = list(Path(resolve_app_path("data", "processed")).glob("*_processed.csv"))
-    files += list(Path(resolve_app_path("data", "fundamentals")).glob("*.json"))
+    processed = Path(resolve_app_path("data", "processed"))
+    fundamentals = Path(resolve_app_path("data", "fundamentals"))
+    files = [processed / f"{ticker}_processed.csv" for ticker in ALL_DOWNLOAD_TICKERS]
+    files += [fundamentals / f"{ticker}.json" for ticker in ALL_DOWNLOAD_TICKERS]
+    files.append(processed / "NSEI_processed.csv")
+    files = [path for path in files if path.exists()]
     return tuple((path.name, path.stat().st_mtime_ns, path.stat().st_size) for path in sorted(files))
 
 
 @st.cache_data(ttl=120, show_spinner=False)
 def load_dashboard_rows(fingerprint=()):
     records = []
-    for path in sorted(Path(resolve_app_path("data", "processed")).glob("*_processed.csv")):
-        ticker = path.name.removesuffix("_processed.csv")
-        if ticker == "NSEI":
+    processed = Path(resolve_app_path("data", "processed"))
+    for ticker in ALL_DOWNLOAD_TICKERS:
+        path = processed / f"{ticker}_processed.csv"
+        if not path.exists():
             continue
         try:
             history = pd.read_csv(path, index_col=0).tail(253)

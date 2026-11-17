@@ -109,9 +109,18 @@ def build_details(ticker, info, screener=None, annual=None, warnings=None):
     cfo, fcf, capex = c("OperatingCashFlow"), c("FreeCashFlow"), c("CapitalExpenditure")
     if fcf is None and cfo is not None and capex is not None:
         fcf = cfo - abs(capex)
+    # FCFE requires net borrowing in addition to CFO less capital investment.
+    # Withhold it when the same-period aggregate is not reported; total financing
+    # cash flow also includes dividends and equity transactions, so it is not a proxy.
+    net_borrowing = c("NetIssuancePaymentsOfDebt")
+    fcfe = cfo - abs(capex) + net_borrowing if cfo is not None and capex is not None and net_borrowing is not None else None
+    derived("net_borrowing", net_borrowing,
+            "Same-period reported net debt issuance less repayments; requires verified annual statement currency")
     for key, value in (("cfo", cfo), ("fcf", fcf), ("capex", abs(capex) if capex is not None else None),
                        ("investing_cf", c("InvestingCashFlow")), ("financing_cf", c("FinancingCashFlow"))):
         derived(key, value, "Annual cash flow statement; FCF = operating cash flow - capital expenditure outflow")
+    derived("fcfe", fcfe,
+            "Annual CFO - capital expenditure outflow + same-period reported net debt borrowing; withheld if any input is unavailable")
     derived("cfo_profit", ratio(cfo, i("NetIncome")), "Same-year operating cash flow / net profit; requires positive net profit")
     dividends = c("CashDividendsPaid")
     derived("dividend_cover", ratio(fcf, abs(dividends)) if dividends is not None else None, "Annual free cash flow / absolute cash dividends paid")
@@ -176,9 +185,11 @@ def build_details(ticker, info, screener=None, annual=None, warnings=None):
     sector = info.get("sector")
     financial = str(sector or "").lower() in ("financial services", "financials") or ticker in BANK_NIFTY_TICKERS or ticker in (
         "LICI.NS", "SBILIFE.NS", "HDFCLIFE.NS", "BAJFINANCE.NS", "BAJAJFINSV.NS", "SHRIRAMFIN.NS")
+    summary = info.get("longBusinessSummary")
+    summary = summary.strip() if isinstance(summary, str) and summary.strip() else None
     return {"schema_version": 4, "Ticker": ticker, "Company": info.get("longName") or screener.get("company") or ticker,
             "Industry": info.get("industry"), "Sector": sector, "Currency": info.get("currency") or "INR",
-            "Financial currency": info.get("financialCurrency"), "Website": info.get("website"),
+            "Financial currency": info.get("financialCurrency"), "Website": info.get("website"), "Summary": summary,
             "As of": datetime.now(timezone.utc).isoformat(), "financial_sector": financial,
             "sources": {"screener": screener.get("url"), "yahoo": f"https://finance.yahoo.com/quote/{quote(provider_symbol(ticker))}/"},
             "metrics": metrics, "statements": statements, "statement_currencies": currency_map, "warnings": warnings or []}

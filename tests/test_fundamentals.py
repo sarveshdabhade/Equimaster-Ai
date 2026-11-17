@@ -193,11 +193,14 @@ def test_fundamentals_page_displays_cached_ranges_and_statement_exports(monkeypa
     details = build_details("TCS.NS", {"longName": "Test Company", "industry": "IT"},
                             parse_screener_html(HTML, "https://www.screener.in/company/TCS/consolidated/"))
     monkeypatch.setattr(tab, "read_cached_details", lambda ticker: details if ticker == "TCS.NS" else None)
+    tab._cached_fundamentals_by_ticker.clear()
     wrapper = tmp_path / "fundamentals_preview.py"
     wrapper.write_text("from tabs.fundamentals import render_fundamentals_tab\nrender_fundamentals_tab('TCS.NS')")
     app = AppTest.from_file(str(wrapper), default_timeout=30).run()
     assert not app.exception
     assert any(metric.label == "P/E (trailing)" and metric.value == "16.80x" for metric in app.metric)
     assert any(button.label == "Export All Fundamentals" for button in app.get("download_button"))
+    app.radio(key="fundamentals_view_TCS.NS").set_value("Statements").run()
+    assert not app.exception
     assert any(button.label == "Export Quarterly results" for button in app.get("download_button")) is False
     assert any(button.label == "Export Annual profit and loss" for button in app.get("download_button"))

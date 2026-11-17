@@ -11,6 +11,7 @@ if str(ROOT) not in sys.path:
 from config import ALL_DOWNLOAD_TICKERS
 from src.artifacts import atomic_json
 from src.fundamentals import company_details, read_cached_details, CACHE_HOURS
+from src.fundamental_history import archive_snapshot
 
 
 def refresh(ticker, only_stale=False):
@@ -18,6 +19,7 @@ def refresh(ticker, only_stale=False):
     if cached and only_stale:
         age = datetime.now(timezone.utc) - datetime.fromisoformat(cached["As of"])
         if age.total_seconds() < CACHE_HOURS * 3600:
+            archive_snapshot(cached)
             return {"ticker": ticker, "ok": True, "reused": True,
                     "available": sum(m["value"] is not None for m in cached["metrics"].values())}
     try:

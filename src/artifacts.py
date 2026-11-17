@@ -26,9 +26,22 @@ def atomic_json(path: Path, payload: dict) -> None:
     temporary.replace(path)
 
 
-def resolve_artifact(ticker: str, horizon: int = 1) -> dict:
+def resolve_artifact(ticker: str, horizon: int = 1, prefer_panel: bool = True) -> dict:
     ticker = canonical_ticker(ticker)
     root = model_directory()
+    panel_manifest = root / "active_PANEL_LSTM.json"
+    if prefer_panel and panel_manifest.exists():
+        pointer = json.loads(panel_manifest.read_text(encoding="utf-8"))
+        bundle = (root / pointer["bundle"]).resolve()
+        if not bundle.is_relative_to(root.resolve()):
+            raise ValueError("Pooled model bundle must be inside the model directory")
+        metadata = json.loads((bundle / "metadata.json").read_text(encoding="utf-8"))
+        entry = metadata.get("horizons", {}).get(str(horizon))
+        if entry is None:
+            raise FileNotFoundError(f"Pooled LSTM has no horizon {horizon} for {ticker}")
+        return {"model": bundle / entry["model"], "scaler": bundle / "scaler.pkl",
+                "metadata": metadata, "evaluation": entry, "legacy": False,
+                "pooled": True, "bundle": bundle}
     manifest = root / f"active_{ticker}.json"
     if manifest.exists():
         pointer = json.loads(manifest.read_text(encoding="utf-8"))

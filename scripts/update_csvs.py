@@ -30,6 +30,9 @@ import yfinance as yf
 
 # Reuse repo yfinance cache configuration if present
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+if ROOT not in sys.path:
+    sys.path.insert(0, ROOT)
+from src.market_data import remove_incomplete_current_daily_bar
 DATA_DIR = os.path.join(ROOT, "data")
 CACHE_DIR = os.path.join(DATA_DIR, ".yf_cache")
 os.makedirs(DATA_DIR, exist_ok=True)
@@ -122,6 +125,8 @@ def update_csv(path: str, dry_run: bool = False) -> tuple[int, str]:
             end = today + timedelta(days=1)
             # Fetch daily history between start and end
             df = yf.download(ticker, start=start.strftime("%Y-%m-%d"), end=end.strftime("%Y-%m-%d"), interval="1d", progress=False)
+
+        df = remove_incomplete_current_daily_bar(df)
         if df is None or df.empty:
             return 0, "No new rows"
 

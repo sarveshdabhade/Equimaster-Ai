@@ -1,5 +1,9 @@
 import os
 import sys
+import hashlib
+import io
+import json
+from pathlib import Path
 
 # Fix Windows console encoding so emoji/Unicode print correctly
 if sys.stdout.encoding and "utf" not in sys.stdout.encoding.lower():
@@ -9,6 +13,67 @@ import pandas as pd
 import numpy as np
 import pandas_ta as ta
 import glob
+
+ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+
+_PRICE_COLUMNS = (
+    "Adj Close", "Open", "High", "Low", "Close", "Volume", "Dividends", "Stock Splits"
+)
+
+
+def can_reuse_active_snapshot(snapshot, candidate, rtol=1e-6, atol=1e-6):
+    """Keep a trained data snapshot when a refresh adds no session or material price change.
+
+    Rolling provider windows may omit the oldest row and revise historical floats
+    slightly. Those changes should not replace the exact dataset paired with an
+    active model when the latest completed session has not advanced.
+    """
+    if snapshot is None or candidate is None or snapshot.empty or candidate.empty:
+        return False
+    if list(snapshot.columns) != list(candidate.columns):
+        return False
+    if snapshot.index.has_duplicates or candidate.index.has_duplicates:
+        return False
+    if snapshot.index.max() != candidate.index.max():
+        return False
+
+    start = snapshot.index.get_indexer([candidate.index[0]])[0]
+    if start < 0 or not snapshot.index[start:].equals(candidate.index):
+        return False
+
+    columns = [column for column in _PRICE_COLUMNS if column in snapshot.columns]
+    if not {"Open", "High", "Low", "Close", "Volume"}.issubset(columns):
+        return False
+    try:
+        previous_prices = snapshot.loc[candidate.index, columns].to_numpy(dtype=float)
+        refreshed_prices = candidate.loc[:, columns].to_numpy(dtype=float)
+    except (TypeError, ValueError):
+        return False
+    return bool(np.allclose(previous_prices, refreshed_prices, rtol=rtol, atol=atol, equal_nan=True))
+
+
+def _load_active_processed_snapshot(ticker):
+    """Load the integrity-checked processed CSV saved with the active bundle."""
+    try:
+        from src.artifacts import model_directory
+
+        model_root = model_directory().resolve()
+        pointer_path = model_root / f"active_{ticker}.json"
+        pointer = json.loads(pointer_path.read_text(encoding="utf-8"))
+        bundle = (model_root / pointer["bundle"]).resolve()
+        if not bundle.is_relative_to(model_root):
+            return None
+        metadata = json.loads((bundle / "metadata.json").read_text(encoding="utf-8"))
+        snapshot_bytes = (bundle / "processed.csv").read_bytes()
+        if hashlib.sha256(snapshot_bytes).hexdigest() != metadata.get("data_sha256"):
+            return None
+        snapshot = pd.read_csv(io.BytesIO(snapshot_bytes), index_col=0, parse_dates=True)
+        return snapshot, snapshot_bytes
+    except (OSError, KeyError, TypeError, ValueError, json.JSONDecodeError):
+        return None
 
 # 1. Setup Folders - FIXED TO POINT TO RAW
 RAW_DIR = "data/raw"
@@ -83,6 +148,18 @@ def process_all_files():
 
             # 4. Save to New Folder
             save_path = f"{PROCESSED_DIR}/{ticker}_processed.csv"
+            active_snapshot = _load_active_processed_snapshot(ticker)
+            if active_snapshot and can_reuse_active_snapshot(active_snapshot[0], df_clean):
+                # Preserve the original artifact bytes, including its float
+                # precision and formatting, so its data hash remains valid.
+                snapshot_bytes = active_snapshot[1]
+                temporary = save_path + ".tmp"
+                with open(temporary, "wb") as output:
+                    output.write(snapshot_bytes)
+                os.replace(temporary, save_path)
+                print(f"Retained active model snapshot for {ticker}; no new completed session")
+                continue
+
             df_clean.to_csv(save_path + ".tmp")
             os.replace(save_path + ".tmp", save_path)
             print(f"Saved clean data with {df_clean.shape[1]} features to {save_path}")

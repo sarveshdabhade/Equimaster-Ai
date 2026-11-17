@@ -11,9 +11,9 @@ from src.training import train_ticker
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--ticker", default="RELIANCE.NS")
-    parser.add_argument("--epochs", type=int, default=10)
+    parser.add_argument("--epochs", type=int, default=60)
     parser.add_argument("--horizon", type=int, default=1,
-                        help="Forecast horizon in sessions: 1=Day, 5=Week, 22=Month, 88=Quarter.")
+                        help="Forecast horizon in sessions: 1=Day, 5=Week, 22=Month, 63=Quarter.")
     args = parser.parse_args()
     train_ticker(args.ticker, (args.horizon,), args.epochs)
 

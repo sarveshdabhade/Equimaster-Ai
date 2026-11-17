@@ -111,7 +111,7 @@ def process_and_save_all():
             np.save(f"{TRAIN_DIR}/y_test_{ticker}.npy", y_test)
 
             # Also prepare multi-horizon sequences for common horizons
-            horizons = [5, 22, 88]  # Week, Month, and legacy Quarter display horizon (~4 months).
+            horizons = [5, 22, 63]  # Week, Month, and approximately one trading quarter.
             for h in horizons:
                 try:
                     X_train_m, y_train_m, X_test_m, y_test_m = split_sequences(

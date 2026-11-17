@@ -81,3 +81,25 @@ def test_market_news_preview_opens_the_full_news_section(monkeypatch, multipage_
     assert app.session_state["home_section"] == "Latest news"
     assert requested_limits[-1] == 20
     assert sum('class="news-row"' in item.value for item in app.markdown) == 20
+
+
+def test_dashboard_rows_ignore_retired_processed_files(monkeypatch, tmp_path):
+    import src.dashboard_data as dashboard
+    from config import ALL_DOWNLOAD_TICKERS
+
+    ticker = ALL_DOWNLOAD_TICKERS[0]
+    processed = tmp_path / "data" / "processed"
+    fundamentals = tmp_path / "data" / "fundamentals"
+    processed.mkdir(parents=True)
+    fundamentals.mkdir(parents=True)
+    history = pd.DataFrame({"Close": [10.0, 11.0], "Volume": [100, 110], "RSI": [45.0, 50.0]},
+                           index=pd.to_datetime(["2026-10-22", "2026-10-23"]))
+    history.to_csv(processed / f"{ticker}_processed.csv")
+    history.to_csv(processed / "RETIRED.NS_processed.csv")
+    monkeypatch.setattr(dashboard, "resolve_app_path", lambda *parts: str(tmp_path.joinpath(*parts)))
+    monkeypatch.setattr(dashboard, "read_cached_details", lambda _ticker: {})
+    dashboard.load_dashboard_rows.clear()
+
+    rows = dashboard.load_dashboard_rows(dashboard.data_fingerprint())
+
+    assert rows["Ticker"].tolist() == [ticker]

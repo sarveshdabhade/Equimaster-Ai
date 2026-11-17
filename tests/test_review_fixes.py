@@ -1,4 +1,5 @@
 import ast
+import math
 import tempfile
 import unittest
 from pathlib import Path
@@ -23,11 +24,11 @@ class ReviewFixTests(unittest.TestCase):
             horizon_description,
         )
 
-        self.assertEqual(HORIZONS, [1, 5, 22, 88])
-        self.assertEqual(HORIZON_LABELS, {1: "Day", 5: "Week", 22: "Month", 88: "Quarter"})
+        self.assertEqual(HORIZONS, [1, 5, 22, 63])
+        self.assertEqual(HORIZON_LABELS, {1: "Day", 5: "Week", 22: "Month", 63: "Quarter"})
         self.assertEqual(horizon_description(1), "Day (1 trading session)")
-        self.assertEqual(horizon_description(88), "Quarter (88 trading sessions)")
-        self.assertEqual(HORIZON_CHOICES_DESCRIPTION, "Day (1 trading session), Week (5 trading sessions), Month (22 trading sessions), Quarter (88 trading sessions)")
+        self.assertEqual(horizon_description(63), "Quarter (63 trading sessions)")
+        self.assertEqual(HORIZON_CHOICES_DESCRIPTION, "Day (1 trading session), Week (5 trading sessions), Month (22 trading sessions), Quarter (63 trading sessions)")
         self.assertEqual(FORECAST_TARGET_COLUMN, "Close")
         self.assertEqual(FORECAST_TARGET_KIND, "future_close")
         self.assertEqual(FORECAST_CUTOFF, "after_close")
@@ -40,7 +41,7 @@ class ReviewFixTests(unittest.TestCase):
     def test_targets_do_not_overlap_for_any_horizon(self):
         data = np.arange(1000, dtype=float).reshape(-1, 1)
         boundary = data_sequencer.chronological_split_index(len(data))
-        for horizon in (1, 5, 22, 88):
+        for horizon in (1, 5, 22, 63):
             with self.subTest(horizon=horizon):
                 x_train, y_train, x_test, y_test = data_sequencer.split_sequences(
                     data, 60, horizon, 0, boundary)
@@ -103,33 +104,61 @@ class ReviewFixTests(unittest.TestCase):
         st.radio.assert_not_called()
         st.warning.assert_any_call("LSTM Brain offline. Model files not found.")
 
-    def test_forecast_chart_splits_history_and_direct_path_at_last_close(self):
+    def test_forecast_chart_shows_one_target_point_next_to_recent_history(self):
         import plotly.graph_objects as go
         from tabs.lstm_model import _forecast_chart
 
         frame = pd.DataFrame({"Close": [100., 101., 102., 103.]})
         result = {
             "prices": np.array([104., 106.]),
+            "final_prices": np.array([105., 107.]),
             "lower": np.array([102., 103.]),
             "upper": np.array([106., 109.]),
         }
-        chart = _forecast_chart(frame, result, 3, "Week")
+        chart = _forecast_chart(frame, result, 3, 5, "Week")
+        target_x = 2 + 0.35 + 1.45 * math.log1p(5) / math.log1p(63)
 
         assert isinstance(chart, go.Figure)
-        assert list(chart.data[0].x) == [0.0, 25.0, 50.0]
+        assert list(chart.data[0].x) == [0.0, 1.0, 2.0]
         assert list(chart.data[0].y) == [101.0, 102.0, 103.0]
-        assert list(chart.data[1].x) == [50.0, 75.0, 100.0]
-        assert list(chart.data[1].y) == [103.0, 104.0, 106.0]
-        assert chart.layout.xaxis.range == (0, 100)
-        assert any(shape.type == "line" and shape.x0 == 50 for shape in chart.layout.shapes)
+        assert list(chart.data[1].x) == [2.0, target_x]
+        assert list(chart.data[1].y) == [103.0, 107.0]
+        assert list(chart.data[2].x) == [target_x]
+        assert list(chart.data[2].y) == [107.0]
+        assert chart.layout.xaxis.range == (0, target_x + 1.5)
+        assert any(shape.type == "line" and shape.x0 == 2 for shape in chart.layout.shapes)
+
+        day_x = _forecast_chart(frame, result, 3, 1, "Day").data[2].x[0]
+        month_x = _forecast_chart(frame, result, 3, 22, "Month").data[2].x[0]
+        quarter_x = _forecast_chart(frame, result, 3, 63, "Quarter").data[2].x[0]
+        assert day_x < target_x < month_x < quarter_x
 
     def test_training_failures_are_reported(self):
         from src import train_model
-        with patch.object(train_model.glob, "glob", return_value=["BROKEN_processed.csv"]), \
-             patch("src.training.train_ticker", side_effect=ValueError("bad data")), \
-             self.assertLogs(train_model.__name__, level="ERROR"):
-            with self.assertRaisesRegex(RuntimeError, "BROKEN"):
-                train_model.train_all()
+        from scripts import train_manager
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            processed = root / "data" / "processed"
+            processed.mkdir(parents=True)
+            (processed / "BROKEN_processed.csv").touch()
+            with patch.object(train_manager, "ROOT", root), \
+                 patch.object(train_manager, "configured_model_tickers", return_value=["BROKEN"]), \
+                 patch.object(
+                     train_manager,
+                     "refresh_news_for_tickers",
+                     side_effect=lambda tickers, required_articles: [
+                         {
+                             "ticker": ticker,
+                             "articles": required_articles,
+                             "ok": True,
+                             "fetched_at": "2026-01-01T00:00:00+00:00",
+                         }
+                         for ticker in tickers
+                     ],
+                 ), \
+                 patch("src.training.train_ticker", side_effect=ValueError("bad data")):
+                with self.assertRaisesRegex(RuntimeError, "BROKEN"):
+                    train_model.train_all()
 
 
 if __name__ == "__main__":

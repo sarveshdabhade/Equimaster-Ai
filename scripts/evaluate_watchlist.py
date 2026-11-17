@@ -9,20 +9,27 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from config import HORIZONS, HORIZON_LABELS, NIFTY_50_TICKERS
+from config import ALL_DOWNLOAD_TICKERS, HORIZONS, HORIZON_LABELS
 from scripts.evaluate_lstm import evaluate_lstm
 
 
+def configured_model_tickers() -> list[str]:
+    """Return the configured stock universe plus its trained NIFTY index model."""
+    return list(dict.fromkeys([*ALL_DOWNLOAD_TICKERS, "NSEI"]))
+
+
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Evaluate horizon-one LSTM models across the NIFTY watchlist.")
+    parser = argparse.ArgumentParser(description="Evaluate active LSTM models across the configured stock universe.")
     parser.add_argument("--limit", type=int, help="Evaluate only the first N tickers.")
+    parser.add_argument("--tickers", help="Comma-separated internal symbols; defaults to configured stocks plus NSEI.")
     parser.add_argument("--horizons", default=",".join(map(str, HORIZONS)),
-                        help="Comma-separated session counts: 1=Day, 5=Week, 22=Month, 88=Quarter.")
+                        help="Comma-separated session counts: 1=Day, 5=Week, 22=Month, 63=Quarter.")
     parser.add_argument("--output", default="data/evaluation/watchlist_all_horizons.json")
     args = parser.parse_args()
     results = []
     failures = []
-    tickers = [p.name.removesuffix("_processed.csv") for p in sorted((ROOT / "data" / "processed").glob("*_processed.csv"))]
+    tickers = ([ticker.strip().upper() for ticker in args.tickers.split(",") if ticker.strip()]
+               if args.tickers else configured_model_tickers())
     for ticker in tickers[:args.limit]:
         for horizon in [int(x) for x in args.horizons.split(",")]:
             try:
@@ -36,6 +43,11 @@ def main() -> None:
     output_path.parent.mkdir(parents=True, exist_ok=True)
     with output_path.open("w", encoding="utf-8") as handle:
         json.dump(results, handle, indent=2)
+    failure_path = output_path.with_name(f"{output_path.stem}_failures.json")
+    with failure_path.open("w", encoding="utf-8") as handle:
+        json.dump({"requested_tickers": tickers,
+                   "horizons": [int(x) for x in args.horizons.split(",")],
+                   "failures": failures}, handle, indent=2)
     if results:
         average_accuracy = sum(item["lstm_directional_accuracy"] for item in results) / len(results)
         print(f"Evaluated {len(results)} ticker/horizon pairs; mean directional accuracy={average_accuracy:.3f}")

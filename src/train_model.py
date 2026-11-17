@@ -20,7 +20,7 @@ MODELS_DIR = os.getenv(MODEL_STORAGE_PATH_ENV, resolve_app_path("models"))
 MODELS_DIR = os.path.abspath(MODELS_DIR)
 os.makedirs(MODELS_DIR, exist_ok=True)
 
-def build_model(input_shape, output_size=1, close_index=None):
+def build_model(input_shape, output_size=1, close_index=None, compile_model=True):
     """
     Creates the LSTM Neural Network Architecture.
     """
@@ -56,23 +56,14 @@ def build_model(input_shape, output_size=1, close_index=None):
         model = tf.keras.Model(inputs, tf.keras.layers.Add()([baseline, model(inputs)]))
 
     # Compile the brain
-    model.compile(optimizer='adam', loss='mean_squared_error')
+    if compile_model:
+        model.compile(optimizer='adam', loss='mean_squared_error')
     
     return model
 
 def train_all():
-    from src.training import train_ticker
-    from config import HORIZONS
-    failures = {}
-    for file_path in glob.glob(resolve_app_path("data", "processed", "*_processed.csv")):
-        ticker = os.path.basename(file_path).removesuffix("_processed.csv")
-        try:
-            train_ticker(ticker, HORIZONS)
-        except Exception as exc:
-            logging.getLogger(__name__).exception("Training failed for %s", ticker)
-            failures[ticker] = str(exc)
-    if failures:
-        raise RuntimeError(f"Training failed for {len(failures)} dataset(s): {failures}")
+    from scripts.train_manager import main
+    main(epochs=60, only_missing=False)
 
 
 if __name__ == "__main__":

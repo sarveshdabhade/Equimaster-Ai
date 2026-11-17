@@ -3,6 +3,7 @@ from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
 from pathlib import Path
 import json
+import logging
 import pandas as pd
 import yfinance as yf
 from config import resolve_app_path, provider_symbol
@@ -10,9 +11,11 @@ from src.artifacts import atomic_json, canonical_ticker
 from src.fundamental_sources import number, fetch_screener, statement_currencies
 from src.fundamental_calculations import build_details, CRORE
 from src.fundamental_catalog import SPECS, RANGES, FINANCIAL_EXCLUSIONS
+from src.fundamental_history import archive_snapshot
 
 SCHEMA_VERSION = 4
 CACHE_HOURS = 24
+logger = logging.getLogger(__name__)
 SOURCES = {
     "Ratio interpretation": "https://www.cfainstitute.org/insights/professional-learning/refresher-readings/2026/financial-analysis-techniques",
     "Industry context": "https://www.fidelity.com/learning-center/trading-investing/fundamentals",
@@ -25,7 +28,18 @@ def read_cached_details(ticker):
     path = Path(resolve_app_path("data", "fundamentals", f"{canonical_ticker(ticker)}.json"))
     try:
         payload = json.loads(path.read_text(encoding="utf-8"))
-        return payload if payload.get("schema_version") == SCHEMA_VERSION else None
+        if payload.get("schema_version") != SCHEMA_VERSION:
+            return None
+        missing_metrics = {key for key in ("net_borrowing", "fcfe") if key not in payload.get("metrics", {})}
+        if missing_metrics:
+            payload = dict(payload)
+            payload["metrics"] = dict(payload.get("metrics", {}))
+            for key in missing_metrics:
+                payload["metrics"][key] = {
+                    **SPECS[key], "value": None, "source": None, "period": None, "basis": None,
+                    "note": "Refresh this snapshot to calculate same-period net borrowing and FCFE inputs.",
+                }
+        return payload
     except (OSError, ValueError):
         return None
 
@@ -83,6 +97,10 @@ def company_details(ticker, refresh=False):
                          for label, row in frame.iterrows()],
                 "unit": "base currency", "basis": "Yahoo annual statements", "source": "Yahoo Finance"}
     atomic_json(Path(resolve_app_path("data", "fundamentals", f"{ticker}.json")), details)
+    try:
+        archive_snapshot(details)
+    except Exception:
+        logger.exception("Could not archive point-in-time fundamentals for %s", ticker)
     return details
 
 
@@ -139,7 +157,7 @@ def compare_peers(tickers, refresh=False):
 
 
 def peer_reference(frame, details, key):
-    if frame.empty or not details.get("Industry"):
+    if frame.empty or not details.get("Industry") or key not in details.get("metrics", {}):
         return []
     subject, values = details["metrics"][key], []
     if subject.get("basis") not in ("Consolidated", "Standalone"):

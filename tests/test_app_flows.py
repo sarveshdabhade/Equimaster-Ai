@@ -34,7 +34,6 @@ def test_analyzer_tabs_and_fundamentals_interaction(monkeypatch, multipage_app):
     import utils
     import tabs.lstm_model as forecast
     import tabs.news_sentinel as news
-    import tabs.market_overview as market
     import tabs.fundamentals as fundamentals
     monkeypatch.setattr(fundamentals, "read_cached_details", lambda *args: None)
     dates = pd.bdate_range("2024-01-01", periods=400)
@@ -62,15 +61,15 @@ def test_analyzer_tabs_and_fundamentals_interaction(monkeypatch, multipage_app):
     context = {"sentiment":sentiment, "combined_score":0., "technical_signal":0., "label":"Neutral"}
     monkeypatch.setattr(news, "build_market_context", lambda *a, **k: context)
     monkeypatch.setattr(news, "analyze_ticker_sentiment", lambda *a, **k: sentiment)
-    monkeypatch.setattr(market, "build_market_context", lambda *a, **k: context)
     monkeypatch.setattr(fundamentals, "compare_peers", lambda *a, **k: (pd.DataFrame([
         {"Ticker":"TCS.NS", "Industry":"IT", "P/E":20.}]), []))
-    app = multipage_app
-    app.session_state["selected_ticker"] = "TCS.NS"
-    app.switch_page("pages/stock_analyzer.py")
+    app = multipage_app.switch_page("pages/stock_analyzer.py")
+    app.query_params["ticker"] = "TCS.NS"
     app.run()
     assert not app.exception
-    assert {"Overview", "Technical Chart", "LSTM Model", "News Sentiment", "Fundamentals", "Market Summary"}.issubset(set(app.radio(key="research_section").options))
+    assert app.radio(key="research_section").options == [
+        "Overview", "Technical Chart", "LSTM Model", "News Sentiment", "Fundamentals"
+    ]
     app.radio(key="research_section").set_value("Technical Chart").run()
     assert not app.exception
     assert any(slider.label == "Chart date range" for slider in app.slider)
@@ -78,6 +77,8 @@ def test_analyzer_tabs_and_fundamentals_interaction(monkeypatch, multipage_app):
     assert not app.exception
     refresh = next(b for b in app.button if b.label == "Refresh Company Data")
     refresh.click().run()
+    assert not app.exception
+    app.radio(key="fundamentals_view_TCS.NS").set_value("Peer Comparison").run()
     assert not app.exception
     assert any(b.label == "Export Peer Comparison" for b in app.get("download_button"))
     app.radio(key="research_section").set_value("News Sentiment").run()
