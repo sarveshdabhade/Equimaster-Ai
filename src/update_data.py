@@ -18,6 +18,8 @@ ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if ROOT not in sys.path:
     sys.path.insert(0, ROOT)
 from config import UPDATE_TICKERS as TICKERS, provider_symbol
+from src.artifacts import atomic_write_bytes
+from pathlib import Path
 from src.market_data import merge_history_without_window_loss, remove_incomplete_current_daily_bar
 
 RAW_DIR = os.path.join(ROOT, "data", "raw")
@@ -98,9 +100,7 @@ def _update_single_ticker(ticker):
                 if equivalent_history(previous, df):
                     return (ticker, True, False, None)
             
-            temporary = save_path + ".tmp"
-            df.to_csv(temporary)
-            os.replace(temporary, save_path)
+            atomic_write_bytes(Path(save_path), df.to_csv().encode("utf-8"))
 
             new_max_date = _latest_date(save_path)
             has_new_data = True  # New dates or a material historical correction.

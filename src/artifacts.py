@@ -3,6 +3,8 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import tempfile
+import time
 from pathlib import Path
 from config import MODEL_STORAGE_PATH_ENV, resolve_app_path
 
@@ -19,11 +21,28 @@ def sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def atomic_json(path: Path, payload: dict) -> None:
+def atomic_write_bytes(path: Path, content: bytes) -> None:
+    """Publish one complete file, allowing short-lived Windows reader locks."""
+    path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
-    temporary = path.with_suffix(path.suffix + ".tmp")
-    temporary.write_text(json.dumps(payload, indent=2, allow_nan=False), encoding="utf-8")
-    temporary.replace(path)
+    with tempfile.NamedTemporaryFile(dir=path.parent, prefix=path.name + ".", suffix=".tmp", delete=False) as output:
+        output.write(content)
+        temporary = Path(output.name)
+    try:
+        for attempt in range(7):
+            try:
+                os.replace(temporary, path)
+                break
+            except PermissionError:
+                if attempt == 6:
+                    raise
+                time.sleep(0.05 * 2 ** attempt)
+    finally:
+        temporary.unlink(missing_ok=True)
+
+
+def atomic_json(path: Path, payload: dict) -> None:
+    atomic_write_bytes(path, json.dumps(payload, indent=2, allow_nan=False).encode("utf-8"))
 
 
 def resolve_artifact(ticker: str, horizon: int = 1, prefer_panel: bool = True) -> dict:

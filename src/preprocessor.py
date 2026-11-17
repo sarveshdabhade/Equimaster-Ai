@@ -17,6 +17,7 @@ import glob
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
+from src.artifacts import atomic_write_bytes
 
 
 _PRICE_COLUMNS = (
@@ -153,15 +154,12 @@ def process_all_files():
                 # Preserve the original artifact bytes, including its float
                 # precision and formatting, so its data hash remains valid.
                 snapshot_bytes = active_snapshot[1]
-                temporary = save_path + ".tmp"
-                with open(temporary, "wb") as output:
-                    output.write(snapshot_bytes)
-                os.replace(temporary, save_path)
+                if not Path(save_path).exists() or Path(save_path).read_bytes() != snapshot_bytes:
+                    atomic_write_bytes(Path(save_path), snapshot_bytes)
                 print(f"Retained active model snapshot for {ticker}; no new completed session")
                 continue
 
-            df_clean.to_csv(save_path + ".tmp")
-            os.replace(save_path + ".tmp", save_path)
+            atomic_write_bytes(Path(save_path), df_clean.to_csv().encode("utf-8"))
             print(f"Saved clean data with {df_clean.shape[1]} features to {save_path}")
 
         except Exception as e:
