@@ -1,5 +1,6 @@
 """Browser acceptance against a running local dashboard; writes review evidence."""
 from datetime import datetime, timezone
+import argparse
 import json
 from pathlib import Path
 import sys
@@ -10,10 +11,15 @@ if str(ROOT) not in sys.path:
 
 from playwright.sync_api import sync_playwright
 from src.artifacts import atomic_json
+from src.artifacts import resolve_artifact
+from config import ALL_DOWNLOAD_TICKERS
 
 
 def main():
-    base = "http://127.0.0.1:8502"
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--url", default="http://127.0.0.1:8502")
+    args = parser.parse_args()
+    base = args.url.rstrip("/")
     output = ROOT / "logs/browser_exports"
     output.mkdir(parents=True, exist_ok=True)
     screenshots = ROOT / "images/release"
@@ -29,15 +35,15 @@ def main():
 
         def check(name, action):
             try:
-                action()
+                detail = action()
                 exceptions = page.locator('[data-testid="stException"]')
                 if exceptions.count():
                     raise AssertionError(exceptions.first.inner_text())
-                checks.append({"name": name, "passed": True})
+                checks.append({"name": name, "passed": True, **({"detail": detail} if detail else {})})
             except Exception as exc:
                 checks.append({"name": name, "passed": False, "error": str(exc)[:1500]})
             atomic_json(ROOT / "data/evaluation/browser_validation.json", {
-                "as_of": datetime.now(timezone.utc).isoformat(), "checks": checks,
+                "as_of": datetime.now(timezone.utc).isoformat(), "base_url": base, "checks": checks,
                 "page_errors": errors, "console_errors": console_errors, "http_errors": http_errors})
             print(json.dumps(checks[-1]), flush=True)
 
@@ -93,10 +99,22 @@ def main():
             download("Export Peer Comparison")
 
         def unavailable():
-            page.goto(base + "/stock_analyzer?ticker=JIOFIN.NS", wait_until="domcontentloaded")
-            page.get_by_text("LSTM Model", exact=True).wait_for(timeout=90000)
-            page.get_by_text("LSTM Model", exact=True).click()
-            page.get_by_text("LSTM Brain offline. Model files not found.", exact=True).wait_for(timeout=90000)
+            missing = None
+            for ticker in [*ALL_DOWNLOAD_TICKERS, "NSEI"]:
+                try:
+                    resolve_artifact(ticker)
+                except FileNotFoundError:
+                    missing = ticker
+                    break
+            if missing:
+                page.goto(base + f"/stock_analyzer?ticker={missing}", wait_until="domcontentloaded")
+                page.get_by_text("LSTM Model", exact=True).wait_for(timeout=90000)
+                page.get_by_text("LSTM Model", exact=True).click()
+                page.get_by_text("LSTM Brain offline. Model files not found.", exact=True).wait_for(timeout=90000)
+                return "Missing-model warning exercised for " + missing
+            page.goto(base + "/stock_analyzer?ticker=OUTSIDE-COVERAGE", wait_until="domcontentloaded")
+            page.get_by_text("That symbol is outside the current research coverage. Select a company below.", exact=True).wait_for(timeout=90000)
+            return "All models available; unsupported-symbol warning exercised. Missing-model rendering also has offline regression coverage."
 
         def mobile():
             page.set_viewport_size({"width": 390, "height": 844})
@@ -116,14 +134,14 @@ def main():
                              ("Company overview and price CSV", overview), ("Technical chart", technical),
                              ("Forecast and CSV", forecast), ("News evidence CSV", news),
                              ("Fundamentals, statements and peers CSV", fundamentals),
-                             ("Missing model state", unavailable), ("Mobile layout", mobile)):
+                             ("Unavailable symbol/model state", unavailable), ("Mobile layout", mobile)):
             check(name, action)
         browser.close()
     blocking_http = [entry for entry in http_errors if not (
         entry["status"] == 404 and entry["url"].endswith((
             "/stock_analyzer/_stcore/health", "/stock_analyzer/_stcore/host-config")))]
     atomic_json(ROOT / "data/evaluation/browser_validation.json", {
-        "as_of": datetime.now(timezone.utc).isoformat(), "checks": checks,
+        "as_of": datetime.now(timezone.utc).isoformat(), "base_url": base, "checks": checks,
         "page_errors": errors, "console_errors": console_errors,
         "http_errors": http_errors, "blocking_http_errors": blocking_http,
         "framework_probe_note": "Direct multipage navigation probes a route-relative Streamlit health/config URL before using the root endpoint."})

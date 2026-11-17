@@ -69,3 +69,9 @@ python scripts/ui_screenshot.py --url "http://127.0.0.1:8511/stock_analyzer?tick
 ```
 
 Generated screenshots are ignored under `.cache/ui_review/`.
+
+The release acceptance runner is `python scripts/validate_browser.py` against an
+app on port 8502. It checks exports, forecast generation, research sections,
+unavailable-symbol/model states and a 390-pixel layout. Release evidence is saved
+to `data/evaluation/browser_validation.json`. The sidebar uses Streamlit's automatic
+initial state so a fresh mobile page starts with the navigation collapsed.

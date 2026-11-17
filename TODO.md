@@ -2,7 +2,7 @@
 
 The previous emoji/UI checklist is superseded by TODO_UI.md and README.md.
 Implemented: chronological training, model bundles, shared fusion formula, baseline
-and backtest metrics, empirical intervals, fundamentals, market summary, technical
+and backtest metrics, empirical intervals, fundamentals, technical
 chart controls, provider failure tests, news evaluation tooling and scheduled refresh.
 
 Remaining research, not claimed as complete:

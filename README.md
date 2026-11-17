@@ -283,6 +283,8 @@ python scripts/validate_runtime.py --require-current
 python -m pytest tests -q
 # Optional: install requirements-ui.txt, start the app on port 8502, then:
 python scripts/validate_browser.py
+# After reviewing and committing the source, package current runtime artifacts:
+python scripts/package_release.py --output D:/Project-Backups/Equimaster-Ai-release.zip
 ```
 
 ## Artifacts and repository hygiene

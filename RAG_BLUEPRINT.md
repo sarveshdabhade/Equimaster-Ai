@@ -29,9 +29,9 @@ back to a live provider for an `as_of` request.
 - Universe: each ticker with a valid processed daily-price dataset.
 - Forecast origin: after the close of the latest available trading-session row.
 - Target: the `Close` price at the end of the requested future trading-session horizon.
-- Display periods: Day (1 session), Week (5), Month (22), and Quarter (88).
-  Quarter retains the existing 88-session model and therefore spans approximately
-  four months. Values are trading-session counts, not calendar-day durations.
+- Display periods: Day (1 session), Week (5), Month (22), and Quarter (63).
+  Quarter is approximately three calendar months. Values are trading-session counts,
+  not calendar-day durations.
 - Primary benchmark: persistence, which predicts the last observed close for the
   target horizon.
 - Evaluation: chronological held-out predictions, reported per ticker and horizon
