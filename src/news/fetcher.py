@@ -14,6 +14,7 @@ from functools import lru_cache
 from concurrent.futures import ThreadPoolExecutor
 
 import requests
+from src.company_names import COMPANY_NAMES
 
 try:
     import yfinance as yf
@@ -291,7 +292,11 @@ def _company_name_aliases(ticker: str) -> tuple[str, ...]:
         SENSEX_30_TICKERS.get(ticker, ""),
         MARKET_MOVERS_TICKERS.get(ticker, ""),
         *NEWS_ALIASES.get(ticker, []),
+        COMPANY_NAMES.get(ticker, ""),
     ]
+    company_name = COMPANY_NAMES.get(ticker, "")
+    if company_name:
+        aliases.append(re.sub(r"\b(limited|ltd|incorporated|inc)\b\.?$", "", company_name, flags=re.IGNORECASE).strip())
     details_path = ROOT_DIR / "data" / "fundamentals" / f"{ticker}.json"
     try:
         details = json.loads(details_path.read_text(encoding="utf-8"))

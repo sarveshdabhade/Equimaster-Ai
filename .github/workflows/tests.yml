@@ -2,9 +2,13 @@ name: Tests
 on: [push, pull_request]
 permissions:
   contents: read
+concurrency:
+  group: tests-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   windows-python:
     runs-on: windows-latest
+    timeout-minutes: 20
     env:
       NUMBA_DISABLE_JIT: "1"
       EQUIMASTER_FINBERT: "0"

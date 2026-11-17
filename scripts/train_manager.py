@@ -91,6 +91,11 @@ def main(workers=1, horizons=None, window_size=60, epochs=60, only_missing=False
         tickers = [ticker for ticker in tickers
                    if not active_bundle_matches_data(ticker, horizons)]
         if not tickers:
+            skipped = {"as_of": datetime.now(timezone.utc).isoformat(), "state": "complete",
+                       "skipped": True, "reason": "All active bundles match current data",
+                       "tickers": [], "completed": [], "failures": []}
+            atomic_json(ROOT / "logs" / "training_status.json", skipped)
+            atomic_json(ROOT / "logs" / "training_news.json", {**skipped, "results": []})
             print("All configured active bundles match the current data; no training or news refresh is needed.", flush=True)
             return
         print(f"Training is needed for {len(tickers)} ticker(s): {', '.join(tickers)}", flush=True)

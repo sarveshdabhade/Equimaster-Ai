@@ -60,3 +60,16 @@ def test_cancelled_run_keeps_completed_stage_results(tmp_path, monkeypatch):
     status = json.loads((tmp_path / "logs/daily_status.json").read_text())
     assert status["state"] == "interrupted"
     assert status["results"] == [{"step": "market", "returncode": 0}]
+
+
+def test_current_models_clear_previous_news_failure_status(tmp_path, monkeypatch):
+    from scripts import train_manager
+    (tmp_path / "logs").mkdir()
+    (tmp_path / "logs/training_news.json").write_text(json.dumps({"results": [{"ticker": "TEST.NS", "ok": False}]}))
+    monkeypatch.setattr(train_manager, "ROOT", tmp_path)
+    monkeypatch.setattr(train_manager, "active_bundle_matches_data", lambda *args: True)
+    train_manager.main(only_missing=True, tickers=["TEST.NS"])
+    news = json.loads((tmp_path / "logs/training_news.json").read_text())
+    assert news["skipped"]
+    assert news["results"] == []
+    assert json.loads((tmp_path / "logs/training_status.json").read_text())["state"] == "complete"

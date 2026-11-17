@@ -10,6 +10,18 @@ def test_company_news_uses_business_names_and_keeps_short_alias_context():
     assert not fetcher.is_finance_relevant({"title": "Local lic collection opens"}, "LICI.NS")
 
 
+def test_company_names_work_without_a_local_fundamentals_cache(tmp_path, monkeypatch):
+    from config import ALL_DOWNLOAD_TICKERS
+    monkeypatch.setattr(fetcher, "ROOT_DIR", tmp_path)
+    fetcher._company_name_aliases.cache_clear()
+    try:
+        assert all(fetcher._company_name_aliases(ticker) for ticker in ALL_DOWNLOAD_TICKERS)
+        assert '"Adani Ports and Special Economic Zone"' in fetcher._google_news_query("ADANIPORTS.NS")
+        assert fetcher.is_finance_relevant({"title": "Cipla announces earnings growth"}, "CIPLA.NS")
+    finally:
+        fetcher._company_name_aliases.cache_clear()
+
+
 def test_training_news_excludes_undated_and_duplicate_stories(monkeypatch):
     def story(slug, stamp):
         return fetcher.normalize_article({"title": f"Example earnings {slug}",

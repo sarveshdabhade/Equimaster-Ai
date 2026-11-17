@@ -121,7 +121,7 @@ def evaluate(tickers: list[str]) -> dict:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--tickers", help="Comma-separated symbols; defaults to configured stocks plus NSEI")
-    parser.add_argument("--output", default="data/evaluation/cost-sensitivity-20261026.json")
+    parser.add_argument("--output", default="data/evaluation/cost_sensitivity.json")
     args = parser.parse_args()
     tickers = ([item.strip().upper() for item in args.tickers.split(",") if item.strip()]
                if args.tickers else configured_model_tickers())
