@@ -1,0 +1,37 @@
+{
+  "as_of": "2026-11-19T15:54:26.618591+00:00",
+  "started_at": "2026-11-19T15:53:53.695724+00:00",
+  "state": "complete",
+  "pid": 26148,
+  "python": "D:\\Projects\\Equimaster-Ai\\.venv\\Scripts\\python.exe",
+  "current_step": null,
+  "results": [
+    {
+      "step": "market",
+      "returncode": 0
+    },
+    {
+      "step": "preprocess",
+      "returncode": 0
+    },
+    {
+      "step": "training",
+      "returncode": 0,
+      "news_incomplete_count": 0,
+      "news_incomplete_tickers": []
+    },
+    {
+      "step": "evaluation",
+      "returncode": 0
+    },
+    {
+      "step": "fundamentals",
+      "returncode": 0
+    },
+    {
+      "step": "fundamental_ml",
+      "returncode": 0
+    }
+  ],
+  "failures": []
+}

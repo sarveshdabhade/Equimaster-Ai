@@ -1,0 +1,84 @@
+{
+  "as_of": "2026-11-19T15:50:00.752356+00:00",
+  "base_url": "http://127.0.0.1:8503",
+  "checks": [
+    {
+      "name": "Home desktop",
+      "passed": true
+    },
+    {
+      "name": "Screener CSV",
+      "passed": true
+    },
+    {
+      "name": "Company overview and price CSV",
+      "passed": true
+    },
+    {
+      "name": "Technical chart",
+      "passed": true
+    },
+    {
+      "name": "Forecast and CSV",
+      "passed": true
+    },
+    {
+      "name": "News evidence CSV",
+      "passed": true
+    },
+    {
+      "name": "Fundamentals, statements and peers CSV",
+      "passed": true
+    },
+    {
+      "name": "Index forecast units and CSV",
+      "passed": true
+    },
+    {
+      "name": "Unavailable symbol/model state",
+      "passed": true,
+      "detail": "All models available; unsupported-symbol warning exercised. Missing-model rendering also has offline regression coverage."
+    },
+    {
+      "name": "Mobile layout",
+      "passed": true
+    }
+  ],
+  "page_errors": [],
+  "console_errors": [
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "http_errors": [
+    {
+      "url": "http://127.0.0.1:8503/stock_analyzer/_stcore/health",
+      "status": 404
+    },
+    {
+      "url": "http://127.0.0.1:8503/stock_analyzer/_stcore/host-config",
+      "status": 404
+    },
+    {
+      "url": "http://127.0.0.1:8503/stock_analyzer/_stcore/health",
+      "status": 404
+    },
+    {
+      "url": "http://127.0.0.1:8503/stock_analyzer/_stcore/host-config",
+      "status": 404
+    },
+    {
+      "url": "http://127.0.0.1:8503/stock_analyzer/_stcore/health",
+      "status": 404
+    },
+    {
+      "url": "http://127.0.0.1:8503/stock_analyzer/_stcore/host-config",
+      "status": 404
+    }
+  ],
+  "blocking_http_errors": [],
+  "framework_probe_note": "Direct multipage navigation probes a route-relative Streamlit health/config URL before using the root endpoint."
+}

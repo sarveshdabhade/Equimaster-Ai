@@ -1,0 +1,13 @@
+{
+  "created_at": "2026-11-19T15:53:21.298302+00:00",
+  "window_days": 30,
+  "published_from": "2026-10-20T15:53:21.298302+00:00",
+  "published_through": "2026-11-19T15:53:21.298302+00:00",
+  "ticker_count": 58,
+  "row_count": 4527,
+  "unique_article_count": 4527,
+  "label_status": "unlabeled; independent human annotation required",
+  "source_policy": "verified archived articles with publication and observation timestamps",
+  "redistribution_note": "Headlines and short summaries are retained with publisher URLs for local annotation. Review source-specific terms before redistribution.",
+  "csv": "D:\\Projects\\Equimaster-Ai\\data\\benchmarks\\indian_market_news_annotations_20261119.csv"
+}

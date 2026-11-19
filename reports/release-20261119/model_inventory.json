@@ -1,0 +1,1064 @@
+[
+  {
+    "ticker": "ADANIENT.NS",
+    "version": "20261119T111716689141Z",
+    "data_end": "2026-11-19 00:00:00",
+    "pipeline_version": 6,
+    "horizons": [
+      "1",
+      "5",
+      "22",
+      "63"
+    ],
+    "data_sha256": "be8ce5cc13f97bb45a8853f1b8e0987fe3b89a646f29081dfa28ecd108be15cc",
+    "training_news": {
+      "article_count": 20,
+      "fetched_at": "2026-11-19T11:12:52.535204+00:00"
+    },
+    "tensorflow_version": "2.21.0"
+  },
+  {
+    "ticker": "ADANIPORTS.NS",
+    "version": "20261119T111716690984Z",
+    "data_end": "2026-11-19 00:00:00",
+    "pipeline_version": 6,
+    "horizons": [
+      "1",
+      "5",
+      "22",
+      "63"
+    ],
+    "data_sha256": "3663fb7425e5919a116d8834332ac11c0649d00fe4e5de6123aa1cf8c76cf889",
+    "training_news": {
+      "article_count": 20,
+      "fetched_at": "2026-11-19T11:12:55.078235+00:00"
+    },
+    "tensorflow_version": "2.21.0"
+  },
+  {
+    "ticker": "APOLLOHOSP.NS",
+    "version": "20261119T111840363576Z",
+    "data_end": "2026-11-19 00:00:00",
+    "pipeline_version": 6,
+    "horizons": [
+      "1",
+      "5",
+      "22",
+      "63"
+    ],
+    "data_sha256": "853f02045c77889baaed78f45bdb0a68e58173c32bfb6519838cff9d92c78261",
+    "training_news": {
+      "article_count": 20,
+      "fetched_at": "2026-11-19T11:13:02.555588+00:00"
+    },
+    "tensorflow_version": "2.21.0"
+  },
+  {
+    "ticker": "ASIANPAINT.NS",
+    "version": "20261119T111846512728Z",
+    "data_end": "2026-11-19 00:00:00",
+    "pipeline_version": 6,
+    "horizons": [
+      "1",
+      "5",
+      "22",
+      "63"
+    ],
+    "data_sha256": "ec21c768cc7588692ad49b37ccba44993b934a48cec9fad34034fdfe4558c6cc",
+    "training_news": {
+      "article_count": 20,
+      "fetched_at": "2026-11-19T11:13:04.833253+00:00"
+    },
+    "tensorflow_version": "2.21.0"
+  },
+  {
+    "ticker": "AXISBANK.NS",
+    "version": "20261119T111956365846Z",
+    "data_end": "2026-11-19 00:00:00",
+    "pipeline_version": 6,
+    "horizons": [
+      "1",
+      "5",
+      "22",
+      "63"
+    ],
+    "data_sha256": "9bf04226b3128d2bf797587509c8ecdba2b416f62d129ad3f26d254ca8b44383",
+    "training_news": {
+      "article_count": 20,
+      "fetched_at": "2026-11-19T11:13:07.184519+00:00"
+    },
+    "tensorflow_version": "2.21.0"
+  },
+  {
+    "ticker": "BSE.NS",
+    "version": "20261119T112023669031Z",
+    "data_end": "2026-11-19 00:00:00",
+    "pipeline_version": 6,
+    "horizons": [
+      "1",
+      "5",
+      "22",
+      "63"
+    ],
+    "data_sha256": "3f31ed6e1105ad5daa4a6dbbcb4d5de3cf87330da1e2d7ae8559c5906b14b787",
+    "training_news": {
+      "article_count": 20,
+      "fetched_at": "2026-11-19T11:13:14.444913+00:00"
+    },
+    "tensorflow_version": "2.21.0"
+  },
+  {
+    "ticker": "BAJAJ-AUTO.NS",
+    "version": "20261119T112142674422Z",
+    "data_end": "2026-11-19 00:00:00",
+    "pipeline_version": 6,
+    "horizons": [
+      "1",
+      "5",
+      "22",
+      "63"
+    ],
+    "data_sha256": "3d334eab7a744299694bdb1954a8e2bc63c8b1e47b2a5bf4983d957820211fa8",
+    "training_news": {
+      "article_count": 20,
+      "fetched_at": "2026-11-19T11:13:16.904341+00:00"
+    },
+    "tensorflow_version": "2.21.0"
+  },
+  {
+    "ticker": "BAJFINANCE.NS",
+    "version": "20261119T112234107861Z",
+    "data_end": "2026-11-19 00:00:00",
+    "pipeline_version": 6,
+    "horizons": [
+      "1",
+      "5",
+      "22",
+      "63"
+    ],
+    "data_sha256": "6fe8ee8b44619c42e014303ef7c0983d791df5d41f1c1129935c45dd7c535adb",
+    "training_news": {
+      "article_count": 20,
+      "fetched_at": "2026-11-19T11:13:19.568368+00:00"
+    },
+    "tensorflow_version": "2.21.0"
+  },
+  {
+    "ticker": "BAJAJFINSV.NS",
+    "version": "20261119T112334102975Z",
+    "data_end": "2026-11-19 00:00:00",
+    "pipeline_version": 6,
+    "horizons": [
+      "1",
+      "5",
+      "22",
+      "63"
+    ],
+    "data_sha256": "2734cbae4c338fc1ccc357930e1e7ec1ecf93edcf7dc09f1f9745c39cc4cb0e5",
+    "training_news": {
+      "article_count": 20,
+      "fetched_at": "2026-11-19T11:13:26.111287+00:00"
+    },
+    "tensorflow_version": "2.21.0"
+  },
+  {
+    "ticker": "BEL.NS",
+    "version": "20261119T112439782188Z",
+    "data_end": "2026-11-19 00:00:00",
+    "pipeline_version": 6,
+    "horizons": [
+      "1",
+      "5",
+      "22",
+      "63"
+    ],
+    "data_sha256": "38dbc3f9a5fb0695f6e686aefca5b65e8fddf754a8c10fce120096a69c32b72d",
+    "training_news": {
+      "article_count": 20,
+      "fetched_at": "2026-11-19T11:13:28.525288+00:00"
+    },
+    "tensorflow_version": "2.21.0"
+  },
+  {
+    "ticker": "BHARTIARTL.NS",
+    "version": "20261119T112518257840Z",
+    "data_end": "2026-11-19 00:00:00",
+    "pipeline_version": 6,
+    "horizons": [
+      "1",
+      "5",
+      "22",
+      "63"
+    ],
+    "data_sha256": "066b3f5305a1a8eee99d38edf23dc49ecbe7785a1c041fc41e2b26fb0cd15887",
+    "training_news": {
+      "article_count": 20,
+      "fetched_at": "2026-11-19T11:13:30.977394+00:00"
+    },
+    "tensorflow_version": "2.21.0"
+  },
+  {
+    "ticker": "CIPLA.NS",
+    "version": "20261119T112617684901Z",
+    "data_end": "2026-11-19 00:00:00",
+    "pipeline_version": 6,
+    "horizons": [
+      "1",
+      "5",
+      "22",
+      "63"
+    ],
+    "data_sha256": "c53d7040cae86f7ea6c0e5173c6f9af9ccc5240c4423e78d0b6cd9eb72aa7195",
+    "training_news": {
+      "article_count": 20,
+      "fetched_at": "2026-11-19T11:13:33.472269+00:00"
+    },
+    "tensorflow_version": "2.21.0"
+  },
+  {
+    "ticker": "COALINDIA.NS",
+    "version": "20261119T112708691298Z",
+    "data_end": "2026-11-19 00:00:00",
+    "pipeline_version": 6,
+    "horizons": [
+      "1",
+      "5",
+      "22",
+      "63"
+    ],
+    "data_sha256": "21b5122692353b6f10bcaef2cc4cc78c52c93daeafa644a32a7528bf176a34c6",
+    "training_news": {
+      "article_count": 20,
+      "fetched_at": "2026-11-19T11:13:36.613704+00:00"
+    },
+    "tensorflow_version": "2.21.0"
+  },
+  {
+    "ticker": "DRREDDY.NS",
+    "version": "20261119T112828220787Z",
+    "data_end": "2026-11-19 00:00:00",
+    "pipeline_version": 6,
+    "horizons": [
+      "1",
+      "5",
+      "22",
+      "63"
+    ],
+    "data_sha256": "02d260f3546445d538302df0bdcecaa05da42d9c7233bde06c1cd6c8ab93a510",
+    "training_news": {
+      "article_count": 20,
+      "fetched_at": "2026-11-19T11:13:39.686773+00:00"
+    },
+    "tensorflow_version": "2.21.0"
+  },
+  {
+    "ticker": "EICHERMOT.NS",
+    "version": "20261119T112851562823Z",
+    "data_end": "2026-11-19 00:00:00",
+    "pipeline_version": 6,
+    "horizons": [
+      "1",
+      "5",
+      "22",
+      "63"
+    ],
+    "data_sha256": "84053c8e9f96c2bd1eb841608e1d9c33230ea4556e9a49e87424780088cbdcca",
+    "training_news": {
+      "article_count": 20,
+      "fetched_at": "2026-11-19T11:13:42.614973+00:00"
+    },
+    "tensorflow_version": "2.21.0"
+  },
+  {
+    "ticker": "ETERNAL.NS",
+    "version": "20261119T113007290582Z",
+    "data_end": "2026-11-19 00:00:00",
+    "pipeline_version": 6,
+    "horizons": [
+      "1",
+      "5",
+      "22",
+      "63"
+    ],
+    "data_sha256": "70bb20516771d576ab0edb0305d52b82a078c6c6e74a71c8a558419da8b54761",
+    "training_news": {
+      "article_count": 20,
+      "fetched_at": "2026-11-19T11:13:45.304446+00:00"
+    },
+    "tensorflow_version": "2.21.0"
+  },
+  {
+    "ticker": "GRASIM.NS",
+    "version": "20261119T113021209932Z",
+    "data_end": "2026-11-19 00:00:00",
+    "pipeline_version": 6,
+    "horizons": [
+      "1",
+      "5",
+      "22",
+      "63"
+    ],
+    "data_sha256": "60bcf6baa9e82e47e91f6efd39b500dda6590ef340e31a83f739746217520534",
+    "training_news": {
+      "article_count": 20,
+      "fetched_at": "2026-11-19T11:13:47.584377+00:00"
+    },
+    "tensorflow_version": "2.21.0"
+  },
+  {
+    "ticker": "HCLTECH.NS",
+    "version": "20261119T113129184723Z",
+    "data_end": "2026-11-19 00:00:00",
+    "pipeline_version": 6,
+    "horizons": [
+      "1",
+      "5",
+      "22",
+      "63"
+    ],
+    "data_sha256": "687c96bf348cfcc9aa22ff8ca0a4c9f6680c53f62cf32c49282b916d8972c865",
+    "training_news": {
+      "article_count": 20,
+      "fetched_at": "2026-11-19T11:13:52.725734+00:00"
+    },
+    "tensorflow_version": "2.21.0"
+  },
+  {
+    "ticker": "HDFCBANK.NS",
+    "version": "20261119T113215657657Z",
+    "data_end": "2026-11-19 00:00:00",
+    "pipeline_version": 6,
+    "horizons": [
+      "1",
+      "5",
+      "22",
+      "63"
+    ],
+    "data_sha256": "40ec446d4131b8d12e0aaa3e0f0696f608726e2dcc67465142ce1b24e2fa42e5",
+    "training_news": {
+      "article_count": 20,
+      "fetched_at": "2026-11-19T11:13:55.507816+00:00"
+    },
+    "tensorflow_version": "2.21.0"
+  },
+  {
+    "ticker": "HDFCLIFE.NS",
+    "version": "20261119T113247906247Z",
+    "data_end": "2026-11-19 00:00:00",
+    "pipeline_version": 6,
+    "horizons": [
+      "1",
+      "5",
+      "22",
+      "63"
+    ],
+    "data_sha256": "5fe2fa68bfb7fe3fad30519892aa8868d1543fc0e8fd01793b8df5f9c9404125",
+    "training_news": {
+      "article_count": 20,
+      "fetched_at": "2026-11-19T11:13:57.873675+00:00"
+    },
+    "tensorflow_version": "2.21.0"
+  },
+  {
+    "ticker": "HINDALCO.NS",
+    "version": "20261119T113353392530Z",
+    "data_end": "2026-11-19 00:00:00",
+    "pipeline_version": 6,
+    "horizons": [
+      "1",
+      "5",
+      "22",
+      "63"
+    ],
+    "data_sha256": "36cea02dba04ffe1689511bd07684d538030a62cc14361bd74423900ec014da4",
+    "training_news": {
+      "article_count": 20,
+      "fetched_at": "2026-11-19T11:14:00.240959+00:00"
+    },
+    "tensorflow_version": "2.21.0"
+  },
+  {
+    "ticker": "HINDUNILVR.NS",
+    "version": "20261119T113442754941Z",
+    "data_end": "2026-11-19 00:00:00",
+    "pipeline_version": 6,
+    "horizons": [
+      "1",
+      "5",
+      "22",
+      "63"
+    ],
+    "data_sha256": "e2a5340d40ce4d5134494349c79015fd69d5a72ff25c8ece7d294596b8312dd7",
+    "training_news": {
+      "article_count": 20,
+      "fetched_at": "2026-11-19T11:14:02.834161+00:00"
+    },
+    "tensorflow_version": "2.21.0"
+  },
+  {
+    "ticker": "ICICIBANK.NS",
+    "version": "20261119T113532103365Z",
+    "data_end": "2026-11-19 00:00:00",
+    "pipeline_version": 6,
+    "horizons": [
+      "1",
+      "5",
+      "22",
+      "63"
+    ],
+    "data_sha256": "2128c3f95d3060df00562cdfe1f49bf2ae6e508e58c3c9f0ff99dbe9f35fdb68",
+    "training_news": {
+      "article_count": 20,
+      "fetched_at": "2026-11-19T11:14:05.399257+00:00"
+    },
+    "tensorflow_version": "2.21.0"
+  },
+  {
+    "ticker": "ITC.NS",
+    "version": "20261119T113616462249Z",
+    "data_end": "2026-11-19 00:00:00",
+    "pipeline_version": 6,
+    "horizons": [
+      "1",
+      "5",
+      "22",
+      "63"
+    ],
+    "data_sha256": "21c065acaa4643a4f6b4fad32080aa61fdd79cb67124574f218404b82b11b1fe",
+    "training_news": {
+      "article_count": 20,
+      "fetched_at": "2026-11-19T11:14:07.750495+00:00"
+    },
+    "tensorflow_version": "2.21.0"
+  },
+  {
+    "ticker": "INFY.NS",
+    "version": "20261119T113638910680Z",
+    "data_end": "2026-11-19 00:00:00",
+    "pipeline_version": 6,
+    "horizons": [
+      "1",
+      "5",
+      "22",
+      "63"
+    ],
+    "data_sha256": "d0d4f07fdd35b200caae7f286df26dc6121f63ade22326d76a64fde06526892b",
+    "training_news": {
+      "article_count": 20,
+      "fetched_at": "2026-11-19T11:14:10.451702+00:00"
+    },
+    "tensorflow_version": "2.21.0"
+  },
+  {
+    "ticker": "INDIGO.NS",
+    "version": "20261119T113741476518Z",
+    "data_end": "2026-11-19 00:00:00",
+    "pipeline_version": 6,
+    "horizons": [
+      "1",
+      "5",
+      "22",
+      "63"
+    ],
+    "data_sha256": "2c2fe63d8fba4db663de5ddf9b3d2cbf1e7d6c9373376a9edb402512ce4e0433",
+    "training_news": {
+      "article_count": 20,
+      "fetched_at": "2026-11-19T11:14:12.840624+00:00"
+    },
+    "tensorflow_version": "2.21.0"
+  },
+  {
+    "ticker": "JSWSTEEL.NS",
+    "version": "20261119T113807437514Z",
+    "data_end": "2026-11-19 00:00:00",
+    "pipeline_version": 6,
+    "horizons": [
+      "1",
+      "5",
+      "22",
+      "63"
+    ],
+    "data_sha256": "a29bedcc80784482d32d7587d98b2ec19dd4d241bcbd7219a950428b15d9ab45",
+    "training_news": {
+      "article_count": 20,
+      "fetched_at": "2026-11-19T11:14:19.409482+00:00"
+    },
+    "tensorflow_version": "2.21.0"
+  },
+  {
+    "ticker": "JIOFIN.NS",
+    "version": "20261119T113854420203Z",
+    "data_end": "2026-11-19 00:00:00",
+    "pipeline_version": 6,
+    "horizons": [
+      "1",
+      "5",
+      "22",
+      "63"
+    ],
+    "data_sha256": "e00f4531aabb30bdde7959fa7eb20d71576b8556265110c63d5b3eca200af031",
+    "training_news": {
+      "article_count": 20,
+      "fetched_at": "2026-11-19T11:14:26.363883+00:00"
+    },
+    "tensorflow_version": "2.21.0"
+  },
+  {
+    "ticker": "KOTAKBANK.NS",
+    "version": "20261119T113941356636Z",
+    "data_end": "2026-11-19 00:00:00",
+    "pipeline_version": 6,
+    "horizons": [
+      "1",
+      "5",
+      "22",
+      "63"
+    ],
+    "data_sha256": "ca8a2434c5be4881094ca7ba50ac5f4aca7d105578688558edd96001f43dbef1",
+    "training_news": {
+      "article_count": 20,
+      "fetched_at": "2026-11-19T11:14:28.863464+00:00"
+    },
+    "tensorflow_version": "2.21.0"
+  },
+  {
+    "ticker": "LT.NS",
+    "version": "20261119T114013064665Z",
+    "data_end": "2026-11-19 00:00:00",
+    "pipeline_version": 6,
+    "horizons": [
+      "1",
+      "5",
+      "22",
+      "63"
+    ],
+    "data_sha256": "1d9cec734f0e63e451af17851fda6733f22740e7e6be8eaaf5f53ce860623b89",
+    "training_news": {
+      "article_count": 20,
+      "fetched_at": "2026-11-19T11:14:35.579313+00:00"
+    },
+    "tensorflow_version": "2.21.0"
+  },
+  {
+    "ticker": "M&M.NS",
+    "version": "20261119T114129326834Z",
+    "data_end": "2026-11-19 00:00:00",
+    "pipeline_version": 6,
+    "horizons": [
+      "1",
+      "5",
+      "22",
+      "63"
+    ],
+    "data_sha256": "f2ad05a4143cda8c022ff779ba376a5a649bdcb715cef8c2bc2f382ec0c87fb4",
+    "training_news": {
+      "article_count": 20,
+      "fetched_at": "2026-11-19T11:14:38.183059+00:00"
+    },
+    "tensorflow_version": "2.21.0"
+  },
+  {
+    "ticker": "MARUTI.NS",
+    "version": "20261119T114200327626Z",
+    "data_end": "2026-11-19 00:00:00",
+    "pipeline_version": 6,
+    "horizons": [
+      "1",
+      "5",
+      "22",
+      "63"
+    ],
+    "data_sha256": "40fcfea145325232ffec76aca7055c00f90e47a966cb343823c4f0bc7f5bf3d6",
+    "training_news": {
+      "article_count": 20,
+      "fetched_at": "2026-11-19T11:14:40.356279+00:00"
+    },
+    "tensorflow_version": "2.21.0"
+  },
+  {
+    "ticker": "MAXHEALTH.NS",
+    "version": "20261119T114329199005Z",
+    "data_end": "2026-11-19 00:00:00",
+    "pipeline_version": 6,
+    "horizons": [
+      "1",
+      "5",
+      "22",
+      "63"
+    ],
+    "data_sha256": "ee41f90fc4b6bbbee82400177b0d5d633d04f978238df5fe299aa711d2fab39e",
+    "training_news": {
+      "article_count": 20,
+      "fetched_at": "2026-11-19T11:14:42.730425+00:00"
+    },
+    "tensorflow_version": "2.21.0"
+  },
+  {
+    "ticker": "NTPC.NS",
+    "version": "20261119T114347130472Z",
+    "data_end": "2026-11-19 00:00:00",
+    "pipeline_version": 6,
+    "horizons": [
+      "1",
+      "5",
+      "22",
+      "63"
+    ],
+    "data_sha256": "d02a37a5eac2263654ccbbec1f2cf521b29a612fcd0613fee9fc5e08d265050b",
+    "training_news": {
+      "article_count": 20,
+      "fetched_at": "2026-11-19T11:14:49.654552+00:00"
+    },
+    "tensorflow_version": "2.21.0"
+  },
+  {
+    "ticker": "NESTLEIND.NS",
+    "version": "20261119T154320397977Z",
+    "data_end": "2026-11-19 00:00:00",
+    "pipeline_version": 6,
+    "horizons": [
+      "1",
+      "5",
+      "22",
+      "63"
+    ],
+    "data_sha256": "05799537826bd4f7a6b29f3e3907896146bb53cfeb4ea49936217a36a92f18e4",
+    "training_news": {
+      "article_count": 20,
+      "fetched_at": "2026-11-19T15:42:27.719348+00:00"
+    },
+    "tensorflow_version": "2.21.0"
+  },
+  {
+    "ticker": "ONGC.NS",
+    "version": "20261119T154320397960Z",
+    "data_end": "2026-11-19 00:00:00",
+    "pipeline_version": 6,
+    "horizons": [
+      "1",
+      "5",
+      "22",
+      "63"
+    ],
+    "data_sha256": "2d73ff0033e791602afc7789a61e0c34b1026beff6576c74513eb9eb0e7a7507",
+    "training_news": {
+      "article_count": 20,
+      "fetched_at": "2026-11-19T15:42:31.880547+00:00"
+    },
+    "tensorflow_version": "2.21.0"
+  },
+  {
+    "ticker": "POWERGRID.NS",
+    "version": "20261119T154353647254Z",
+    "data_end": "2026-11-19 00:00:00",
+    "pipeline_version": 6,
+    "horizons": [
+      "1",
+      "5",
+      "22",
+      "63"
+    ],
+    "data_sha256": "bce0fd02525b51314031395b30de5839c50223bff34c2dfa7c857b7f824e3a6a",
+    "training_news": {
+      "article_count": 20,
+      "fetched_at": "2026-11-19T15:42:35.706303+00:00"
+    },
+    "tensorflow_version": "2.21.0"
+  },
+  {
+    "ticker": "RELIANCE.NS",
+    "version": "20261119T154358049300Z",
+    "data_end": "2026-11-19 00:00:00",
+    "pipeline_version": 6,
+    "horizons": [
+      "1",
+      "5",
+      "22",
+      "63"
+    ],
+    "data_sha256": "840679a5737b1f4ccf3bedb4c1f8108905a411c17a30cb5cff9508023fb3d43e",
+    "training_news": {
+      "article_count": 20,
+      "fetched_at": "2026-11-19T15:42:37.024621+00:00"
+    },
+    "tensorflow_version": "2.21.0"
+  },
+  {
+    "ticker": "SBILIFE.NS",
+    "version": "20261119T154432749250Z",
+    "data_end": "2026-11-19 00:00:00",
+    "pipeline_version": 6,
+    "horizons": [
+      "1",
+      "5",
+      "22",
+      "63"
+    ],
+    "data_sha256": "a63d2db2aa5f7e1897d98cdbdd638f0cd7a5cfa382fad3abadf1ec1742af1e8d",
+    "training_news": {
+      "article_count": 20,
+      "fetched_at": "2026-11-19T15:42:38.217862+00:00"
+    },
+    "tensorflow_version": "2.21.0"
+  },
+  {
+    "ticker": "SHRIRAMFIN.NS",
+    "version": "20261119T154433176287Z",
+    "data_end": "2026-11-19 00:00:00",
+    "pipeline_version": 6,
+    "horizons": [
+      "1",
+      "5",
+      "22",
+      "63"
+    ],
+    "data_sha256": "855fc8346440e92407628004598fba592840c93481345071be4ba6181349161f",
+    "training_news": {
+      "article_count": 20,
+      "fetched_at": "2026-11-19T15:42:39.462527+00:00"
+    },
+    "tensorflow_version": "2.21.0"
+  },
+  {
+    "ticker": "SBIN.NS",
+    "version": "20261119T154503460733Z",
+    "data_end": "2026-11-19 00:00:00",
+    "pipeline_version": 6,
+    "horizons": [
+      "1",
+      "5",
+      "22",
+      "63"
+    ],
+    "data_sha256": "d4eac56b85be32414690d690b51ab9572af9f0e155478777d01a72fb76659916",
+    "training_news": {
+      "article_count": 20,
+      "fetched_at": "2026-11-19T15:42:43.193992+00:00"
+    },
+    "tensorflow_version": "2.21.0"
+  },
+  {
+    "ticker": "SUNPHARMA.NS",
+    "version": "20261119T154503672115Z",
+    "data_end": "2026-11-19 00:00:00",
+    "pipeline_version": 6,
+    "horizons": [
+      "1",
+      "5",
+      "22",
+      "63"
+    ],
+    "data_sha256": "03ff5e9e97d552e142992acf38a68f75bacae1d7c901423a8e54ce431987de51",
+    "training_news": {
+      "article_count": 20,
+      "fetched_at": "2026-11-19T15:42:47.411657+00:00"
+    },
+    "tensorflow_version": "2.21.0"
+  },
+  {
+    "ticker": "TCS.NS",
+    "version": "20261119T154604103687Z",
+    "data_end": "2026-11-19 00:00:00",
+    "pipeline_version": 6,
+    "horizons": [
+      "1",
+      "5",
+      "22",
+      "63"
+    ],
+    "data_sha256": "27fa5471c2bb2d1e60ccc3eac1a7974ea3eb0f4da610df06d5ebfd808f34a902",
+    "training_news": {
+      "article_count": 20,
+      "fetched_at": "2026-11-19T15:42:50.855777+00:00"
+    },
+    "tensorflow_version": "2.21.0"
+  },
+  {
+    "ticker": "TATACONSUM.NS",
+    "version": "20261119T154625066551Z",
+    "data_end": "2026-11-19 00:00:00",
+    "pipeline_version": 6,
+    "horizons": [
+      "1",
+      "5",
+      "22",
+      "63"
+    ],
+    "data_sha256": "e3fba145cd9fbc777af344342aa01cf5a8690536d7e21561c6a1e5efbe2852ba",
+    "training_news": {
+      "article_count": 20,
+      "fetched_at": "2026-11-19T15:42:52.198785+00:00"
+    },
+    "tensorflow_version": "2.21.0"
+  },
+  {
+    "ticker": "TMPV.NS",
+    "version": "20261119T154759884454Z",
+    "data_end": "2026-11-19 00:00:00",
+    "pipeline_version": 6,
+    "horizons": [
+      "1",
+      "5",
+      "22",
+      "63"
+    ],
+    "data_sha256": "3f04069648848b4878de07237860d236a4af26f53d8dc262be6e06ec1fa438a3",
+    "training_news": {
+      "article_count": 20,
+      "fetched_at": "2026-11-19T15:42:53.772519+00:00"
+    },
+    "tensorflow_version": "2.21.0"
+  },
+  {
+    "ticker": "TATASTEEL.NS",
+    "version": "20261119T154806457256Z",
+    "data_end": "2026-11-19 00:00:00",
+    "pipeline_version": 6,
+    "horizons": [
+      "1",
+      "5",
+      "22",
+      "63"
+    ],
+    "data_sha256": "71627350f142c1ac9deab7393ff08e556a9a09cec172b206615267066980d2dd",
+    "training_news": {
+      "article_count": 20,
+      "fetched_at": "2026-11-19T15:42:55.272767+00:00"
+    },
+    "tensorflow_version": "2.21.0"
+  },
+  {
+    "ticker": "TECHM.NS",
+    "version": "20261119T113831142185Z",
+    "data_end": "2026-11-19 00:00:00",
+    "pipeline_version": 6,
+    "horizons": [
+      "1",
+      "5",
+      "22",
+      "63"
+    ],
+    "data_sha256": "469b7dcfb908386b64939578082594ce60d3e90eddc6a101a53537c9e59257cd",
+    "training_news": {
+      "article_count": 20,
+      "fetched_at": "2026-11-19T11:15:47.500702+00:00"
+    },
+    "tensorflow_version": "2.21.0"
+  },
+  {
+    "ticker": "TITAN.NS",
+    "version": "20261119T113758427293Z",
+    "data_end": "2026-11-19 00:00:00",
+    "pipeline_version": 6,
+    "horizons": [
+      "1",
+      "5",
+      "22",
+      "63"
+    ],
+    "data_sha256": "56acd1667fea3d554ad85be4d3a4167e04dd488d4b21393c384a26ff48f7a864",
+    "training_news": {
+      "article_count": 20,
+      "fetched_at": "2026-11-19T11:15:49.484349+00:00"
+    },
+    "tensorflow_version": "2.21.0"
+  },
+  {
+    "ticker": "TRENT.NS",
+    "version": "20261119T113721284583Z",
+    "data_end": "2026-11-19 00:00:00",
+    "pipeline_version": 6,
+    "horizons": [
+      "1",
+      "5",
+      "22",
+      "63"
+    ],
+    "data_sha256": "c8b9fd537153594068db4dae2e99cbe8853eed1c719c33b8cf81a5012ee12460",
+    "training_news": {
+      "article_count": 20,
+      "fetched_at": "2026-11-19T11:15:56.074811+00:00"
+    },
+    "tensorflow_version": "2.21.0"
+  },
+  {
+    "ticker": "ULTRACEMCO.NS",
+    "version": "20261119T113645518705Z",
+    "data_end": "2026-11-19 00:00:00",
+    "pipeline_version": 6,
+    "horizons": [
+      "1",
+      "5",
+      "22",
+      "63"
+    ],
+    "data_sha256": "83f3842f5d3799a1b697e0fd763b6e83299915ae91497bc135b0e327e31063ea",
+    "training_news": {
+      "article_count": 20,
+      "fetched_at": "2026-11-19T11:16:00.870177+00:00"
+    },
+    "tensorflow_version": "2.21.0"
+  },
+  {
+    "ticker": "INDUSINDBK.NS",
+    "version": "20261119T113604284819Z",
+    "data_end": "2026-11-19 00:00:00",
+    "pipeline_version": 6,
+    "horizons": [
+      "1",
+      "5",
+      "22",
+      "63"
+    ],
+    "data_sha256": "0247cfec85664998d15785a3f27b9ccd44c0cfbc3bd6c11f5d4a6e2ea3dd5ce1",
+    "training_news": {
+      "article_count": 20,
+      "fetched_at": "2026-11-19T11:16:03.030014+00:00"
+    },
+    "tensorflow_version": "2.21.0"
+  },
+  {
+    "ticker": "BANKBARODA.NS",
+    "version": "20261119T113531308811Z",
+    "data_end": "2026-11-19 00:00:00",
+    "pipeline_version": 6,
+    "horizons": [
+      "1",
+      "5",
+      "22",
+      "63"
+    ],
+    "data_sha256": "6387c8949a961e718c657681d0d70876ef3cb5c64e259c76cedb762372256bf2",
+    "training_news": {
+      "article_count": 20,
+      "fetched_at": "2026-11-19T11:16:05.333960+00:00"
+    },
+    "tensorflow_version": "2.21.0"
+  },
+  {
+    "ticker": "PNB.NS",
+    "version": "20261119T113449952124Z",
+    "data_end": "2026-11-19 00:00:00",
+    "pipeline_version": 6,
+    "horizons": [
+      "1",
+      "5",
+      "22",
+      "63"
+    ],
+    "data_sha256": "3dcb1ff230c03aa44769d74888c4618b493eec2fc20821b5886c44bfb71e28b1",
+    "training_news": {
+      "article_count": 20,
+      "fetched_at": "2026-11-19T11:16:11.648532+00:00"
+    },
+    "tensorflow_version": "2.21.0"
+  },
+  {
+    "ticker": "FEDERALBNK.NS",
+    "version": "20261119T113257460930Z",
+    "data_end": "2026-11-19 00:00:00",
+    "pipeline_version": 6,
+    "horizons": [
+      "1",
+      "5",
+      "22",
+      "63"
+    ],
+    "data_sha256": "8c260606c09aeabe52654c700f26dfb3bfe5eefc49dec6ee1fda98efc5840278",
+    "training_news": {
+      "article_count": 20,
+      "fetched_at": "2026-11-19T11:16:20.188930+00:00"
+    },
+    "tensorflow_version": "2.21.0"
+  },
+  {
+    "ticker": "IDFCFIRSTB.NS",
+    "version": "20261119T113216341003Z",
+    "data_end": "2026-11-19 00:00:00",
+    "pipeline_version": 6,
+    "horizons": [
+      "1",
+      "5",
+      "22",
+      "63"
+    ],
+    "data_sha256": "ef749c9c9d8ac3e2fc3f784ce6d17c1675fc333600987f61d80c9c2dba7cbc9a",
+    "training_news": {
+      "article_count": 20,
+      "fetched_at": "2026-11-19T11:16:22.268332+00:00"
+    },
+    "tensorflow_version": "2.21.0"
+  },
+  {
+    "ticker": "BANDHANBNK.NS",
+    "version": "20261119T113143735463Z",
+    "data_end": "2026-11-19 00:00:00",
+    "pipeline_version": 6,
+    "horizons": [
+      "1",
+      "5",
+      "22",
+      "63"
+    ],
+    "data_sha256": "a589ae2b2e757f3a1149668bf920ee44fad889e2c51a81d6ece5a8add3d524c6",
+    "training_news": {
+      "article_count": 20,
+      "fetched_at": "2026-11-19T11:16:28.068353+00:00"
+    },
+    "tensorflow_version": "2.21.0"
+  },
+  {
+    "ticker": "AUBANK.NS",
+    "version": "20261119T113112151206Z",
+    "data_end": "2026-11-19 00:00:00",
+    "pipeline_version": 6,
+    "horizons": [
+      "1",
+      "5",
+      "22",
+      "63"
+    ],
+    "data_sha256": "f7c2a5e587e9827536a6bdf283399d0aca9cb4f936707c2bc129ebb6bfffe6a1",
+    "training_news": {
+      "article_count": 20,
+      "fetched_at": "2026-11-19T11:16:30.090343+00:00"
+    },
+    "tensorflow_version": "2.21.0"
+  },
+  {
+    "ticker": "LICI.NS",
+    "version": "20261119T113033125145Z",
+    "data_end": "2026-11-19 00:00:00",
+    "pipeline_version": 6,
+    "horizons": [
+      "1",
+      "5",
+      "22",
+      "63"
+    ],
+    "data_sha256": "83f136fde01a8b171ab49e6599f91e190c20df3cd857bb5c5e2513713012432d",
+    "training_news": {
+      "article_count": 20,
+      "fetched_at": "2026-11-19T11:16:32.120275+00:00"
+    },
+    "tensorflow_version": "2.21.0"
+  },
+  {
+    "ticker": "NSEI",
+    "version": "20261119T112948750321Z",
+    "data_end": "2026-11-19 00:00:00",
+    "pipeline_version": 6,
+    "horizons": [
+      "1",
+      "5",
+      "22",
+      "63"
+    ],
+    "data_sha256": "f7565d17f63639de7d1e40bde2392bfbe45979c1e01ac2e563f5e288447faaa1",
+    "training_news": {
+      "article_count": 20,
+      "fetched_at": "2026-11-19T11:16:38.690687+00:00"
+    },
+    "tensorflow_version": "2.21.0"
+  }
+]

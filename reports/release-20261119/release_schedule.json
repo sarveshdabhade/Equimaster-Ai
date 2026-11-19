@@ -1,0 +1,20 @@
+﻿[
+    {
+        "name":  "Equimaster daily update",
+        "state":  "Ready",
+        "last_run":  "2026-11-17T21:42:19.0000000+05:30",
+        "last_result":  2147946720,
+        "next_run":  "2026-11-20T18:52:32.0000000+05:30",
+        "python":  "D:\\Projects\\Equimaster-Ai\\run_pipeline.bat",
+        "arguments":  null
+    },
+    {
+        "name":  "Equimaster-Daily-Refresh",
+        "state":  "Ready",
+        "last_run":  "2026-11-19T21:23:53.0000000+05:30",
+        "last_result":  0,
+        "next_run":  "2026-11-20T18:30:00.0000000+05:30",
+        "python":  "D:\\Projects\\Equimaster-Ai\\.venv\\Scripts\\python.exe",
+        "arguments":  "-u \"D:\\Projects\\Equimaster-Ai\\daily_pipeline.py\" --workers 2"
+    }
+]

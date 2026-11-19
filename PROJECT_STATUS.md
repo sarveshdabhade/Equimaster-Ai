@@ -1,103 +1,100 @@
-# Completion report ? 24 October 2026
+# Equimaster-Ai release review - 19 November 2026
 
-All ten requested development areas have been implemented. This report distinguishes implemented features from measured model quality.
+The research dashboard's application and artifact checks pass. All 59 configured
+stock/index models cover Day, Week, Month and Quarter (1, 5, 22 and 63 sessions).
+All 58 configured companies have fresh fundamentals and supported valuation scenarios.
+Forecasting performance and historical fusion remain research work; passing software
+checks does not establish predictive advantage or a trading edge.
 
-## Completed work
+## Verified release evidence
 
-1. Refreshed all 57 raw/processed datasets through 23 October 2026; trained four horizons per ticker: Day (1 session), Week (5), Month (22), and Quarter (88, approximately four months). Added a verified Yahoo provider alias for LTIM/LTM. Tiny feed-rounding noise preserves existing data; material corrections trigger retraining.
-2. Evaluated all 228 models against persistence using purged chronological fitting, validation and test periods. Historical prediction origins, target dates and actual prices are exported.
-3. Shared the forecast/news fusion formula between inference and evaluation.
-4. Replaced placeholder performance with measured metrics, persistence comparisons and empirical validation intervals. Measured test coverage is displayed rather than assuming nominal coverage.
-5. Implemented cached company fundamentals, selected-peer comparisons, same-industry positive-P/E medians and CSV export. Live TCS/Infosys/HCLTech snapshots were checked.
-6. Connected Market Summary, recommendation and risk modules, with their technical/news heuristic basis identified.
-7. Added deterministic provider-independent tests, Streamlit interaction coverage, a Windows/Python 3.13 CI workflow, pinned requirements and an installed dependency lockfile. Updated setup/run instructions.
-8. Consolidated training entrypoints. Immutable bundles contain models, scaler, exact processed-data snapshot, feature order, hashes, version, training parameters, dates, evaluations and backtests. Active bundles publish atomically; missing/corrupt artifacts are not silently reused.
-9. Added provider fallback/failure checks, public publisher RSS, historical news cutoff enforcement, archived observations, sentiment/retrieval evaluation tooling and a registered weekday refresh task.
-10. Added technical-chart date selection, volume, ATR, volatility and period returns; the forecast interface provides direct multi-session forecasts, held-out performance metrics and export. Model training is handled by backend CLI/pipeline workflows, not a frontend Training Manager page.
+- 168 tests pass in the clean Windows/Python 3.13 lockfile environment; pip check passes.
+- The isolated source checkout is also tested without the workspace's runtime data caches.
+- 59/59 raw and processed datasets pass quality checks; provider reference ends 2026-11-19.
+- 59/59 active bundles match their current processed datasets, scalers and model hashes.
+- All 236 ticker/horizon inference checks return finite positive forecasts and ordered intervals.
+- All 59 bundles record at least 20 fresh verified news articles at fitting; the gate was retained.
+- 58/58 company valuation scenarios pass arithmetic, currency and freshness checks.
+- 10/10 browser checks pass, including exports, forecast generation, mobile and unavailable states.
+- The registered Task Scheduler pipeline completed with result 0. The ordinary weekday trigger remains 18:30 Asia/Kolkata, while this user is logged in.
+- Remote CI passed for validated source baseline `234ac3ad`: https://github.com/sarveshdabhade/Equimaster-Ai/actions/runs/44559131716.
+  The runtime archive's RELEASE_MANIFEST.json additionally records successful CI for its exact packaged source commit.
 
-## Verification
+Evidence copies are in [reports/release-20261119](reports/release-20261119/). The runtime
+archive contains source, current bundles, datasets, fundamentals, news archives,
+evaluation artifacts and per-file checksums. It excludes environments, provider
+cookie databases and secrets. Historical models/data remain on disk; 288 generated
+paths were removed from Git tracking without deleting their files.
 
-- Latest full local suite: **56 tests passed**, including fundamentals, currency regressions, dashboard screening and multipage interactions. The artifact-reuse guard also has focused coverage for missing model files.
-- Runtime integrity: **57 datasets**, all four model/scaler/snapshot contracts checked, **zero failures**.
-- Inference smoke checks: **10 passed** across TCS/NIFTY direct horizons and the legacy recursive backend path. The user-facing forecast interface now exposes direct forecasts only.
-- Streamlit headless startup and health endpoint: **200 OK**; home and analyzer interactions tested.
-- Core daily workflow: **all five original stages returned exit code 0**; see [daily status](logs/daily_status.json). The new sixth fundamentals stage was separately verified for all 56 companies, including reuse of fresh snapshots.
-- `pip check`: no broken requirements. Python syntax and changed-file whitespace checks passed.
-- GitHub Actions workflow is prepared locally; no remote CI run or repository push was performed.
+## Frozen chronological test results
 
-## Forecast results
+Means are unweighted across the 59 active bundles. Persistence is evaluated on the
+same ticker and terminal dates. Interval coverage is compared with a nominal 90%.
 
-Unweighted means across 57 tickers per horizon. Stock-price MAE is compared within each ticker, not averaged across differently priced stocks.
+| Horizon | Models | Direction accuracy | LSTM MAPE | Persistence MAPE | MAE wins | Terminal interval coverage | Path coverage |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| Day (1) | 59 | 27.25% | 1.299% | 1.296% | 13/59 | 77.80% | 77.80% |
+| Week (5) | 59 | 35.18% | 2.972% | 2.960% | 19/59 | 76.09% | 77.21% |
+| Month (22) | 59 | 38.34% | 6.653% | 6.565% | 16/59 | 59.94% | 68.52% |
+| Quarter (63) | 59 | 39.08% | 9.800% | 9.129% | 18/59 | 37.79% | 52.66% |
 
-| Period (sessions) | Mean directional accuracy | Mean MAPE | Models beating persistence MAE | Measured interval coverage |
-|---|---:|---:|---:|---:|
-| Day (1) | 50.34% | 1.26% | 25/57 | 76.33% |
-| Week (5) | 49.86% | 2.83% | 30/57 | 75.71% |
-| Month (22) | 48.41% | 6.57% | 22/57 | 67.83% |
-| Quarter (88; ~4 months) | 46.53% | 11.09% | 21/57 | 37.55% |
+Terminal coverage uses the target date scored by MAE/MAPE. Path coverage averages
+all lead steps and is retained separately. Reports before 17 November used the path
+average under the former coverage field. Intervals use validation residuals; that
+segment also selects stopping weights and shrinkage, so these are not independently
+calibrated or guaranteed conformal intervals. These are frozen fitted-model tests,
+not monthly refitted walk-forward results or proof of an untouched final study.
+The universe is the currently configured stock set, not a point-in-time constituent
+database. Historical comparisons retain survivorship and corporate-action limits.
 
-These results do not establish a trading edge. The interval target is 90%; actual coverage is often substantially lower, especially at 88 sessions. Validation also selects early-stopping weights, so these are empirical ranges, not guaranteed conformal intervals. Historical predictions use a fixed fitted model with rolling observed input windows; repeated walk-forward refitting and transaction-cost backtests remain separate research studies.
+| Horizon | Net return per trade at illustrative 10 bp cost | Trades |
+|---|---:|---:|
+| 1 sessions | -0.066% | 916 |
+| 5 sessions | +0.114% | 624 |
+| 22 sessions | +0.248% | 314 |
+| 63 sessions | +0.233% | 99 |
 
-## News validation
+Cost inputs are illustrative round-trip sensitivities, not broker-specific charges.
+The study uses non-overlapping long-only positions per ticker/horizon, equal weight
+per trade and zero-return cash; it omits portfolio sizing, taxes, liquidity, financing,
+market impact and uncertainty estimates. It does not establish profitability.
 
-The default keyword scorer was evaluated on **2,264 independently expert-labeled financial sentences** from the original [FinancialPhraseBank source](https://huggingface.co/datasets/takala/financial_phrasebank). The source revision, archive checksum, attribution and CC-BY-NC-SA-3.0 license are recorded in [benchmark provenance](data/benchmarks/financial_phrasebank_provenance.json). No scorer fitting was performed on this benchmark.
+## News and fundamentals evidence
 
-- Accuracy: **69.61%**, versus **61.44%** for the majority class.
-- Balanced accuracy: **49.39%**; macro F1: **0.507**.
-- Negative-example recall: **15.84%**. This is a material weakness.
-- Retrieval smoke Recall@1: 1.0 on two explicitly synthetic queries; this is not a real-world retrieval benchmark.
-- News confidence/impact scores remain heuristics, not calibrated probabilities.
-- Latest verified news refresh found articles for **9/57** configured symbols. The RSS feed is finite; empty results are preserved as unavailable evidence. Broader coverage can use NEWS_API_KEY.
-- Current price backtests do not mix in today's news. Historical fusion requires archived articles available at each prediction origin.
+The keyword scorer was evaluated without fitting on 2,264 expert-labelled English
+FinancialPhraseBank sentences: accuracy 76.19%, majority
+baseline 61.44%, macro F1
+0.626, and negative recall 27.06%.
+This is not an Indian-market return benchmark; confidence remains uncalibrated.
+The current annotation export contains 4,527 unlabelled
+article rows across 58 companies. Independent human labels are still required.
 
-## Schedule and operation
+Valuation reports share the company-page calculation, with default research
+discount-rate assumptions, reported company beta, verified monetary units and
+same-period FCFE inputs. Confidence labels describe method/input coverage; the
+ranges are scenarios, not statistical confidence intervals. Page overrides can
+produce different scenarios. The 252-session fundamentals return model remains
+gated by matured point-in-time labels (minimum 30 matured snapshot months and 300
+samples); no historical fundamentals were backfilled using today's observations.
 
-Windows task **Equimaster-Daily-Refresh** is registered and Ready. It runs weekdays at **18:30 Asia/Kolkata**, with the selected Python interpreter and project working directory, while the registering Windows user is logged in. The next scheduled weekday is **26 October 2026**. The manual end-to-end run was verified; the future scheduled trigger has not yet fired.
+## Remaining administrator and research work
 
-Run the dashboard with `python -m streamlit run app.py`. See [README](README.md) for setup, optional neural news models, evaluation commands, scheduling and limitations.
+1. Windows denied disabling the legacy `Equimaster daily update` task. Run
+   `scripts/install_schedule.ps1` once as administrator to disable that duplicate.
+   A shared operating-system lock prevents overlapping pipeline runs meanwhile.
+2. Run preregistered refitted walk-forward studies on additional untouched origins
+   with persistence baselines and realistic documented trading costs.
+3. Separate model selection from interval calibration and evaluate additional
+   untouched periods before claiming nominal coverage.
+4. Obtain independent Indian-market news labels and point-in-time disclosure
+   histories; validate sentiment, confidence and LSTM/news/fundamentals fusion.
+   The dashboard blend remains a research heuristic; learned fusion stays shadow-only.
 
-## Remaining research, beyond feature implementation
+## Reproducible operation
 
-- Improve and independently validate models that do not beat persistence.
-- Improve negative-news detection and calibrate sentiment confidence.
-- Collect timestamped, independently labeled Indian-market news for regional sentiment/retrieval and historical fusion validation.
-- Evaluate interval coverage on additional untouched periods and refitted walk-forward strategies.
-
-No production profitability or calibrated-confidence claim is made. Existing legacy models and prior version bundles remain available as backups; no source files or Git history were deleted.
-
-## Fundamentals expansion ? 24 October 2026
-
-The Fundamentals tab now supports 96 parameters. All 56 configured companies were
-refreshed from public Screener and Yahoo sources, with 54?89 populated parameters
-per company (TCS: 88). All 56 returned quarterly results, annual profit/loss, balance
-sheet, cash flow, historical ratios and shareholding sections. Ranges are visible,
-sector-aware application heuristics, with compatible peer valuation bands where possible.
-
-Monetary fields carry their own currency, including verified USD statements for Infosys
-and INR annual statements for HCL. Ambiguous cross-currency valuation multiples are
-withheld. Missing bank disclosures and pledged shares are not invented.
-
-See [Fundamentals guide](FUNDAMENTALS_GUIDE.md) for the metrics, sources, formulas,
-range interpretation, exports and refresh commands. Snapshots refresh with the existing
-daily workflow after 24 hours. Source warnings and per-company status are recorded in
-`logs/fundamentals_refresh.json`.
-
-## Dashboard redesign - 24 October 2026
-
-Implemented a Trendlyne-inspired research layout within Streamlit, preserving
-Equimaster's dark background and cyan/green palette:
-shared navigation, six dated index cards, benchmark and coverage charts, sector
-moves, gainers/losers, recent news and a functional screener.
-Company pages include a quote header, real financial/valuation/momentum cards and
-six research sections that render on selection. Technical charts, forecasts,
-fundamentals, statements, exports and model operations remain connected.
-
-Browser checks verified screener search, native navigation, fundamentals,
-technical charts and a generated TCS forecast. No browser JavaScript errors were
-reported. The offline suite passed 56 tests. See [UI design notes](UI_DESIGN.md)
-for implementation and screenshot commands.
-
-The dark-theme contrast correction covers native controls, selected chips,
-captions, company facts, dataframe headers and assessment cells, plus every
-Plotly view. The native configuration and custom surfaces now use compatible
-foreground/background pairs; captions retain full opacity.
+Install requirements-lock.txt in a fresh Python 3.13 environment, restore the local
+runtime archive or run the refresh pipeline, and launch `streamlit run app.py`.
+The tested lockfile uses TensorFlow 2.20.0, Keras 3.13.2, pandas 2.3.3 and Streamlit
+1.53.1. The existing training environment has newer TensorFlow/Streamlit packages;
+the locked environment's inference and browser checks verify the saved weights
+can be served under the documented installation.

@@ -1,3 +1,38 @@
+CURRENT RELEASE REVIEW - 19 November 2026
+
+This addendum supersedes earlier coverage and test counts. The historical report
+below retains its original dated research measurements and implementation context.
+Current application evidence: 168 clean-environment tests; 59 current model
+bundles; 236 finite inference checks; 58 company valuation scenarios; 10 browser
+checks; and a successful registered daily pipeline run. Data ends 2026-11-19.
+All four horizons are active, including JIOFIN.NS and MAXHEALTH.NS. No news gate was bypassed.
+
+CURRENT FROZEN-MODEL EVALUATION
+
+| Horizon | Models | Direction accuracy | LSTM MAPE | Persistence MAPE | MAE wins | Terminal interval coverage | Path coverage |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| Day (1) | 59 | 27.25% | 1.299% | 1.296% | 13/59 | 77.80% | 77.80% |
+| Week (5) | 59 | 35.18% | 2.972% | 2.960% | 19/59 | 76.09% | 77.21% |
+| Month (22) | 59 | 38.34% | 6.653% | 6.565% | 16/59 | 59.94% | 68.52% |
+| Quarter (63) | 59 | 39.08% | 9.800% | 9.129% | 18/59 | 37.79% | 52.66% |
+
+Terminal and path coverage are distinct. The nominal interval target is 90%.
+Software validation does not establish a trading edge. Refitted walk-forward tests,
+independent Indian-market news labels, independent interval calibration, historical
+fusion validation and matured 252-session fundamentals labels remain research work.
+One administrator task remains: disable the inaccessible legacy daily schedule;
+the shared lock already prevents concurrent pipeline execution.
+
+Detailed methods, costs, provenance and limitations: PROJECT_STATUS.md and
+reports/release-20261119/. The final local runtime archive includes exact-source CI
+provenance and per-file checksums in RELEASE_MANIFEST.json.
+
+END CURRENT RELEASE REVIEW
+
+HISTORICAL STUDY - 26 OCTOBER 2026 CHECKPOINT
+
+The study below describes the October checkpoint. References to current results in its body belong to that historical study; the release review above supersedes its coverage and verification counts.
+
 ================================================================================
 EQUIMASTER-AI: POINT-IN-TIME NEWS RETRIEVAL AND MULTI-HORIZON LSTM FORECASTING
 FOR FINANCIAL RESEARCH
@@ -9,8 +44,8 @@ ABSTRACT
     combines per-ticker Long Short-Term Memory (LSTM) price forecasting with a
     timestamp-aware financial-news retrieval and sentiment pipeline. The
     platform supports Indian equities and direct forecasts at Day (1 session),
-    Week (5), Month (22), and Quarter (88) horizons. Quarter retains the
-    existing 88-session model and spans approximately four months. Historical
+    Week (5), Month (22), and Quarter (63) horizons. Quarter is approximately
+    three calendar months of trading sessions. Historical
     market models use 60-session input
     windows, fit-only feature scaling, chronological calibration and test
     periods, and immutable versioned artifacts. News is retrieved from
@@ -19,14 +54,15 @@ ABSTRACT
     model synthesis is an optional capability; it is not presented as a
     validated price forecaster.
 
-    The latest saved evaluation contains 228 ticker-horizon results across 57
-    tickers. Mean directional accuracy across tickers is 50.34%, 49.86%,
-    48.41%, and 46.53% at Day, Week, Month, and Quarter horizons (1, 5, 22,
-    and 88 sessions), respectively.
-    Mean MAPE is 1.26%, 2.83%, 6.57%, and 11.09%. The model's MAE is lower
-    than a persistence price baseline for 25/57, 30/57, 22/57, and 21/57
-    tickers at those horizons. These observations do not establish a
-    profitable trading strategy or show that news retrieval increases price
+    The current saved evaluation contains 228 ticker-horizon results across
+    57 active models; two of the 59 configured stock/index models have no
+    bundle because the fresh-news training requirement was not met. Mean MAPE
+    is 1.286%, 2.873%, 6.555%, and 10.054% at Day, Week, Month, and Quarter
+    (1, 5, 22, and 63 sessions); persistence MAPE is 1.281%, 2.854%, 6.382%,
+    and 9.385%. LSTM MAE is lower than persistence for 16/57, 20/57, 15/57,
+    and 18/57 tickers at those horizons. Empirical interval coverage is
+    76.40%, 76.05%, 69.03%, and 53.76% against a 90% nominal target. These
+    observations do not establish a profitable trading strategy or show that news retrieval increases price
     accuracy. The historical price backtests use one fitted model per ticker
     and horizon with rolling observed input windows; they are not a repeated
     walk-forward retraining study. A separate expert-labeled financial
@@ -85,8 +121,8 @@ ABSTRACT
 
     (1) An implementation-grounded account of the current forecast contract:
         prediction after the latest available close, with future-close targets
-        Day (1), Week (5), Month (22), or Quarter (88) trading sessions ahead.
-        Quarter retains the existing horizon and spans approximately four months.
+        Day (1), Week (5), Month (22), or Quarter (63) trading sessions ahead.
+        Quarter is approximately three calendar months.
 
     (2) A description of per-ticker, per-horizon residual LSTMs, chronological
         fitting and testing, persisted backtest rows, and the persistence
@@ -165,8 +201,8 @@ ABSTRACT
 
     The canonical forecast task is an after-close prediction from the latest
     available close, with a future closing-price target at horizon h in
-    {1, 5, 22, 88} trading sessions, displayed as Day, Week, Month, and
-    Quarter. Quarter is the retained 88-session (~4-month) model. A ticker's latest close is the forecast
+    {1, 5, 22, 63} trading sessions, displayed as Day, Week, Month, and
+    Quarter. Quarter is approximately three calendar months. A ticker's latest close is the forecast
     origin. Calendar days, weekends, and market holidays are not counted as
     trading sessions.
 
@@ -322,9 +358,6 @@ ABSTRACT
     where r is the LSTM predicted return from the origin close and sentiment
     lies in [-1, 1]. This is a fixed rule, not a learned fusion model. The
     formula is used for displayed forecast/news fusion and evaluation code.
-    A separate Market Summary is a heuristic research summary and is not a
-    validated probability or substitute for the forecast metrics.
-
     The current saved per-ticker LSTM backtests evaluate price forecasts
     without mixing in today's news. Measuring historical news fusion requires
     timestamped articles archived as they were available at each historical
@@ -374,7 +407,7 @@ ABSTRACT
     Evaluate all available tickers and four horizons, writing results to a
     separate file so the current summary is preserved:
 
-        python scripts/evaluate_watchlist.py --horizons 1,5,22,88 --output data/evaluation/watchlist_research_run.json
+        python scripts/evaluate_watchlist.py --horizons 1,5,22,63 --output data/evaluation/quarter63_research_run.json
 
     Evaluate the configured labeled-news fixture:
 
@@ -403,31 +436,31 @@ ABSTRACT
 
     5.1 Evaluation snapshot
 
-    The figures below are the latest saved summary in
-    data/evaluation/watchlist_all_horizons.json and PROJECT_STATUS.md at the
-    time this paper was updated. There are 57 ticker-level results at each
-    horizon. Means are unweighted across tickers, not pooled across all
+    The current figures are saved in data/evaluation/current-universe-20261026.json.
+    They cover 57 active models at each horizon; Jio Financial Services and
+    Max Healthcare are missing bundles and are excluded. Means are unweighted
+    across tickers, not pooled across all
     prediction rows. Sample totals are shown for transparency; individual
     ticker histories have different lengths.
 
     Period    Ticker pairs   Test samples   Mean directional   Mean MAPE
     (sessions)                             accuracy           (%)
     -------------------------------------------------------------------
-    Day (1)      57            11,144         50.34%            1.26
-    Week (5)     57            10,916         49.86%            2.83
-    Month (22)   57             9,947         48.41%            6.57
-    Quarter (88) 57             6,185         46.53%           11.09
+    Day (1)      57            11,144         30.13%            1.286
+    Week (5)     57            10,916         34.12%            2.873
+    Month (22)   57             9,947         36.30%            6.555
+    Quarter (63) 57             7,610         41.21%           10.054
 
     Period    Tickers with lower LSTM MAE than persistence   Mean test
     (sessions)                                               interval
                                                               coverage
     ------------------------------------------------------------------
-    Day (1)                     25 / 57                       76.33%
-    Week (5)                    30 / 57                       75.71%
-    Month (22)                  22 / 57                       67.83%
-    Quarter (88)                21 / 57                       37.55%
+    Day (1)                     16 / 57                       76.40%
+    Week (5)                    20 / 57                       76.05%
+    Month (22)                  15 / 57                       69.03%
+    Quarter (63)                18 / 57                       53.76%
 
-    There are 38,192 test prediction rows summed across horizons. The
+    There are 39,617 test prediction rows summed across horizons. The
     horizon-specific evaluations are not independent samples because
     multiple horizons use overlapping market histories and target periods.
     The aggregate counts and means are descriptive; no significance test or
@@ -435,38 +468,52 @@ ABSTRACT
 
     5.2 Interpretation of price and directional metrics
 
-    The Day mean MAPE of 1.26% describes average absolute percentage
+    The Day mean MAPE of 1.286% describes average absolute percentage
     price error under the stated test protocol. It does not mean that 98.74%
     of predictions are "accurate." The corresponding mean directional
-    accuracy is 50.34%. The averages decline with horizon in this snapshot,
-    and the 22-session and 88-session directional means are below 50%.
+    accuracy is 30.13%. Directional accuracy is below 50% at every horizon
+    under the saved metric definition.
 
     The persistence comparison reinforces that the LSTM does not uniformly
     improve price error. The LSTM has lower MAE for fewer than half of the
-    evaluated tickers at Day, Month, and Quarter; at Week it does so for
-    30 of 57. These results justify per-ticker and per-horizon model
+    evaluated tickers at every horizon. These results justify per-ticker and per-horizon model
     selection, but that selection itself must be based on validation data,
     not repeated reuse of the final test period.
 
     The reported 90% nominal interval target is not reached in the saved
     average test coverage at any listed horizon. Coverage is particularly low
-    at Quarter (88 sessions, approximately four months). These intervals are based on validation residual
+    at the Quarter (63 sessions, approximately three months). These intervals are based on validation residual
     quantiles, and calibration-period early stopping means they should be
     described as empirical intervals, not guaranteed coverage.
 
-    5.3 News classification benchmark
+    5.3 Frozen-holdout cost sensitivity
+
+    A fixed long-only rule was applied to non-overlapping holdout forecasts:
+    enter when predicted return exceeds an illustrative round-trip cost, and
+    otherwise remain in cash. At 10 basis points, mean realized net return
+    per trade was -0.142% for Day (647 trades), +0.034% for Week (624),
+    -0.594% for Month (260), and -1.794% for Quarter (111). Trades are
+    equally weighted; cash return is zero. The small positive Week mean has
+    no uncertainty estimate and does not establish an economic edge. The
+    scenarios omit broker-specific taxes, slippage, liquidity, financing,
+    portfolio sizing, and concurrent capital allocation. Models were frozen
+    within their test periods; this is not a refitted walk-forward study.
+    The complete 0/10/25/50 basis-point report is saved in
+    data/evaluation/cost-sensitivity-20261026.json.
+
+    5.4 News classification benchmark
 
     On 2,264 expert-labeled FinancialPhraseBank sentences, the current
     keyword-based evaluation reports:
 
     Metric                                  Result
     ------------------------------------------------
-    Accuracy                                69.61%
+    Accuracy                                76.19%
     Majority-class accuracy baseline       61.44%
-    Balanced accuracy                       49.39%
-    Macro F1                                0.507
-    Negative-class recall                   15.84%
-    Heuristic-confidence ECE                0.236
+    Balanced accuracy                       60.16%
+    Macro F1                                0.626
+    Negative-class recall                   27.06%
+    Heuristic-confidence ECE                0.240
 
     Class counts are 1,391 neutral, 570 positive, and 303 negative. The
     accuracy exceeds the majority-class baseline, but balanced accuracy and
@@ -502,16 +549,16 @@ ABSTRACT
         multi-horizon LSTM artifacts and persist reproducible evaluation
         records.
 
-    (b) The tested models achieve approximately 50% mean short-horizon
-        directional accuracy in the saved evaluation; their performance is
-        worse on average at longer horizons.
+    (b) The tested models have 30.13% and 34.12% mean directional accuracy
+        at one and five sessions under the saved metric; longer-horizon
+        averages are 36.30% and 41.21%.
 
     (c) The LSTM's price-error performance is mixed against a no-change
         persistence baseline and differs by ticker and horizon.
 
-    (d) The keyword news scorer achieves 69.61% accuracy on one
-        sentence-level benchmark, but has low negative-class recall and
-        balanced accuracy near 50%.
+    (d) The keyword news scorer achieves 76.19% accuracy on one
+        sentence-level benchmark, but negative-class recall remains 27.06%
+        and confidence calibration remains weak.
 
     (e) The software supports evidence retrieval, timestamp checks, and
         optional language-model synthesis, but these system capabilities
@@ -667,11 +714,13 @@ ABSTRACT
 
     The current Equimaster-AI implementation is a financial research platform
     containing per-ticker LSTM close forecasts and a timestamp-aware
-    news-retrieval/sentiment path. Its saved 57-ticker evaluation reports
-    mean directional accuracy of 50.34% at one session, 49.86% at five,
-    48.41% at 22, and 46.53% at 88 sessions. Its LSTM beats persistence MAE
-    for 25, 30, 22, and 21 tickers at those respective horizons. The separate
-    sentence-level news benchmark reports 69.61% accuracy, but that benchmark
+    news-retrieval/sentiment path. Its saved 57-model evaluation reports
+    mean directional accuracy of 30.13% at one session, 34.12% at five,
+    36.30% at 22, and 41.21% at 63 sessions. Its LSTM beats persistence MAE
+    for 16, 20, 15, and 18 tickers at those respective horizons. Two of the
+    59 configured models remain unavailable because the fresh-news training
+    requirement is unmet. The sentence-level news benchmark reports 76.19%
+    accuracy, but that benchmark
     does not measure stock-price direction and also reveals weak negative
     recall.
 

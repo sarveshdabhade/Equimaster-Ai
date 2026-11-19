@@ -1,0 +1,1723 @@
+{
+  "as_of": "2026-11-19T15:54:55.748968+00:00",
+  "requested": 59,
+  "inference_skipped": false,
+  "current_bundles": 59,
+  "freshness_required": true,
+  "datasets": [
+    {
+      "ticker": "ADANIENT.NS",
+      "data_end": "2026-11-19 00:00:00",
+      "training_data_end": "2026-11-19 00:00:00",
+      "version": "20261119T111716689141Z",
+      "current_data_match": true,
+      "retraining_required": false,
+      "horizons": 4
+    },
+    {
+      "ticker": "ADANIPORTS.NS",
+      "data_end": "2026-11-19 00:00:00",
+      "training_data_end": "2026-11-19 00:00:00",
+      "version": "20261119T111716690984Z",
+      "current_data_match": true,
+      "retraining_required": false,
+      "horizons": 4
+    },
+    {
+      "ticker": "APOLLOHOSP.NS",
+      "data_end": "2026-11-19 00:00:00",
+      "training_data_end": "2026-11-19 00:00:00",
+      "version": "20261119T111840363576Z",
+      "current_data_match": true,
+      "retraining_required": false,
+      "horizons": 4
+    },
+    {
+      "ticker": "ASIANPAINT.NS",
+      "data_end": "2026-11-19 00:00:00",
+      "training_data_end": "2026-11-19 00:00:00",
+      "version": "20261119T111846512728Z",
+      "current_data_match": true,
+      "retraining_required": false,
+      "horizons": 4
+    },
+    {
+      "ticker": "AXISBANK.NS",
+      "data_end": "2026-11-19 00:00:00",
+      "training_data_end": "2026-11-19 00:00:00",
+      "version": "20261119T111956365846Z",
+      "current_data_match": true,
+      "retraining_required": false,
+      "horizons": 4
+    },
+    {
+      "ticker": "BSE.NS",
+      "data_end": "2026-11-19 00:00:00",
+      "training_data_end": "2026-11-19 00:00:00",
+      "version": "20261119T112023669031Z",
+      "current_data_match": true,
+      "retraining_required": false,
+      "horizons": 4
+    },
+    {
+      "ticker": "BAJAJ-AUTO.NS",
+      "data_end": "2026-11-19 00:00:00",
+      "training_data_end": "2026-11-19 00:00:00",
+      "version": "20261119T112142674422Z",
+      "current_data_match": true,
+      "retraining_required": false,
+      "horizons": 4
+    },
+    {
+      "ticker": "BAJFINANCE.NS",
+      "data_end": "2026-11-19 00:00:00",
+      "training_data_end": "2026-11-19 00:00:00",
+      "version": "20261119T112234107861Z",
+      "current_data_match": true,
+      "retraining_required": false,
+      "horizons": 4
+    },
+    {
+      "ticker": "BAJAJFINSV.NS",
+      "data_end": "2026-11-19 00:00:00",
+      "training_data_end": "2026-11-19 00:00:00",
+      "version": "20261119T112334102975Z",
+      "current_data_match": true,
+      "retraining_required": false,
+      "horizons": 4
+    },
+    {
+      "ticker": "BEL.NS",
+      "data_end": "2026-11-19 00:00:00",
+      "training_data_end": "2026-11-19 00:00:00",
+      "version": "20261119T112439782188Z",
+      "current_data_match": true,
+      "retraining_required": false,
+      "horizons": 4
+    },
+    {
+      "ticker": "BHARTIARTL.NS",
+      "data_end": "2026-11-19 00:00:00",
+      "training_data_end": "2026-11-19 00:00:00",
+      "version": "20261119T112518257840Z",
+      "current_data_match": true,
+      "retraining_required": false,
+      "horizons": 4
+    },
+    {
+      "ticker": "CIPLA.NS",
+      "data_end": "2026-11-19 00:00:00",
+      "training_data_end": "2026-11-19 00:00:00",
+      "version": "20261119T112617684901Z",
+      "current_data_match": true,
+      "retraining_required": false,
+      "horizons": 4
+    },
+    {
+      "ticker": "COALINDIA.NS",
+      "data_end": "2026-11-19 00:00:00",
+      "training_data_end": "2026-11-19 00:00:00",
+      "version": "20261119T112708691298Z",
+      "current_data_match": true,
+      "retraining_required": false,
+      "horizons": 4
+    },
+    {
+      "ticker": "DRREDDY.NS",
+      "data_end": "2026-11-19 00:00:00",
+      "training_data_end": "2026-11-19 00:00:00",
+      "version": "20261119T112828220787Z",
+      "current_data_match": true,
+      "retraining_required": false,
+      "horizons": 4
+    },
+    {
+      "ticker": "EICHERMOT.NS",
+      "data_end": "2026-11-19 00:00:00",
+      "training_data_end": "2026-11-19 00:00:00",
+      "version": "20261119T112851562823Z",
+      "current_data_match": true,
+      "retraining_required": false,
+      "horizons": 4
+    },
+    {
+      "ticker": "ETERNAL.NS",
+      "data_end": "2026-11-19 00:00:00",
+      "training_data_end": "2026-11-19 00:00:00",
+      "version": "20261119T113007290582Z",
+      "current_data_match": true,
+      "retraining_required": false,
+      "horizons": 4
+    },
+    {
+      "ticker": "GRASIM.NS",
+      "data_end": "2026-11-19 00:00:00",
+      "training_data_end": "2026-11-19 00:00:00",
+      "version": "20261119T113021209932Z",
+      "current_data_match": true,
+      "retraining_required": false,
+      "horizons": 4
+    },
+    {
+      "ticker": "HCLTECH.NS",
+      "data_end": "2026-11-19 00:00:00",
+      "training_data_end": "2026-11-19 00:00:00",
+      "version": "20261119T113129184723Z",
+      "current_data_match": true,
+      "retraining_required": false,
+      "horizons": 4
+    },
+    {
+      "ticker": "HDFCBANK.NS",
+      "data_end": "2026-11-19 00:00:00",
+      "training_data_end": "2026-11-19 00:00:00",
+      "version": "20261119T113215657657Z",
+      "current_data_match": true,
+      "retraining_required": false,
+      "horizons": 4
+    },
+    {
+      "ticker": "HDFCLIFE.NS",
+      "data_end": "2026-11-19 00:00:00",
+      "training_data_end": "2026-11-19 00:00:00",
+      "version": "20261119T113247906247Z",
+      "current_data_match": true,
+      "retraining_required": false,
+      "horizons": 4
+    },
+    {
+      "ticker": "HINDALCO.NS",
+      "data_end": "2026-11-19 00:00:00",
+      "training_data_end": "2026-11-19 00:00:00",
+      "version": "20261119T113353392530Z",
+      "current_data_match": true,
+      "retraining_required": false,
+      "horizons": 4
+    },
+    {
+      "ticker": "HINDUNILVR.NS",
+      "data_end": "2026-11-19 00:00:00",
+      "training_data_end": "2026-11-19 00:00:00",
+      "version": "20261119T113442754941Z",
+      "current_data_match": true,
+      "retraining_required": false,
+      "horizons": 4
+    },
+    {
+      "ticker": "ICICIBANK.NS",
+      "data_end": "2026-11-19 00:00:00",
+      "training_data_end": "2026-11-19 00:00:00",
+      "version": "20261119T113532103365Z",
+      "current_data_match": true,
+      "retraining_required": false,
+      "horizons": 4
+    },
+    {
+      "ticker": "ITC.NS",
+      "data_end": "2026-11-19 00:00:00",
+      "training_data_end": "2026-11-19 00:00:00",
+      "version": "20261119T113616462249Z",
+      "current_data_match": true,
+      "retraining_required": false,
+      "horizons": 4
+    },
+    {
+      "ticker": "INFY.NS",
+      "data_end": "2026-11-19 00:00:00",
+      "training_data_end": "2026-11-19 00:00:00",
+      "version": "20261119T113638910680Z",
+      "current_data_match": true,
+      "retraining_required": false,
+      "horizons": 4
+    },
+    {
+      "ticker": "INDIGO.NS",
+      "data_end": "2026-11-19 00:00:00",
+      "training_data_end": "2026-11-19 00:00:00",
+      "version": "20261119T113741476518Z",
+      "current_data_match": true,
+      "retraining_required": false,
+      "horizons": 4
+    },
+    {
+      "ticker": "JSWSTEEL.NS",
+      "data_end": "2026-11-19 00:00:00",
+      "training_data_end": "2026-11-19 00:00:00",
+      "version": "20261119T113807437514Z",
+      "current_data_match": true,
+      "retraining_required": false,
+      "horizons": 4
+    },
+    {
+      "ticker": "JIOFIN.NS",
+      "data_end": "2026-11-19 00:00:00",
+      "training_data_end": "2026-11-19 00:00:00",
+      "version": "20261119T113854420203Z",
+      "current_data_match": true,
+      "retraining_required": false,
+      "horizons": 4
+    },
+    {
+      "ticker": "KOTAKBANK.NS",
+      "data_end": "2026-11-19 00:00:00",
+      "training_data_end": "2026-11-19 00:00:00",
+      "version": "20261119T113941356636Z",
+      "current_data_match": true,
+      "retraining_required": false,
+      "horizons": 4
+    },
+    {
+      "ticker": "LT.NS",
+      "data_end": "2026-11-19 00:00:00",
+      "training_data_end": "2026-11-19 00:00:00",
+      "version": "20261119T114013064665Z",
+      "current_data_match": true,
+      "retraining_required": false,
+      "horizons": 4
+    },
+    {
+      "ticker": "M&M.NS",
+      "data_end": "2026-11-19 00:00:00",
+      "training_data_end": "2026-11-19 00:00:00",
+      "version": "20261119T114129326834Z",
+      "current_data_match": true,
+      "retraining_required": false,
+      "horizons": 4
+    },
+    {
+      "ticker": "MARUTI.NS",
+      "data_end": "2026-11-19 00:00:00",
+      "training_data_end": "2026-11-19 00:00:00",
+      "version": "20261119T114200327626Z",
+      "current_data_match": true,
+      "retraining_required": false,
+      "horizons": 4
+    },
+    {
+      "ticker": "MAXHEALTH.NS",
+      "data_end": "2026-11-19 00:00:00",
+      "training_data_end": "2026-11-19 00:00:00",
+      "version": "20261119T114329199005Z",
+      "current_data_match": true,
+      "retraining_required": false,
+      "horizons": 4
+    },
+    {
+      "ticker": "NTPC.NS",
+      "data_end": "2026-11-19 00:00:00",
+      "training_data_end": "2026-11-19 00:00:00",
+      "version": "20261119T114347130472Z",
+      "current_data_match": true,
+      "retraining_required": false,
+      "horizons": 4
+    },
+    {
+      "ticker": "NESTLEIND.NS",
+      "data_end": "2026-11-19 00:00:00",
+      "training_data_end": "2026-11-19 00:00:00",
+      "version": "20261119T154320397977Z",
+      "current_data_match": true,
+      "retraining_required": false,
+      "horizons": 4
+    },
+    {
+      "ticker": "ONGC.NS",
+      "data_end": "2026-11-19 00:00:00",
+      "training_data_end": "2026-11-19 00:00:00",
+      "version": "20261119T154320397960Z",
+      "current_data_match": true,
+      "retraining_required": false,
+      "horizons": 4
+    },
+    {
+      "ticker": "POWERGRID.NS",
+      "data_end": "2026-11-19 00:00:00",
+      "training_data_end": "2026-11-19 00:00:00",
+      "version": "20261119T154353647254Z",
+      "current_data_match": true,
+      "retraining_required": false,
+      "horizons": 4
+    },
+    {
+      "ticker": "RELIANCE.NS",
+      "data_end": "2026-11-19 00:00:00",
+      "training_data_end": "2026-11-19 00:00:00",
+      "version": "20261119T154358049300Z",
+      "current_data_match": true,
+      "retraining_required": false,
+      "horizons": 4
+    },
+    {
+      "ticker": "SBILIFE.NS",
+      "data_end": "2026-11-19 00:00:00",
+      "training_data_end": "2026-11-19 00:00:00",
+      "version": "20261119T154432749250Z",
+      "current_data_match": true,
+      "retraining_required": false,
+      "horizons": 4
+    },
+    {
+      "ticker": "SHRIRAMFIN.NS",
+      "data_end": "2026-11-19 00:00:00",
+      "training_data_end": "2026-11-19 00:00:00",
+      "version": "20261119T154433176287Z",
+      "current_data_match": true,
+      "retraining_required": false,
+      "horizons": 4
+    },
+    {
+      "ticker": "SBIN.NS",
+      "data_end": "2026-11-19 00:00:00",
+      "training_data_end": "2026-11-19 00:00:00",
+      "version": "20261119T154503460733Z",
+      "current_data_match": true,
+      "retraining_required": false,
+      "horizons": 4
+    },
+    {
+      "ticker": "SUNPHARMA.NS",
+      "data_end": "2026-11-19 00:00:00",
+      "training_data_end": "2026-11-19 00:00:00",
+      "version": "20261119T154503672115Z",
+      "current_data_match": true,
+      "retraining_required": false,
+      "horizons": 4
+    },
+    {
+      "ticker": "TCS.NS",
+      "data_end": "2026-11-19 00:00:00",
+      "training_data_end": "2026-11-19 00:00:00",
+      "version": "20261119T154604103687Z",
+      "current_data_match": true,
+      "retraining_required": false,
+      "horizons": 4
+    },
+    {
+      "ticker": "TATACONSUM.NS",
+      "data_end": "2026-11-19 00:00:00",
+      "training_data_end": "2026-11-19 00:00:00",
+      "version": "20261119T154625066551Z",
+      "current_data_match": true,
+      "retraining_required": false,
+      "horizons": 4
+    },
+    {
+      "ticker": "TMPV.NS",
+      "data_end": "2026-11-19 00:00:00",
+      "training_data_end": "2026-11-19 00:00:00",
+      "version": "20261119T154759884454Z",
+      "current_data_match": true,
+      "retraining_required": false,
+      "horizons": 4
+    },
+    {
+      "ticker": "TATASTEEL.NS",
+      "data_end": "2026-11-19 00:00:00",
+      "training_data_end": "2026-11-19 00:00:00",
+      "version": "20261119T154806457256Z",
+      "current_data_match": true,
+      "retraining_required": false,
+      "horizons": 4
+    },
+    {
+      "ticker": "TECHM.NS",
+      "data_end": "2026-11-19 00:00:00",
+      "training_data_end": "2026-11-19 00:00:00",
+      "version": "20261119T113831142185Z",
+      "current_data_match": true,
+      "retraining_required": false,
+      "horizons": 4
+    },
+    {
+      "ticker": "TITAN.NS",
+      "data_end": "2026-11-19 00:00:00",
+      "training_data_end": "2026-11-19 00:00:00",
+      "version": "20261119T113758427293Z",
+      "current_data_match": true,
+      "retraining_required": false,
+      "horizons": 4
+    },
+    {
+      "ticker": "TRENT.NS",
+      "data_end": "2026-11-19 00:00:00",
+      "training_data_end": "2026-11-19 00:00:00",
+      "version": "20261119T113721284583Z",
+      "current_data_match": true,
+      "retraining_required": false,
+      "horizons": 4
+    },
+    {
+      "ticker": "ULTRACEMCO.NS",
+      "data_end": "2026-11-19 00:00:00",
+      "training_data_end": "2026-11-19 00:00:00",
+      "version": "20261119T113645518705Z",
+      "current_data_match": true,
+      "retraining_required": false,
+      "horizons": 4
+    },
+    {
+      "ticker": "INDUSINDBK.NS",
+      "data_end": "2026-11-19 00:00:00",
+      "training_data_end": "2026-11-19 00:00:00",
+      "version": "20261119T113604284819Z",
+      "current_data_match": true,
+      "retraining_required": false,
+      "horizons": 4
+    },
+    {
+      "ticker": "BANKBARODA.NS",
+      "data_end": "2026-11-19 00:00:00",
+      "training_data_end": "2026-11-19 00:00:00",
+      "version": "20261119T113531308811Z",
+      "current_data_match": true,
+      "retraining_required": false,
+      "horizons": 4
+    },
+    {
+      "ticker": "PNB.NS",
+      "data_end": "2026-11-19 00:00:00",
+      "training_data_end": "2026-11-19 00:00:00",
+      "version": "20261119T113449952124Z",
+      "current_data_match": true,
+      "retraining_required": false,
+      "horizons": 4
+    },
+    {
+      "ticker": "FEDERALBNK.NS",
+      "data_end": "2026-11-19 00:00:00",
+      "training_data_end": "2026-11-19 00:00:00",
+      "version": "20261119T113257460930Z",
+      "current_data_match": true,
+      "retraining_required": false,
+      "horizons": 4
+    },
+    {
+      "ticker": "IDFCFIRSTB.NS",
+      "data_end": "2026-11-19 00:00:00",
+      "training_data_end": "2026-11-19 00:00:00",
+      "version": "20261119T113216341003Z",
+      "current_data_match": true,
+      "retraining_required": false,
+      "horizons": 4
+    },
+    {
+      "ticker": "BANDHANBNK.NS",
+      "data_end": "2026-11-19 00:00:00",
+      "training_data_end": "2026-11-19 00:00:00",
+      "version": "20261119T113143735463Z",
+      "current_data_match": true,
+      "retraining_required": false,
+      "horizons": 4
+    },
+    {
+      "ticker": "AUBANK.NS",
+      "data_end": "2026-11-19 00:00:00",
+      "training_data_end": "2026-11-19 00:00:00",
+      "version": "20261119T113112151206Z",
+      "current_data_match": true,
+      "retraining_required": false,
+      "horizons": 4
+    },
+    {
+      "ticker": "LICI.NS",
+      "data_end": "2026-11-19 00:00:00",
+      "training_data_end": "2026-11-19 00:00:00",
+      "version": "20261119T113033125145Z",
+      "current_data_match": true,
+      "retraining_required": false,
+      "horizons": 4
+    },
+    {
+      "ticker": "NSEI",
+      "data_end": "2026-11-19 00:00:00",
+      "training_data_end": "2026-11-19 00:00:00",
+      "version": "20261119T112948750321Z",
+      "current_data_match": true,
+      "retraining_required": false,
+      "horizons": 4
+    }
+  ],
+  "inference_checks": [
+    {
+      "ticker": "ADANIENT.NS",
+      "horizon": 1,
+      "finite": true
+    },
+    {
+      "ticker": "ADANIENT.NS",
+      "horizon": 5,
+      "finite": true
+    },
+    {
+      "ticker": "ADANIENT.NS",
+      "horizon": 22,
+      "finite": true
+    },
+    {
+      "ticker": "ADANIENT.NS",
+      "horizon": 63,
+      "finite": true
+    },
+    {
+      "ticker": "ADANIPORTS.NS",
+      "horizon": 1,
+      "finite": true
+    },
+    {
+      "ticker": "ADANIPORTS.NS",
+      "horizon": 5,
+      "finite": true
+    },
+    {
+      "ticker": "ADANIPORTS.NS",
+      "horizon": 22,
+      "finite": true
+    },
+    {
+      "ticker": "ADANIPORTS.NS",
+      "horizon": 63,
+      "finite": true
+    },
+    {
+      "ticker": "APOLLOHOSP.NS",
+      "horizon": 1,
+      "finite": true
+    },
+    {
+      "ticker": "APOLLOHOSP.NS",
+      "horizon": 5,
+      "finite": true
+    },
+    {
+      "ticker": "APOLLOHOSP.NS",
+      "horizon": 22,
+      "finite": true
+    },
+    {
+      "ticker": "APOLLOHOSP.NS",
+      "horizon": 63,
+      "finite": true
+    },
+    {
+      "ticker": "ASIANPAINT.NS",
+      "horizon": 1,
+      "finite": true
+    },
+    {
+      "ticker": "ASIANPAINT.NS",
+      "horizon": 5,
+      "finite": true
+    },
+    {
+      "ticker": "ASIANPAINT.NS",
+      "horizon": 22,
+      "finite": true
+    },
+    {
+      "ticker": "ASIANPAINT.NS",
+      "horizon": 63,
+      "finite": true
+    },
+    {
+      "ticker": "AXISBANK.NS",
+      "horizon": 1,
+      "finite": true
+    },
+    {
+      "ticker": "AXISBANK.NS",
+      "horizon": 5,
+      "finite": true
+    },
+    {
+      "ticker": "AXISBANK.NS",
+      "horizon": 22,
+      "finite": true
+    },
+    {
+      "ticker": "AXISBANK.NS",
+      "horizon": 63,
+      "finite": true
+    },
+    {
+      "ticker": "BSE.NS",
+      "horizon": 1,
+      "finite": true
+    },
+    {
+      "ticker": "BSE.NS",
+      "horizon": 5,
+      "finite": true
+    },
+    {
+      "ticker": "BSE.NS",
+      "horizon": 22,
+      "finite": true
+    },
+    {
+      "ticker": "BSE.NS",
+      "horizon": 63,
+      "finite": true
+    },
+    {
+      "ticker": "BAJAJ-AUTO.NS",
+      "horizon": 1,
+      "finite": true
+    },
+    {
+      "ticker": "BAJAJ-AUTO.NS",
+      "horizon": 5,
+      "finite": true
+    },
+    {
+      "ticker": "BAJAJ-AUTO.NS",
+      "horizon": 22,
+      "finite": true
+    },
+    {
+      "ticker": "BAJAJ-AUTO.NS",
+      "horizon": 63,
+      "finite": true
+    },
+    {
+      "ticker": "BAJFINANCE.NS",
+      "horizon": 1,
+      "finite": true
+    },
+    {
+      "ticker": "BAJFINANCE.NS",
+      "horizon": 5,
+      "finite": true
+    },
+    {
+      "ticker": "BAJFINANCE.NS",
+      "horizon": 22,
+      "finite": true
+    },
+    {
+      "ticker": "BAJFINANCE.NS",
+      "horizon": 63,
+      "finite": true
+    },
+    {
+      "ticker": "BAJAJFINSV.NS",
+      "horizon": 1,
+      "finite": true
+    },
+    {
+      "ticker": "BAJAJFINSV.NS",
+      "horizon": 5,
+      "finite": true
+    },
+    {
+      "ticker": "BAJAJFINSV.NS",
+      "horizon": 22,
+      "finite": true
+    },
+    {
+      "ticker": "BAJAJFINSV.NS",
+      "horizon": 63,
+      "finite": true
+    },
+    {
+      "ticker": "BEL.NS",
+      "horizon": 1,
+      "finite": true
+    },
+    {
+      "ticker": "BEL.NS",
+      "horizon": 5,
+      "finite": true
+    },
+    {
+      "ticker": "BEL.NS",
+      "horizon": 22,
+      "finite": true
+    },
+    {
+      "ticker": "BEL.NS",
+      "horizon": 63,
+      "finite": true
+    },
+    {
+      "ticker": "BHARTIARTL.NS",
+      "horizon": 1,
+      "finite": true
+    },
+    {
+      "ticker": "BHARTIARTL.NS",
+      "horizon": 5,
+      "finite": true
+    },
+    {
+      "ticker": "BHARTIARTL.NS",
+      "horizon": 22,
+      "finite": true
+    },
+    {
+      "ticker": "BHARTIARTL.NS",
+      "horizon": 63,
+      "finite": true
+    },
+    {
+      "ticker": "CIPLA.NS",
+      "horizon": 1,
+      "finite": true
+    },
+    {
+      "ticker": "CIPLA.NS",
+      "horizon": 5,
+      "finite": true
+    },
+    {
+      "ticker": "CIPLA.NS",
+      "horizon": 22,
+      "finite": true
+    },
+    {
+      "ticker": "CIPLA.NS",
+      "horizon": 63,
+      "finite": true
+    },
+    {
+      "ticker": "COALINDIA.NS",
+      "horizon": 1,
+      "finite": true
+    },
+    {
+      "ticker": "COALINDIA.NS",
+      "horizon": 5,
+      "finite": true
+    },
+    {
+      "ticker": "COALINDIA.NS",
+      "horizon": 22,
+      "finite": true
+    },
+    {
+      "ticker": "COALINDIA.NS",
+      "horizon": 63,
+      "finite": true
+    },
+    {
+      "ticker": "DRREDDY.NS",
+      "horizon": 1,
+      "finite": true
+    },
+    {
+      "ticker": "DRREDDY.NS",
+      "horizon": 5,
+      "finite": true
+    },
+    {
+      "ticker": "DRREDDY.NS",
+      "horizon": 22,
+      "finite": true
+    },
+    {
+      "ticker": "DRREDDY.NS",
+      "horizon": 63,
+      "finite": true
+    },
+    {
+      "ticker": "EICHERMOT.NS",
+      "horizon": 1,
+      "finite": true
+    },
+    {
+      "ticker": "EICHERMOT.NS",
+      "horizon": 5,
+      "finite": true
+    },
+    {
+      "ticker": "EICHERMOT.NS",
+      "horizon": 22,
+      "finite": true
+    },
+    {
+      "ticker": "EICHERMOT.NS",
+      "horizon": 63,
+      "finite": true
+    },
+    {
+      "ticker": "ETERNAL.NS",
+      "horizon": 1,
+      "finite": true
+    },
+    {
+      "ticker": "ETERNAL.NS",
+      "horizon": 5,
+      "finite": true
+    },
+    {
+      "ticker": "ETERNAL.NS",
+      "horizon": 22,
+      "finite": true
+    },
+    {
+      "ticker": "ETERNAL.NS",
+      "horizon": 63,
+      "finite": true
+    },
+    {
+      "ticker": "GRASIM.NS",
+      "horizon": 1,
+      "finite": true
+    },
+    {
+      "ticker": "GRASIM.NS",
+      "horizon": 5,
+      "finite": true
+    },
+    {
+      "ticker": "GRASIM.NS",
+      "horizon": 22,
+      "finite": true
+    },
+    {
+      "ticker": "GRASIM.NS",
+      "horizon": 63,
+      "finite": true
+    },
+    {
+      "ticker": "HCLTECH.NS",
+      "horizon": 1,
+      "finite": true
+    },
+    {
+      "ticker": "HCLTECH.NS",
+      "horizon": 5,
+      "finite": true
+    },
+    {
+      "ticker": "HCLTECH.NS",
+      "horizon": 22,
+      "finite": true
+    },
+    {
+      "ticker": "HCLTECH.NS",
+      "horizon": 63,
+      "finite": true
+    },
+    {
+      "ticker": "HDFCBANK.NS",
+      "horizon": 1,
+      "finite": true
+    },
+    {
+      "ticker": "HDFCBANK.NS",
+      "horizon": 5,
+      "finite": true
+    },
+    {
+      "ticker": "HDFCBANK.NS",
+      "horizon": 22,
+      "finite": true
+    },
+    {
+      "ticker": "HDFCBANK.NS",
+      "horizon": 63,
+      "finite": true
+    },
+    {
+      "ticker": "HDFCLIFE.NS",
+      "horizon": 1,
+      "finite": true
+    },
+    {
+      "ticker": "HDFCLIFE.NS",
+      "horizon": 5,
+      "finite": true
+    },
+    {
+      "ticker": "HDFCLIFE.NS",
+      "horizon": 22,
+      "finite": true
+    },
+    {
+      "ticker": "HDFCLIFE.NS",
+      "horizon": 63,
+      "finite": true
+    },
+    {
+      "ticker": "HINDALCO.NS",
+      "horizon": 1,
+      "finite": true
+    },
+    {
+      "ticker": "HINDALCO.NS",
+      "horizon": 5,
+      "finite": true
+    },
+    {
+      "ticker": "HINDALCO.NS",
+      "horizon": 22,
+      "finite": true
+    },
+    {
+      "ticker": "HINDALCO.NS",
+      "horizon": 63,
+      "finite": true
+    },
+    {
+      "ticker": "HINDUNILVR.NS",
+      "horizon": 1,
+      "finite": true
+    },
+    {
+      "ticker": "HINDUNILVR.NS",
+      "horizon": 5,
+      "finite": true
+    },
+    {
+      "ticker": "HINDUNILVR.NS",
+      "horizon": 22,
+      "finite": true
+    },
+    {
+      "ticker": "HINDUNILVR.NS",
+      "horizon": 63,
+      "finite": true
+    },
+    {
+      "ticker": "ICICIBANK.NS",
+      "horizon": 1,
+      "finite": true
+    },
+    {
+      "ticker": "ICICIBANK.NS",
+      "horizon": 5,
+      "finite": true
+    },
+    {
+      "ticker": "ICICIBANK.NS",
+      "horizon": 22,
+      "finite": true
+    },
+    {
+      "ticker": "ICICIBANK.NS",
+      "horizon": 63,
+      "finite": true
+    },
+    {
+      "ticker": "ITC.NS",
+      "horizon": 1,
+      "finite": true
+    },
+    {
+      "ticker": "ITC.NS",
+      "horizon": 5,
+      "finite": true
+    },
+    {
+      "ticker": "ITC.NS",
+      "horizon": 22,
+      "finite": true
+    },
+    {
+      "ticker": "ITC.NS",
+      "horizon": 63,
+      "finite": true
+    },
+    {
+      "ticker": "INFY.NS",
+      "horizon": 1,
+      "finite": true
+    },
+    {
+      "ticker": "INFY.NS",
+      "horizon": 5,
+      "finite": true
+    },
+    {
+      "ticker": "INFY.NS",
+      "horizon": 22,
+      "finite": true
+    },
+    {
+      "ticker": "INFY.NS",
+      "horizon": 63,
+      "finite": true
+    },
+    {
+      "ticker": "INDIGO.NS",
+      "horizon": 1,
+      "finite": true
+    },
+    {
+      "ticker": "INDIGO.NS",
+      "horizon": 5,
+      "finite": true
+    },
+    {
+      "ticker": "INDIGO.NS",
+      "horizon": 22,
+      "finite": true
+    },
+    {
+      "ticker": "INDIGO.NS",
+      "horizon": 63,
+      "finite": true
+    },
+    {
+      "ticker": "JSWSTEEL.NS",
+      "horizon": 1,
+      "finite": true
+    },
+    {
+      "ticker": "JSWSTEEL.NS",
+      "horizon": 5,
+      "finite": true
+    },
+    {
+      "ticker": "JSWSTEEL.NS",
+      "horizon": 22,
+      "finite": true
+    },
+    {
+      "ticker": "JSWSTEEL.NS",
+      "horizon": 63,
+      "finite": true
+    },
+    {
+      "ticker": "JIOFIN.NS",
+      "horizon": 1,
+      "finite": true
+    },
+    {
+      "ticker": "JIOFIN.NS",
+      "horizon": 5,
+      "finite": true
+    },
+    {
+      "ticker": "JIOFIN.NS",
+      "horizon": 22,
+      "finite": true
+    },
+    {
+      "ticker": "JIOFIN.NS",
+      "horizon": 63,
+      "finite": true
+    },
+    {
+      "ticker": "KOTAKBANK.NS",
+      "horizon": 1,
+      "finite": true
+    },
+    {
+      "ticker": "KOTAKBANK.NS",
+      "horizon": 5,
+      "finite": true
+    },
+    {
+      "ticker": "KOTAKBANK.NS",
+      "horizon": 22,
+      "finite": true
+    },
+    {
+      "ticker": "KOTAKBANK.NS",
+      "horizon": 63,
+      "finite": true
+    },
+    {
+      "ticker": "LT.NS",
+      "horizon": 1,
+      "finite": true
+    },
+    {
+      "ticker": "LT.NS",
+      "horizon": 5,
+      "finite": true
+    },
+    {
+      "ticker": "LT.NS",
+      "horizon": 22,
+      "finite": true
+    },
+    {
+      "ticker": "LT.NS",
+      "horizon": 63,
+      "finite": true
+    },
+    {
+      "ticker": "M&M.NS",
+      "horizon": 1,
+      "finite": true
+    },
+    {
+      "ticker": "M&M.NS",
+      "horizon": 5,
+      "finite": true
+    },
+    {
+      "ticker": "M&M.NS",
+      "horizon": 22,
+      "finite": true
+    },
+    {
+      "ticker": "M&M.NS",
+      "horizon": 63,
+      "finite": true
+    },
+    {
+      "ticker": "MARUTI.NS",
+      "horizon": 1,
+      "finite": true
+    },
+    {
+      "ticker": "MARUTI.NS",
+      "horizon": 5,
+      "finite": true
+    },
+    {
+      "ticker": "MARUTI.NS",
+      "horizon": 22,
+      "finite": true
+    },
+    {
+      "ticker": "MARUTI.NS",
+      "horizon": 63,
+      "finite": true
+    },
+    {
+      "ticker": "MAXHEALTH.NS",
+      "horizon": 1,
+      "finite": true
+    },
+    {
+      "ticker": "MAXHEALTH.NS",
+      "horizon": 5,
+      "finite": true
+    },
+    {
+      "ticker": "MAXHEALTH.NS",
+      "horizon": 22,
+      "finite": true
+    },
+    {
+      "ticker": "MAXHEALTH.NS",
+      "horizon": 63,
+      "finite": true
+    },
+    {
+      "ticker": "NTPC.NS",
+      "horizon": 1,
+      "finite": true
+    },
+    {
+      "ticker": "NTPC.NS",
+      "horizon": 5,
+      "finite": true
+    },
+    {
+      "ticker": "NTPC.NS",
+      "horizon": 22,
+      "finite": true
+    },
+    {
+      "ticker": "NTPC.NS",
+      "horizon": 63,
+      "finite": true
+    },
+    {
+      "ticker": "NESTLEIND.NS",
+      "horizon": 1,
+      "finite": true
+    },
+    {
+      "ticker": "NESTLEIND.NS",
+      "horizon": 5,
+      "finite": true
+    },
+    {
+      "ticker": "NESTLEIND.NS",
+      "horizon": 22,
+      "finite": true
+    },
+    {
+      "ticker": "NESTLEIND.NS",
+      "horizon": 63,
+      "finite": true
+    },
+    {
+      "ticker": "ONGC.NS",
+      "horizon": 1,
+      "finite": true
+    },
+    {
+      "ticker": "ONGC.NS",
+      "horizon": 5,
+      "finite": true
+    },
+    {
+      "ticker": "ONGC.NS",
+      "horizon": 22,
+      "finite": true
+    },
+    {
+      "ticker": "ONGC.NS",
+      "horizon": 63,
+      "finite": true
+    },
+    {
+      "ticker": "POWERGRID.NS",
+      "horizon": 1,
+      "finite": true
+    },
+    {
+      "ticker": "POWERGRID.NS",
+      "horizon": 5,
+      "finite": true
+    },
+    {
+      "ticker": "POWERGRID.NS",
+      "horizon": 22,
+      "finite": true
+    },
+    {
+      "ticker": "POWERGRID.NS",
+      "horizon": 63,
+      "finite": true
+    },
+    {
+      "ticker": "RELIANCE.NS",
+      "horizon": 1,
+      "finite": true
+    },
+    {
+      "ticker": "RELIANCE.NS",
+      "horizon": 5,
+      "finite": true
+    },
+    {
+      "ticker": "RELIANCE.NS",
+      "horizon": 22,
+      "finite": true
+    },
+    {
+      "ticker": "RELIANCE.NS",
+      "horizon": 63,
+      "finite": true
+    },
+    {
+      "ticker": "SBILIFE.NS",
+      "horizon": 1,
+      "finite": true
+    },
+    {
+      "ticker": "SBILIFE.NS",
+      "horizon": 5,
+      "finite": true
+    },
+    {
+      "ticker": "SBILIFE.NS",
+      "horizon": 22,
+      "finite": true
+    },
+    {
+      "ticker": "SBILIFE.NS",
+      "horizon": 63,
+      "finite": true
+    },
+    {
+      "ticker": "SHRIRAMFIN.NS",
+      "horizon": 1,
+      "finite": true
+    },
+    {
+      "ticker": "SHRIRAMFIN.NS",
+      "horizon": 5,
+      "finite": true
+    },
+    {
+      "ticker": "SHRIRAMFIN.NS",
+      "horizon": 22,
+      "finite": true
+    },
+    {
+      "ticker": "SHRIRAMFIN.NS",
+      "horizon": 63,
+      "finite": true
+    },
+    {
+      "ticker": "SBIN.NS",
+      "horizon": 1,
+      "finite": true
+    },
+    {
+      "ticker": "SBIN.NS",
+      "horizon": 5,
+      "finite": true
+    },
+    {
+      "ticker": "SBIN.NS",
+      "horizon": 22,
+      "finite": true
+    },
+    {
+      "ticker": "SBIN.NS",
+      "horizon": 63,
+      "finite": true
+    },
+    {
+      "ticker": "SUNPHARMA.NS",
+      "horizon": 1,
+      "finite": true
+    },
+    {
+      "ticker": "SUNPHARMA.NS",
+      "horizon": 5,
+      "finite": true
+    },
+    {
+      "ticker": "SUNPHARMA.NS",
+      "horizon": 22,
+      "finite": true
+    },
+    {
+      "ticker": "SUNPHARMA.NS",
+      "horizon": 63,
+      "finite": true
+    },
+    {
+      "ticker": "TCS.NS",
+      "horizon": 1,
+      "finite": true
+    },
+    {
+      "ticker": "TCS.NS",
+      "horizon": 5,
+      "finite": true
+    },
+    {
+      "ticker": "TCS.NS",
+      "horizon": 22,
+      "finite": true
+    },
+    {
+      "ticker": "TCS.NS",
+      "horizon": 63,
+      "finite": true
+    },
+    {
+      "ticker": "TATACONSUM.NS",
+      "horizon": 1,
+      "finite": true
+    },
+    {
+      "ticker": "TATACONSUM.NS",
+      "horizon": 5,
+      "finite": true
+    },
+    {
+      "ticker": "TATACONSUM.NS",
+      "horizon": 22,
+      "finite": true
+    },
+    {
+      "ticker": "TATACONSUM.NS",
+      "horizon": 63,
+      "finite": true
+    },
+    {
+      "ticker": "TMPV.NS",
+      "horizon": 1,
+      "finite": true
+    },
+    {
+      "ticker": "TMPV.NS",
+      "horizon": 5,
+      "finite": true
+    },
+    {
+      "ticker": "TMPV.NS",
+      "horizon": 22,
+      "finite": true
+    },
+    {
+      "ticker": "TMPV.NS",
+      "horizon": 63,
+      "finite": true
+    },
+    {
+      "ticker": "TATASTEEL.NS",
+      "horizon": 1,
+      "finite": true
+    },
+    {
+      "ticker": "TATASTEEL.NS",
+      "horizon": 5,
+      "finite": true
+    },
+    {
+      "ticker": "TATASTEEL.NS",
+      "horizon": 22,
+      "finite": true
+    },
+    {
+      "ticker": "TATASTEEL.NS",
+      "horizon": 63,
+      "finite": true
+    },
+    {
+      "ticker": "TECHM.NS",
+      "horizon": 1,
+      "finite": true
+    },
+    {
+      "ticker": "TECHM.NS",
+      "horizon": 5,
+      "finite": true
+    },
+    {
+      "ticker": "TECHM.NS",
+      "horizon": 22,
+      "finite": true
+    },
+    {
+      "ticker": "TECHM.NS",
+      "horizon": 63,
+      "finite": true
+    },
+    {
+      "ticker": "TITAN.NS",
+      "horizon": 1,
+      "finite": true
+    },
+    {
+      "ticker": "TITAN.NS",
+      "horizon": 5,
+      "finite": true
+    },
+    {
+      "ticker": "TITAN.NS",
+      "horizon": 22,
+      "finite": true
+    },
+    {
+      "ticker": "TITAN.NS",
+      "horizon": 63,
+      "finite": true
+    },
+    {
+      "ticker": "TRENT.NS",
+      "horizon": 1,
+      "finite": true
+    },
+    {
+      "ticker": "TRENT.NS",
+      "horizon": 5,
+      "finite": true
+    },
+    {
+      "ticker": "TRENT.NS",
+      "horizon": 22,
+      "finite": true
+    },
+    {
+      "ticker": "TRENT.NS",
+      "horizon": 63,
+      "finite": true
+    },
+    {
+      "ticker": "ULTRACEMCO.NS",
+      "horizon": 1,
+      "finite": true
+    },
+    {
+      "ticker": "ULTRACEMCO.NS",
+      "horizon": 5,
+      "finite": true
+    },
+    {
+      "ticker": "ULTRACEMCO.NS",
+      "horizon": 22,
+      "finite": true
+    },
+    {
+      "ticker": "ULTRACEMCO.NS",
+      "horizon": 63,
+      "finite": true
+    },
+    {
+      "ticker": "INDUSINDBK.NS",
+      "horizon": 1,
+      "finite": true
+    },
+    {
+      "ticker": "INDUSINDBK.NS",
+      "horizon": 5,
+      "finite": true
+    },
+    {
+      "ticker": "INDUSINDBK.NS",
+      "horizon": 22,
+      "finite": true
+    },
+    {
+      "ticker": "INDUSINDBK.NS",
+      "horizon": 63,
+      "finite": true
+    },
+    {
+      "ticker": "BANKBARODA.NS",
+      "horizon": 1,
+      "finite": true
+    },
+    {
+      "ticker": "BANKBARODA.NS",
+      "horizon": 5,
+      "finite": true
+    },
+    {
+      "ticker": "BANKBARODA.NS",
+      "horizon": 22,
+      "finite": true
+    },
+    {
+      "ticker": "BANKBARODA.NS",
+      "horizon": 63,
+      "finite": true
+    },
+    {
+      "ticker": "PNB.NS",
+      "horizon": 1,
+      "finite": true
+    },
+    {
+      "ticker": "PNB.NS",
+      "horizon": 5,
+      "finite": true
+    },
+    {
+      "ticker": "PNB.NS",
+      "horizon": 22,
+      "finite": true
+    },
+    {
+      "ticker": "PNB.NS",
+      "horizon": 63,
+      "finite": true
+    },
+    {
+      "ticker": "FEDERALBNK.NS",
+      "horizon": 1,
+      "finite": true
+    },
+    {
+      "ticker": "FEDERALBNK.NS",
+      "horizon": 5,
+      "finite": true
+    },
+    {
+      "ticker": "FEDERALBNK.NS",
+      "horizon": 22,
+      "finite": true
+    },
+    {
+      "ticker": "FEDERALBNK.NS",
+      "horizon": 63,
+      "finite": true
+    },
+    {
+      "ticker": "IDFCFIRSTB.NS",
+      "horizon": 1,
+      "finite": true
+    },
+    {
+      "ticker": "IDFCFIRSTB.NS",
+      "horizon": 5,
+      "finite": true
+    },
+    {
+      "ticker": "IDFCFIRSTB.NS",
+      "horizon": 22,
+      "finite": true
+    },
+    {
+      "ticker": "IDFCFIRSTB.NS",
+      "horizon": 63,
+      "finite": true
+    },
+    {
+      "ticker": "BANDHANBNK.NS",
+      "horizon": 1,
+      "finite": true
+    },
+    {
+      "ticker": "BANDHANBNK.NS",
+      "horizon": 5,
+      "finite": true
+    },
+    {
+      "ticker": "BANDHANBNK.NS",
+      "horizon": 22,
+      "finite": true
+    },
+    {
+      "ticker": "BANDHANBNK.NS",
+      "horizon": 63,
+      "finite": true
+    },
+    {
+      "ticker": "AUBANK.NS",
+      "horizon": 1,
+      "finite": true
+    },
+    {
+      "ticker": "AUBANK.NS",
+      "horizon": 5,
+      "finite": true
+    },
+    {
+      "ticker": "AUBANK.NS",
+      "horizon": 22,
+      "finite": true
+    },
+    {
+      "ticker": "AUBANK.NS",
+      "horizon": 63,
+      "finite": true
+    },
+    {
+      "ticker": "LICI.NS",
+      "horizon": 1,
+      "finite": true
+    },
+    {
+      "ticker": "LICI.NS",
+      "horizon": 5,
+      "finite": true
+    },
+    {
+      "ticker": "LICI.NS",
+      "horizon": 22,
+      "finite": true
+    },
+    {
+      "ticker": "LICI.NS",
+      "horizon": 63,
+      "finite": true
+    },
+    {
+      "ticker": "NSEI",
+      "horizon": 1,
+      "finite": true
+    },
+    {
+      "ticker": "NSEI",
+      "horizon": 5,
+      "finite": true
+    },
+    {
+      "ticker": "NSEI",
+      "horizon": 22,
+      "finite": true
+    },
+    {
+      "ticker": "NSEI",
+      "horizon": 63,
+      "finite": true
+    }
+  ],
+  "failures": []
+}
