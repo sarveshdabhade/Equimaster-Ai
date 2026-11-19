@@ -2,6 +2,7 @@
 from html import escape
 from pathlib import Path
 import streamlit as st
+import pandas as pd
 from components.layout import render_shell, render_footer
 from utils import load_data, fetch_stock_snapshot
 from config import resolve_app_path, provider_symbol, ALL_DOWNLOAD_TICKERS
@@ -156,6 +157,7 @@ try:
     model_path, scaler_path = str(artifact["model"]), str(artifact["scaler"])
     model_label = "Model available"
 except (FileNotFoundError, KeyError, ValueError):
+    artifact = None
     model_path, scaler_path, model_label = None, None, "Model unavailable"
 with st.container(border=True, key="company_quote"):
     heading, search = st.columns([3.6, 2])
@@ -191,5 +193,7 @@ else:
         elif section == "Fundamentals":
             from tabs import fundamentals
             fundamentals.render_fundamentals_tab(ticker, current_price=price, price_history=df)
-st.caption(f"Chart/model history through {df.index[-1]:%d %b %Y}. Quote and financial reporting dates may differ.")
+training_end = artifact.get("metadata", {}).get("data_end") if artifact else None
+training_label = pd.Timestamp(training_end).strftime("%d %b %Y") if training_end else "unavailable"
+st.caption(f"Price history through {df.index[-1]:%d %b %Y}. Model training data through {training_label}. Quote and financial reporting dates may differ.")
 render_footer()

@@ -66,17 +66,17 @@ persistence baselines on a frozen, untouched temporal test.
 
 ## Current evidence
 
-- Frozen LSTM test summaries: `data/evaluation/current-universe-20261117.json`.
-- Cost sensitivity: `data/evaluation/cost-sensitivity-20261117.json`.
+- Frozen LSTM test summaries: `data/evaluation/current-universe-20261119.json`.
+- Cost sensitivity: `data/evaluation/cost-sensitivity-20261119.json`.
 - Runtime model checks: `data/evaluation/runtime_validation.json`.
 - Universe data audit: `data/evaluation/data_quality.json`.
 - All-stock valuation inputs and scenarios: `data/evaluation/valuation_coverage.json`.
 - Browser acceptance: `data/evaluation/browser_validation.json`.
-- News annotation template: `data/benchmarks/indian_market_news_annotations_20261117.csv`.
-- Current sentiment benchmark and provenance: `data/evaluation/news-financialphrasebank-20261117.json` and `data/benchmarks/financial_phrasebank_provenance.json`.
+- News annotation template: `data/benchmarks/indian_market_news_annotations_20261119.csv`.
+- Current sentiment benchmark and provenance: `data/evaluation/news-financialphrasebank-20261119.json` and `data/benchmarks/financial_phrasebank_provenance.json`.
 
 The retained October reports describe earlier checkpoints. Release evidence is
-also copied into `reports/release-20261117/` so it remains reviewable without the
+also copied into `reports/release-20261119/` so it remains reviewable without the
 local runtime dataset archive.
 
 These files describe evidence and coverage limits; they do not certify a trading edge.

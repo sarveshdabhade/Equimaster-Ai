@@ -1,1345 +1,164 @@
-================================================================================
-EQUIMASTER-AI: COMPLETE FOLDER STRUCTURE & FILE INFORMATION
-================================================================================
-
-Project: Equimaster-AI (Multi-Modal Deep Learning Platform for Financial
-                        Time-Series Prediction and Sentiment Analysis)
-
-Date Generated: September 2026
-Total Files: 47+ (code, data, models, logs, docs)
-Total Directories: 12 (organized by function)
-Project Root: d:\Projects\Equimaster-Ai
-
-================================================================================
-DIRECTORY TREE (COMPLETE)
-================================================================================
-
-d:\Projects\Equimaster-Ai\
-│
-├── ROOT-LEVEL CONFIGURATION & DOCUMENTATION
-│   ├── app.py                                   [Streamlit main entry point, 350 lines]
-│   ├── config.py                                [Centralized config + paths, 120 lines]
-│   ├── daily_pipeline.py                        [Orchestrates nightly ETL, 160 lines]
-│   ├── utils.py                                 [UI utilities & snapshots, 140 lines]
-│   ├── requirements.txt                         [Python dependencies]
-│   ├── run_pipeline.bat                         [Windows batch scheduler]
-│   ├── push-to-github.ps1                       [CI/CD automation]
-│   ├── README.md                                [Project documentation]
-│   │
-│   ├── EQUIMASTER_AI_RESEARCH_PAPER_IEEE.txt   [6,500+ words, IEEE format]
-│   ├── EQUIMASTER_AI_RESEARCH_PAPER_IEEE.docx  [52.9 KB, Word format]
-│   ├── CODE_ORIGINALITY_ANALYSIS.txt           [Code plagiarism analysis]
-│   ├── ACTIVE_FUNCTIONS_MAP.txt                [Function usage documentation]
-│   ├── TECHNICAL_REPORT_COMPLETE.txt           [This comprehensive report]
-│   └── [THIS FILE]                              [Folder structure guide]
-│
-├── COMPONENTS/ (Reusable UI Widgets)
-│   ├── __init__.py                              [Module initialization]
-│   ├── indices_ticker.py                        [Scrolling index strip animation, 50 lines]
-│   ├── market_movers.py                         [Top 5 gainers/losers widget, 80 lines]
-│   └── sensex_ticker.py                         [Sensex 30 animated ticker, 75 lines]
-│
-├── PAGES/ (Multi-page Streamlit Apps)
-│   ├── stock_analyzer.py                        [Main stock analysis page (5 tabs), 200 lines]
-│   └── training_manager.py                      [Model management UI, 80 lines]
-│
-├── TABS/ (Analysis Tab Components)
-│   ├── __init__.py                              [Module initialization]
-│   ├── overview.py                              [Company info & 52-week range, 35 lines]
-│   ├── technicals.py                            [Candlestick chart + indicators, 60 lines]
-│   ├── lstm_model.py                            [Prediction + performance chart, 120 lines]
-│   ├── news_sentinel.py                         [Sentiment analysis (placeholder), 25 lines]
-│   └── fundamentals.py                          [Financial ratios (placeholder), 15 lines]
-│
-├── VIEWS/ (Main Page Views)
-│   ├── __init__.py                              [Module initialization]
-│   └── home_view.py                             [Landing page with search, 80 lines]
-│
-├── SRC/ (Core Business Logic)
-│   ├── __init__.py                              [Module initialization]
-│   ├── train_model.py                           [LSTM building & training, 100 lines]
-│   ├── data_loader.py                           [Parallel data download, 60 lines]
-│   ├── data_sequencer.py                        [Create train/test splits, 70 lines]
-│   ├── preprocessor.py                          [Add technical indicators, 85 lines]
-│   ├── update_data.py                           [Daily data refresh, 95 lines]
-│   ├── market_context.py                        [Hybrid technical+sentiment, 55 lines]
-│   ├── prediction_contract.py                   [Immutable prediction records, 55 lines]
-│   ├── risk_score.py                            [Risk metrics engine, 45 lines]
-│   ├── recommendation.py                        [Buy/hold/sell signals, 35 lines]
-│   ├── repair_models.py                         [Maintenance utilities, 60 lines]
-│   ├── evaluate_predictions.py                  [Backtest evaluation, 75 lines]
-│   │
-│   └── NEWS/ (News & Sentiment Pipeline)
-│       ├── __init__.py                          [Module initialization]
-│       ├── fetcher.py                           [Multi-source article fetch, 240 lines]
-│       ├── sentiment.py                         [FinBERT + aggregation, 180 lines]
-│       ├── retriever.py                         [Hybrid FAISS+TF-IDF RAG, 88 lines]
-│       ├── chunker.py                           [Article text chunking, 45 lines]
-│       ├── embeddings.py                        [FAISS index management, 150 lines]
-│       └── ingest.py                            [Batch article ingestion, 230 lines]
-│
-├── SCRIPTS/ (Standalone CLI Utilities)
-│   ├── refresh_all_news.py                      [Batch news refresh, 65 lines]
-│   ├── complete_all_training.py                 [Full model training, 230 lines]
-│   ├── train_manager.py                         [Parallel training orchestrator, 145 lines]
-│   ├── convert_models.py                        [.h5 to .keras conversion, 40 lines]
-│   ├── fix_missing_scalers.py                   [Regenerate scalers, 105 lines]
-│   ├── news_ingest.py                           [Scheduled news daemon, 45 lines]
-│   ├── quick_run.py                             [Quick test workflow, 160 lines]
-│   ├── train_all_missing_models.py              [Train incomplete models, 85 lines]
-│   ├── update_csvs.py                           [Incremental CSV updates, 140 lines]
-│   ├── evaluate_lstm.py                         [Model evaluation script, 65 lines]
-│   ├── evaluate_watchlist.py                    [Portfolio evaluation, 50 lines]
-│   └── run_sequencer_train.py                   [Background job launcher, 35 lines]
-│
-├── TESTS/ (Test Suite - pytest)
-│   ├── __init__.py                              [Module initialization]
-│   ├── test_smoke.py                            [Quick sanity tests, 50 lines] ✓ PASSING
-│   ├── test_news_sentiment.py                   [News pipeline tests, 120 lines] ✓ 8/8 PASSING
-│   ├── test_data_sequencer.py                   [Sequencing validation, 20 lines]
-│   └── test_train_model.py                      [Model architecture tests, 30 lines]
-│
-├── DATA/ (All Persistent Data)
-│   ├── raw/                                     [Original OHLCV CSVs (10 years)]
-│   │   ├── ADANIENT.NS.csv                      [10 years daily OHLCV, ~2500 rows]
-│   │   ├── ADANIPORTS.NS.csv
-│   │   ├── APOLLOHOSP.NS.csv
-│   │   ├── [... 46 more stock CSVs ...]
-│   │   └── WIPRO.NS.csv
-│   │
-│   │   Total: 49 stock files + 1 NIFTY (50.2 MB total)
-│   │
-│   ├── processed/                               [Enhanced with technical indicators]
-│   │   ├── ADANIENT.NS_processed.csv             [OHLCV + 15 technical features, ~2500 rows]
-│   │   ├── ADANIPORTS.NS_processed.csv
-│   │   ├── [... 46 more ...]
-│   │   └── WIPRO.NS_processed.csv
-│   │
-│   │   Total: 49 processed files (75.4 MB total)
-│   │
-│   ├── train_data/                              [LSTM training artifacts]
-│   │   ├── X_train_ADANIENT.NS.npy              [Training input, shape (1950, 60, 21)]
-│   │   ├── y_train_ADANIENT.NS.npy              [Training output, shape (1950, 4)]
-│   │   ├── X_test_ADANIENT.NS.npy               [Test input, shape (444, 60, 21)]
-│   │   ├── y_test_ADANIENT.NS.npy               [Test output, shape (444, 4)]
-│   │   ├── scaler_ADANIENT.NS.pkl               [MinMax scaler (fitted on train)]
-│   │   ├── [... 48 × 5 files ...]               [240 total numpy + scaler files]
-│   │   │
-│   │   Total: 49 tickers × (4 numpy + 1 scaler) = 245 files (45.1 MB)
-│   │
-│   ├── news_cache/                              [Cached articles by ticker (1-hour TTL)]
-│   │   ├── ADANIENT.NS.json                     [Cached articles array]
-│   │   ├── ADANIPORTS.NS.json
-│   │   ├── [... 47 more ...]
-│   │   └── NSEI.json
-│   │
-│   │   Total: 50 cache files (~25 MB, rolling 30-day retention)
-│   │
-│   ├── evaluation/                              [Backtest results & analysis]
-│   │   └── [Placeholder for future evaluation data]
-│   │
-│   ├── .yf_cache/                               [yfinance internal cache]
-│   │   └── [Binary cache files (auto-managed)]
-│   │
-│   └── [STATISTICS]
-│       ├─ Raw size: 50.2 MB (10 years × 49 stocks)
-│       ├─ Processed size: 75.4 MB (with indicators)
-│       ├─ Training size: 45.1 MB (numpy arrays + scalers)
-│       ├─ News cache: 25 MB (rolling)
-│       └─ Total: ~200 MB active data
-│
-├── MODELS/ (Trained LSTM Models - 229 Total)
-│   ├── lstm_ADANIENT.NS.keras                   [4-horizon model, 0.5 MB]
-│   ├── lstm_ADANIENT.NS_h22.keras               [Alternative checkpoint]
-│   ├── lstm_ADANIENT.NS_h5.h5                   [Old format backup]
-│   ├── lstm_ADANIPORTS.NS.keras                 [4-horizon model, 0.5 MB]
-│   ├── [... 47 more (one per stock) ...]        [Primary models: 49 × .keras]
-│   ├── lstm_NSEI.keras                          [NIFTY 50 index model]
-│   ├── [Additional checkpoint variants]         [Alternative training runs]
-│   │
-│   [ORGANIZATION]
-│   ├─ Primary models: 49 stocks × 1 model = 49 files (.keras format)
-│   ├─ Alternative checkpoints: 49 stocks × 2-3 variants = ~120 files
-│   ├─ Old .h5 backups: 49 files (legacy format, for conversion)
-│   ├─ Index models: 1 NIFTY model + variants = 10 files
-│   ├─ Total: ~230 model files
-│   └─ Total size: 115 MB
-│
-│   [METADATA]
-│   ├─ Model type: Sequential LSTM (Keras)
-│   ├─ Architecture: Input(60, 21) → LSTM(50) → LSTM(50) → Dense(25) → Dense(4)
-│   ├─ File size: ~0.5 MB per model
-│   ├─ Training framework: TensorFlow 2.14+
-│   └─ Format: .keras (new standard), .h5 (legacy)
-│
-├── LOGS/ (Runtime Logs & Progress)
-│   ├── master_pipeline.log                      [Daily pipeline execution log]
-│   │   └─ Format: [TIMESTAMP] [LEVEL] [MESSAGE]
-│   │   └─ Entries: Step start/end, timing, errors
-│   │   └─ Retention: Rolling (7 days)
-│   │
-│   ├── app_errors.log                           [Streamlit app runtime errors]
-│   │   └─ Format: [TIMESTAMP] [LEVEL] [MESSAGE]
-│   │   └─ Entries: Exception traces, API failures
-│   │   └─ Retention: Rolling (30 days)
-│   │
-│   ├── progress_ADANIENT.NS.json                [Per-ticker training progress]
-│   │   │
-│   │   │ JSON Structure:
-│   │   │ {
-│   │   │   "ticker": "ADANIENT.NS",
-│   │   │   "timestamp": "2026-09-03T06:15:23",
-│   │   │   "status": "complete" | "in-progress" | "failed",
-│   │   │   "horizons": {
-│   │   │     "1": {"status": "complete", "mae": 52.34, "rmse": 78.45},
-│   │   │     "5": {"status": "complete", "mae": 126.78, "rmse": 189.23},
-│   │   │     "22": {...},
-│   │   │     "88": {...}
-│   │   │   },
-│   │   │   "error_message": null | "string",
-│   │   │   "training_time_seconds": 45.67
-│   │   │ }
-│   │   │
-│   │
-│   ├── progress_ADANIPORTS.NS.json
-│   ├── progress_APOLLOHOSP.NS.json
-│   ├── [... 46 more progress files ...]
-│   ├── progress_WIPRO.NS.json
-│   │
-│   │ Total: 49 progress JSON files (one per ticker)
-│   │ Size: ~1-2 KB each, 50-100 KB total
-│   │ Updated: Daily after training completes
-│   │
-│   ├── run_sequencer_train.log                  [Background job output]
-│   │   └─ Captures stdout/stderr from parallel training
-│   │
-│   └── [STATISTICS]
-│       ├─ Log files active: 52 (master, app, 49 progress, sequencer)
-│       ├─ Total size: ~5-10 MB (rolling retention)
-│       ├─ Oldest entries: Auto-purged after 30 days
-│       └─ Retention policy: Space-bounded (max 50 MB)
-│
-├── IMAGES/ (UI Assets)
-│   └── [Custom graphics, logos, icons]
-│       └─ Used by: Streamlit components, HTML/CSS
-│
-├── NOTEBOOKS/ (Jupyter Notebooks - EDA & Research)
-│   └── [Exploratory data analysis, model experimentation]
-│       └─ Not used in production, for research only
-│
-├── .VENV/ (Python Virtual Environment)
-│   ├── Scripts/                                 [Executable scripts]
-│   │   ├── python.exe                           [Python interpreter]
-│   │   ├── activate.ps1                         [PowerShell activation]
-│   │   ├── streamlit.exe                        [Streamlit CLI]
-│   │   └─ [100+ other package executables]
-│   │
-│   ├── Lib/site-packages/                       [Installed packages]
-│   │   ├── tensorflow/                          [Deep learning framework]
-│   │   ├── streamlit/                           [Web UI framework]
-│   │   ├── pandas/                              [Data manipulation]
-│   │   ├── numpy/                               [Numerical computing]
-│   │   ├── yfinance/                            [Market data]
-│   │   ├── faiss/                               [Vector search]
-│   │   ├── sentence_transformers/               [Embeddings]
-│   │   ├── [30+ more packages]
-│   │   └─ Total: 1.2 GB
-│   │
-│   └─ Purpose: Isolated Python environment (not deployed, local dev only)
-│
-├── .GITIGNORE (Git Exclusions)
-│   ├── .venv/                                   [Exclude venv folder]
-│   ├── __pycache__/                             [Exclude Python cache]
-│   ├── *.pyc, *.pyo                             [Exclude compiled files]
-│   ├── .pytest_cache/                           [Exclude test cache]
-│   ├── data/raw/*.csv                           [Exclude raw data (too large)]
-│   ├── data/processed/*.csv                     [Exclude processed data]
-│   ├── data/train_data/*.npy                    [Exclude training arrays]
-│   ├── models/*.keras, *.h5                     [Exclude model files]
-│   ├── logs/*.log                               [Exclude logs]
-│   ├── .env                                     [Exclude environment file]
-│   ├── .DS_Store                                [Exclude macOS files]
-│   └─ Purpose: Keep GitHub repo lean (~500 KB without ignored files)
-│
-├── .STREAMLIT/ (Configuration - Optional)
-│   └── config.toml                              [Streamlit settings]
-│       ├─ [server]
-│       │   ├─ port = 8501
-│       │   ├─ headless = false
-│       │   └─ runOnSave = true
-│       │
-│       └─ [theme]
-│           ├─ primaryColor = "#00C9FF"
-│           ├─ backgroundColor = "#0E1117"
-│           └─ font = "sans serif"
-│
-└── .GITHUB/ (CI/CD Configuration - Optional)
-    ├── workflows/                              [GitHub Actions workflows]
-    │   ├── test.yml                            [Run pytest on push]
-    │   ├── build.yml                           [Build Docker image]
-    │   └─ deploy.yml                           [Deploy to cloud]
-    │
-    └─ Purpose: Automated testing + deployment
-
-
-================================================================================
-FILE DESCRIPTIONS (ALPHABETICAL BY CATEGORY)
-================================================================================
-
-ROOT-LEVEL FILES
-────────────────
-
-1. app.py
-   ├─ Purpose: Main Streamlit application entry point
-   ├─ Lines: ~350
-   ├─ Key Functions:
-   │   ├─ Page configuration (title, layout, icon)
-   │   ├─ CSS styling (gradients, animations, color scheme)
-   │   ├─ Sidebar with "Quick Actions" (refresh cache)
-   │   ├─ Renders home view (indices, tickers, search)
-   │   └─ Navigation to pages/stock_analyzer.py
-   ├─ Called By: streamlit run app.py (user entry point)
-   └─ Dependencies: views.render_home_view, st.* (Streamlit)
-
-2. config.py
-   ├─ Purpose: Centralized configuration + path resolution
-   ├─ Lines: ~120
-   ├─ Key Functions:
-   │   ├─ get_project_root() → Returns PROJECT_ROOT Path
-   │   ├─ resolve_app_path(*parts) → Converts relative to absolute paths
-   │   └─ ensure_runtime_directories() → Creates all required dirs
-   ├─ Key Constants:
-   │   ├─ NIFTY_50_TICKERS (49 stocks)
-   │   ├─ BANK_NIFTY_TICKERS (12 banks)
-   │   ├─ ALL_DOWNLOAD_TICKERS (61 deduped)
-   │   ├─ INDEX_TICKERS (6 indices)
-   │   ├─ TRUSTED_NEWS_DOMAINS (14 publishers)
-   │   ├─ NEWS_CACHE_TTL_HOURS = 1
-   │   └─ NEWS_MAX_ARTICLES = 8
-   ├─ Used By: All modules (central config source)
-   └─ Dependencies: pathlib.Path, os
-
-3. daily_pipeline.py
-   ├─ Purpose: Orchestrates nightly ETL + training pipeline
-   ├─ Lines: ~160
-   ├─ Workflow:
-   │   ├─ Step 1: Update raw data (src/update_data.py)
-   │   ├─ Step 2: Calculate indicators (src/preprocessor.py)
-   │   ├─ Step 3: Create sequences (src/data_sequencer.py)
-   │   └─ Step 4: Train models (src/train_model.py)
-   ├─ Frequency: Daily @ 6:00 AM (Windows Task Scheduler)
-   ├─ Duration: ~90 minutes total
-   ├─ Logs: logs/master_pipeline.log
-   ├─ Called By: run_pipeline.bat (batch scheduler)
-   └─ Dependencies: subprocess, logging, pandas
-
-4. utils.py
-   ├─ Purpose: UI utilities (live snapshots, data loading)
-   ├─ Lines: ~140
-   ├─ Key Functions:
-   │   ├─ load_lottieurl(url) → Fetch Lottie animations from web
-   │   ├─ fetch_index_snapshot() → Get 6 index prices (cached 10min)
-   │   ├─ fetch_stock_snapshot(symbol) → Get live stock data (cached 5min)
-   │   ├─ load_data(ticker, path, fingerprint) → Load CSV or yfinance
-   │   └─ _fetch_single_index(label, symbol) → Fetch one index
-   ├─ Used By: components/, pages/, tabs/
-   └─ Dependencies: yfinance, pandas, streamlit, requests
-
-5. requirements.txt
-   ├─ Purpose: List all Python package dependencies
-   ├─ Format: One package per line with version
-   ├─ Count: ~30 packages
-   ├─ Key Packages:
-   │   ├─ tensorflow≥2.14.0 (deep learning)
-   │   ├─ streamlit≥1.28.0 (web UI)
-   │   ├─ yfinance≥0.2.32 (market data)
-   │   ├─ pandas≥2.0 (dataframes)
-   │   ├─ scikit-learn≥1.3.0 (ML utilities)
-   │   ├─ sentence-transformers≥2.2.0 (embeddings)
-   │   ├─ faiss-cpu≥1.7.0 (vector search)
-   │   └─ [20+ more]
-   ├─ Used By: pip install -r requirements.txt
-   └─ Note: All versions pinned (no ">=", exact or with patch flexibility)
-
-6. run_pipeline.bat
-   ├─ Purpose: Windows batch script to run daily pipeline
-   ├─ Content:
-   │   ├─ chcp 65001 (set UTF-8 encoding)
-   │   ├─ Activate venv
-   │   └─ python daily_pipeline.py
-   ├─ Triggered By: Windows Task Scheduler @ 6:00 AM daily
-   ├─ Output: Logs to logs/master_pipeline.log
-   └─ Note: Must be in project root for relative paths to work
-
-7. push-to-github.ps1
-   ├─ Purpose: PowerShell script for CI/CD automation
-   ├─ Functionality:
-   │   ├─ git add . (stage all changes)
-   │   ├─ git commit -m (commit with timestamp)
-   │   ├─ git push origin main (push to GitHub)
-   │   └─ Reports success/failure
-   ├─ Usage: .\push-to-github.ps1
-   └─ Note: Requires git + GitHub credentials configured
-
-8. README.md
-   ├─ Purpose: Project overview + setup guide
-   ├─ Sections:
-   │   ├─ Project description
-   │   ├─ Tech stack table
-   │   ├─ Installation steps
-   │   ├─ Running the app
-   │   ├─ Project features
-   │   └─ Contributing guidelines
-   ├─ Format: Markdown
-   └─ Used By: GitHub repository homepage
-
-
-DOCUMENTATION FILES (Generated)
-────────────────────────────────
-
-9. EQUIMASTER_AI_RESEARCH_PAPER_IEEE.txt
-   ├─ Purpose: Academic research paper in IEEE format
-   ├─ Lines: 6,500+
-   ├─ Sections:
-   │   ├─ Abstract (150 words)
-   │   ├─ Introduction (1.1-1.3)
-   │   ├─ Related Work (2.1-2.5)
-   │   ├─ Methodology (3.1-3.5)
-   │   ├─ System Architecture (4.1-4.4)
-   │   ├─ Experimental Validation (5.1-5.7)
-   │   ├─ Discussion & Conclusion
-   │   └─ References (10+ citations)
-   ├─ Content: Complete project architecture, ML models, sentiment analysis
-   ├─ Created: 2026-09-02
-   └─ Use Case: Thesis, conference, publication
-
-10. EQUIMASTER_AI_RESEARCH_PAPER_IEEE.docx
-    ├─ Purpose: Word (.docx) version of research paper
-    ├─ Size: 52.9 KB
-    ├─ Formatting:
-    │   ├─ Font: Calibri (standard)
-    │   ├─ Headings: Color-coded (blue, red)
-    │   ├─ Line spacing: 1.15
-    │   ├─ Page breaks: Proper sections
-    │   └─ Tables & figures: Professional layout
-    ├─ Created: 2026-09-02
-    └─ Use Case: Professional submission, printing
-
-11. CODE_ORIGINALITY_ANALYSIS.txt
-    ├─ Purpose: Analysis of code originality + plagiarism risk
-    ├─ Content:
-    │   ├─ Tier 1 (95-92/100): Highly original components
-    │   ├─ Tier 2 (72-78/100): Moderately original (custom architecture)
-    │   ├─ Tier 3 (<60/100): Standard patterns (low plagiarism risk)
-    │   ├─ Code snippets: Examples from each component
-    │   └─ Publication recommendations: Which components suitable for academic work
-    ├─ Key Finding: 7 highly original components (NewsRetriever, PredictionContract, etc.)
-    └─ Created: 2026-09-02
-
-12. ACTIVE_FUNCTIONS_MAP.txt
-    ├─ Purpose: Complete map of function usage throughout project
-    ├─ Content:
-    │   ├─ Always active (~30 functions): Page rendering, data loading
-    │   ├─ Often used (~50): Technical indicators, article fetching
-    │   ├─ Scheduled (~40): Daily pipeline functions
-    │   ├─ Sometimes called (~20): Analysis engines (currently unused)
-    │   └─ Never used (~10): Placeholders, tests, maintenance scripts
-    ├─ Execution flow: ASCII diagrams showing call chains
-    ├─ Entry points: app.py, daily_pipeline.py, pages/stock_analyzer.py
-    └─ Created: 2026-09-02
-
-13. TECHNICAL_REPORT_COMPLETE.txt
-    ├─ Purpose: Comprehensive technical report (this is WHAT YOU JUST RECEIVED)
-    ├─ Lines: 6,000+
-    ├─ Sections:
-    │   ├─ 1. Executive Summary
-    │   ├─ 2. Architecture Overview
-    │   ├─ 3. Technology Stack
-    │   ├─ 4. System Components & Data Flow
-    │   ├─ 5. Machine Learning Models
-    │   ├─ 6. Prediction & Signal Generation
-    │   ├─ 7. User Interface
-    │   ├─ 8. Deployment & Operations
-    │   ├─ 9. Performance Metrics
-    │   ├─ 10. Security & Data Integrity
-    │   ├─ 11. Future Enhancements
-    │   └─ 12. Conclusion
-    ├─ Usage: Complete project understanding + deployment guide
-    └─ Created: 2026-09-03
-
-14. FOLDER_STRUCTURE_COMPLETE.txt (THIS FILE)
-    ├─ Purpose: Complete directory tree + file descriptions
-    ├─ Content:
-    │   ├─ Full folder hierarchy
-    │   ├─ File purposes + line counts
-    │   ├─ Key functions per file
-    │   ├─ Data statistics
-    │   ├─ File relationships
-    │   └─ Module organization
-    └─ Created: 2026-09-03
-
-
-COMPONENTS/ (UI Widgets)
-────────────────────────
-
-15. components/__init__.py
-    ├─ Purpose: Python module initialization
-    ├─ Content: Empty or imports for package discovery
-    └─ Used By: Python import system
-
-16. components/indices_ticker.py
-    ├─ Purpose: Scrolling ticker animation for market indices
-    ├─ Lines: ~50
-    ├─ Key Function: render_indices_ticker(indices_data=None)
-    ├─ Implementation:
-    │   ├─ HTML + CSS ticker tape animation
-    │   ├─ Continuous scrolling effect (CSS keyframes)
-    │   ├─ Displays 6 indices with live prices
-    │   └─ Injected via streamlit.components.v1.html()
-    ├─ Called By: views/home_view.py
-    └─ Dependencies: streamlit.components, HTML/CSS
-
-17. components/market_movers.py
-    ├─ Purpose: Display top 5 gainers and losers
-    ├─ Lines: ~80
-    ├─ Key Functions:
-    │   ├─ fetch_market_movers() → Get gainers/losers data
-    │   ├─ render_market_movers() → Display widget
-    │   ├─ format_change_pct(value) → Format percentage
-    │   └─ _fetch_single_ticker(symbol) → Fetch one stock
-    ├─ Data Source: yfinance
-    ├─ Called By: views/home_view.py
-    └─ Dependencies: yfinance, pandas, streamlit
-
-18. components/sensex_ticker.py
-    ├─ Purpose: Animated Sensex 30 ticker display
-    ├─ Lines: ~75
-    ├─ Key Functions:
-    │   ├─ fetch_sensex_data() → Get all 30 stocks
-    │   ├─ render_sensex_ticker() → Display with animation
-    │   └─ _fetch_single_sensex_stock(ticker) → Fetch one
-    ├─ Stocks: 30 major companies from BSE
-    ├─ Called By: views/home_view.py
-    └─ Dependencies: yfinance, streamlit
-
-
-PAGES/ (Multi-page Streamlit Apps)
-──────────────────────────────────
-
-19. pages/stock_analyzer.py
-    ├─ Purpose: Main stock analysis page with 5 tabs
-    ├─ Lines: ~200
-    ├─ Workflow:
-    │   ├─ Get ticker from session state (or show search)
-    │   ├─ Load processed CSV data
-    │   ├─ Display header with ticker + search bar
-    │   └─ Render 5 tabs:
-    │       ├─ Overview: Company info, 52-week range
-    │       ├─ Technicals: Candlestick chart + indicators
-    │       ├─ LSTM: Predictions + performance metrics
-    │       ├─ News: Sentiment analysis (placeholder)
-    │       └─ Fundamentals: Financial ratios (placeholder)
-    ├─ Called By: Navigation from app.py or previous page
-    └─ Dependencies: tabs/*.py, utils.load_data, streamlit
-
-20. pages/training_manager.py
-    ├─ Purpose: UI for model training management (admin only)
-    ├─ Lines: ~80
-    ├─ Features:
-    │   ├─ Display training KPIs (total, complete, incomplete)
-    │   ├─ Model status table with last trained date
-    │   ├─ Filter checkbox (show only complete)
-    │   ├─ Action buttons (retrain, train)
-    │   └─ Progress logs display
-    ├─ Data Source: models/, data/train_data/scaler_*, logs/progress_*.json
-    ├─ Called By: Streamlit Pages navigation
-    └─ Dependencies: glob, json, os, streamlit
-
-
-TABS/ (Stock Analysis Components)
-──────────────────────────────────
-
-21. tabs/overview.py
-    ├─ Purpose: Company info + 52-week range tab
-    ├─ Lines: ~35
-    ├─ Function: render_overview_tab(df, ticker)
-    ├─ Content:
-    │   ├─ Company name, sector, industry
-    │   ├─ 52-week high, low, current
-    │   ├─ Market cap, P/E ratio, dividend yield
-    │   └─ Website link
-    ├─ Data Source: yfinance.Ticker.info
-    ├─ Called By: pages/stock_analyzer.py (Tab 1)
-    └─ Dependencies: yfinance, streamlit
-
-22. tabs/technicals.py
-    ├─ Purpose: Technical analysis chart with indicators
-    ├─ Lines: ~60
-    ├─ Function: render_technicals(df, ticker)
-    ├─ Chart:
-    │   ├─ Plotly candlestick (OHLC)
-    │   ├─ SMA 20 (blue line)
-    │   ├─ SMA 50 (orange line)
-    │   ├─ Bollinger Bands (gray bands)
-    │   ├─ Volume subplot (bar chart)
-    │   └─ Interactive: Hover, zoom, pan
-    ├─ Data Source: data/processed/{TICKER}_processed.csv
-    ├─ Called By: pages/stock_analyzer.py (Tab 2)
-    └─ Dependencies: plotly, pandas, streamlit
-
-23. tabs/lstm_model.py
-    ├─ Purpose: LSTM predictions + performance metrics tab
-    ├─ Lines: ~120
-    ├─ Function: render_lstm_tab(df, ticker, MODEL_PATH, SCALER_PATH)
-    ├─ Content:
-    │   ├─ Prediction table:
-    │   │   ├─ Horizon (1, 5, 22, 88 days)
-    │   │   ├─ Current price
-    │   │   ├─ Predicted price
-    │   │   ├─ Expected return %
-    │   │   └─ Direction (↑ Bullish / ↓ Bearish)
-    │   ├─ Performance metrics:
-    │   │   ├─ MAE (mean absolute error)
-    │   │   ├─ RMSE (root mean squared error)
-    │   │   └─ Directional accuracy %
-    │   ├─ Chart: Actual vs Predicted candlestick/line
-    │   └─ Refresh button (manual retrain)
-    ├─ Data Source: Model predictions + test set
-    ├─ Called By: pages/stock_analyzer.py (Tab 3)
-    └─ Dependencies: TensorFlow, joblib, numpy, plotly, streamlit
-
-24. tabs/news_sentinel.py
-    ├─ Purpose: News sentiment analysis (placeholder)
-    ├─ Lines: ~25
-    ├─ Function: render_news_tab(ticker)
-    ├─ Current: Shows "Coming Soon" message
-    ├─ Future Implementation: Will call analyze_ticker_sentiment()
-    ├─ Planned Content:
-    │   ├─ Sentiment score (-1 to +1)
-    │   ├─ Article list with per-article sentiment
-    │   ├─ Evidence attribution (source, relevance)
-    │   └─ Driver analysis (earnings, risks, catalysts)
-    ├─ Called By: pages/stock_analyzer.py (Tab 4)
-    └─ Dependencies: streamlit, Lottie animations
-
-25. tabs/fundamentals.py
-    ├─ Purpose: Financial fundamentals (placeholder)
-    ├─ Lines: ~15
-    ├─ Function: render_fundamentals_tab(ticker)
-    ├─ Current: Shows "Coming Soon" message
-    ├─ Future Implementation: Will display financial ratios
-    ├─ Planned Content:
-    │   ├─ P/E ratio, EPS, ROE, ROA
-    │   ├─ Debt/equity, Current ratio, Quick ratio
-    │   ├─ Dividend history, Payout ratio
-    │   └─ Quarterly earnings, revenue, profit
-    ├─ Called By: pages/stock_analyzer.py (Tab 5)
-    └─ Dependencies: yfinance, streamlit
-
-
-VIEWS/ (Main Page Views)
-────────────────────────
-
-26. views/__init__.py
-    ├─ Purpose: Module initialization
-    ├─ Content: from .home_view import render_home_view
-    └─ Used By: Python import system
-
-27. views/home_view.py
-    ├─ Purpose: Landing page with tickers, search, market movers
-    ├─ Lines: ~80
-    ├─ Function: render_home_view()
-    ├─ Content:
-    │   ├─ Indices ticker strip (6 major indices)
-    │   ├─ Sensex 30 ticker (30 large-cap stocks)
-    │   ├─ Market movers (top 5 gainers/losers)
-    │   ├─ Search box (select or enter stock)
-    │   ├─ Stock list (from data/processed/)
-    │   └─ Navigation to stock_analyzer.py on selection
-    ├─ Called By: app.py (root entry point)
-    └─ Dependencies: components/*.py, utils.py, streamlit
-
-
-SRC/ (Core Business Logic)
-──────────────────────────
-
-28. src/__init__.py
-    ├─ Purpose: Module initialization
-    └─ Used By: Python import system
-
-29. src/train_model.py
-    ├─ Purpose: Build and train LSTM models
-    ├─ Lines: ~100
-    ├─ Key Functions:
-    │   ├─ build_model(input_shape, output_size) → Constructs Sequential LSTM
-    │   │   └─ Architecture: Input(60,21) → LSTM(50) → LSTM(50) → Dense(25) → Dense(4)
-    │   ├─ train_all() → Trains models for all tickers
-    │   │   └─ Loads X_train, y_train, trains, saves model + logs
-    │   └─ Compilation: adam optimizer, MSE loss
-    ├─ Input Data: data/train_data/X_train_*.npy, y_train_*.npy
-    ├─ Output: models/lstm_{TICKER}.keras
-    ├─ Hyperparameters:
-    │   ├─ Epochs: 10
-    │   ├─ Batch size: 32
-    │   ├─ Validation split: 0.2
-    │   └─ Dropout: 0.2
-    ├─ Called By: daily_pipeline.py (Step 4)
-    └─ Dependencies: TensorFlow, numpy, glob, os
-
-30. src/data_loader.py
-    ├─ Purpose: Download historical market data from yfinance
-    ├─ Lines: ~60
-    ├─ Key Functions:
-    │   ├─ download_data(max_workers=3) → Parallel download all tickers
-    │   │   └─ Uses ThreadPoolExecutor for concurrent downloads
-    │   ├─ _download_single_ticker(ticker) → Download one stock (10 years)
-    │   │   └─ yf.download(ticker, period="10y", interval="1d")
-    │   └─ Delay: 0.1s between tickers (API respect)
-    ├─ Output: data/raw/{TICKER}.csv (OHLCV + Volume)
-    ├─ Scope: 49 NIFTY 50 + 12 Bank Nifty = 61 tickers
-    ├─ Called By: Used for initial data fetch (not in daily pipeline)
-    └─ Dependencies: yfinance, pandas, ThreadPoolExecutor
-
-31. src/data_sequencer.py
-    ├─ Purpose: Create train/test sequences for LSTM
-    ├─ Lines: ~70
-    ├─ Key Functions:
-    │   ├─ process_and_save_all() → Process all processed CSVs
-    │   ├─ create_sequences(data, window_size, close_col_idx) → Single-step
-    │   ├─ create_multi_step_sequences(data, window_size, horizon, close_col_idx) → Multi-step
-    │   └─ Splitting: 80% train, 20% test (by date, no lookahead bias)
-    ├─ Window: 60-session input; Day/Week/Month/Quarter horizons [1, 5, 22, 88]
-    ├─ Input: data/processed/{TICKER}_processed.csv (21 features)
-    ├─ Output:
-    │   ├─ data/train_data/X_train_{TICKER}.npy (1950, 60, 21)
-    │   ├─ data/train_data/y_train_{TICKER}.npy (1950, 4)
-    │   ├─ data/train_data/X_test_{TICKER}.npy (444, 60, 21)
-    │   ├─ data/train_data/y_test_{TICKER}.npy (444, 4)
-    │   └─ data/train_data/scaler_{TICKER}.pkl (MinMaxScaler)
-    ├─ Called By: daily_pipeline.py (Step 3)
-    └─ Dependencies: pandas, numpy, sklearn, joblib
-
-32. src/preprocessor.py
-    ├─ Purpose: Add technical indicators to OHLCV data
-    ├─ Lines: ~85
-    ├─ Key Functions:
-    │   ├─ add_technical_indicators(df) → Calculate all indicators
-    │   ├─ process_all_files() → Process all raw CSVs
-    │   └─ Indicators added:
-    │       ├─ SMA (20-day, 50-day) - Simple moving average
-    │       ├─ RSI (relative strength index, period=14)
-    │       ├─ MACD (moving average convergence divergence)
-    │       ├─ Bollinger Bands (upper, middle, lower, period=20)
-    │       ├─ ATR (average true range)
-    │       └─ Returns (log returns for modeling)
-    ├─ Output features: 21 total (OHLCV + 15 indicators)
-    ├─ Input: data/raw/{TICKER}.csv
-    ├─ Output: data/processed/{TICKER}_processed.csv
-    ├─ Called By: daily_pipeline.py (Step 2)
-    └─ Dependencies: pandas, pandas-ta, numpy
-
-33. src/update_data.py
-    ├─ Purpose: Daily refresh of raw market data
-    ├─ Lines: ~95
-    ├─ Key Functions:
-    │   ├─ update_all_stocks(max_workers=3) → Parallel update
-    │   ├─ _update_single_ticker(ticker) → Download latest for one stock
-    │   │   └─ yf.download(ticker, start={last_date}, end={today})
-    │   ├─ run_downstream_pipeline() → Trigger preprocessing + training
-    │   └─ Detection: Identifies stale tickers (not updated today)
-    ├─ Input: data/raw/{TICKER}.csv (existing)
-    ├─ Output: data/raw/{TICKER}.csv (appended with latest rows)
-    ├─ Called By: daily_pipeline.py (Step 1)
-    └─ Dependencies: yfinance, pandas, ThreadPoolExecutor
-
-34. src/market_context.py
-    ├─ Purpose: Combine technical + sentiment signals
-    ├─ Lines: ~55
-    ├─ Key Functions:
-    │   ├─ build_market_context(ticker, horizon) → Hybrid analysis
-    │   ├─ _technical_signal(dataframe) → Trend + momentum
-    │   └─ Calculation: 50% technical + 50% sentiment
-    ├─ Inputs:
-    │   ├─ Technical: SMA(20), SMA(50), current price
-    │   ├─ Sentiment: analyze_ticker_sentiment() result
-    │   └─ Horizon: Time period for analysis
-    ├─ Output: {technical_score, sentiment_score, combined_score, label}
-    ├─ Current Status: Defined but unused in UI
-    └─ Dependencies: src/news/sentiment.py, pandas
-
-35. src/prediction_contract.py
-    ├─ Purpose: Immutable prediction records for reproducibility
-    ├─ Lines: ~55
-    ├─ Key Classes/Functions:
-    │   ├─ PredictionRecord (frozen dataclass)
-    │   │   ├─ Fields: ticker, horizon, current_close, predicted_close, lstm_signal,
-    │   │   │            sentiment_score, combined_score, combined_label
-    │   │   └─ frozen=True (immutable)
-    │   ├─ bounded_signal(value) → Clamp to [-1, 1]
-    │   ├─ classify_signal(score, threshold) → Bullish/Neutral/Bearish
-    │   └─ directional_accuracy(predicted, actual) → 1.0 if same sign, else 0.0
-    ├─ Purpose: Enable reproducible backtesting
-    ├─ Called By: Backtesting workflows (currently manual)
-    └─ Dependencies: dataclasses
-
-36. src/risk_score.py
-    ├─ Purpose: Compute risk metrics (defined but unused)
-    ├─ Lines: ~45
-    ├─ Key Function: build_risk_score(ticker, horizon)
-    ├─ Planned Metrics:
-    │   ├─ Volatility (std of returns)
-    │   ├─ Beta (correlation with NIFTY 50)
-    │   ├─ Max drawdown (peak-to-trough decline)
-    │   ├─ Sharpe ratio (return-adjusted risk)
-    │   └─ VaR (value at risk, 95%)
-    ├─ Current Status: Function defined, not integrated into UI
-    └─ Dependencies: pandas, numpy
-
-37. src/recommendation.py
-    ├─ Purpose: Generate BUY/HOLD/SELL signals (defined but unused)
-    ├─ Lines: ~35
-    ├─ Key Function: build_recommendation(ticker, horizon)
-    ├─ Planned Output:
-    │   ├─ action: "BUY" | "HOLD" | "SELL"
-    │   ├─ confidence: float [0, 1]
-    │   ├─ target_price: float
-    │   ├─ stop_loss: float
-    │   └─ rationale: str (explanation)
-    ├─ Logic: Combine LSTM + sentiment + technicals
-    ├─ Current Status: Function defined, not called
-    └─ Dependencies: src/market_context.py
-
-38. src/repair_models.py
-    ├─ Purpose: Maintenance utilities (manual use)
-    ├─ Lines: ~60
-    ├─ Key Functions:
-    │   ├─ find_tickers() → List all tickers with data
-    │   ├─ model_input_features(model_path) → Inspect model shape
-    │   ├─ scaler_features(scaler_path) → Inspect scaler
-    │   ├─ retrain_ticker(ticker, epochs) → Retrain one model
-    │   └─ main(epochs) → Retrain all missing models
-    ├─ Usage: python src/repair_models.py [--epochs N]
-    ├─ Purpose: Fix corrupted/missing models
-    └─ Dependencies: joblib, tensorflow, glob, os
-
-39. src/evaluate_predictions.py
-    ├─ Purpose: Compute evaluation metrics for predictions
-    ├─ Lines: ~75
-    ├─ Key Functions:
-    │   ├─ regression_metrics(actual, predicted) → MAE, RMSE, MAPE
-    │   ├─ signal_metrics(actual, predicted) → Directional accuracy
-    │   └─ evaluate_predictions() → Full evaluation
-    ├─ Metrics:
-    │   ├─ MAE: Mean absolute error
-    │   ├─ RMSE: Root mean squared error
-    │   ├─ Directional accuracy: % correct direction
-    │   └─ MAPE: Mean absolute percentage error
-    ├─ Called By: Model training, backtesting
-    └─ Dependencies: numpy, iterable processing
-
-40. src/news/__init__.py
-    ├─ Purpose: Module initialization for news package
-    └─ Used By: Python import system
-
-41. src/news/fetcher.py
-    ├─ Purpose: Multi-source news article fetching with validation
-    ├─ Lines: ~240
-    ├─ Key Functions:
-    │   ├─ fetch_ticker_articles(ticker, max_articles, force_refresh)
-    │   │   └─ Main entry point (primary → fallback → cache)
-    │   ├─ _newsapi_articles(ticker, max_articles) → Query NewsAPI.org
-    │   │   └─ Endpoint: /v2/everything with domain whitelist
-    │   ├─ _yahoo_articles(ticker, max_articles) → Fallback to Yahoo
-    │   ├─ _is_trusted_article(article) → Validate against TRUSTED_NEWS_DOMAINS
-    │   ├─ normalize_article(article, ticker) → Standardize fields
-    │   ├─ is_finance_relevant(article, ticker) → Filter unrelated articles
-    │   ├─ _read_cache(ticker) → Load cached articles
-    │   ├─ _write_cache(ticker, articles) → Save to cache
-    │   ├─ clear_news_cache() → Clear cache for one or all tickers
-    │   └─ Whitelist: 14 trusted publishers (Reuters, Bloomberg, etc.)
-    ├─ Cache: TTL = 1 hour, Storage = data/news_cache/{TICKER}.json
-    ├─ Called By: analyze_ticker_sentiment(), UI (manual)
-    └─ Dependencies: requests, datetime, pathlib, config
-
-42. src/news/sentiment.py
-    ├─ Purpose: FinBERT sentiment analysis with source weighting
-    ├─ Lines: ~180
-    ├─ Key Functions:
-    │   ├─ analyze_ticker_sentiment(ticker, max_articles, query_type, recency_days)
-    │   │   └─ Full pipeline: fetch → retrieve → score → aggregate
-    │   ├─ _load_finbert() → Load FinBERT model (cached)
-    │   ├─ _finbert_score(text) → Score with FinBERT or keyword fallback
-    │   ├─ _keyword_score(text) → Keyword-based fallback
-    │   ├─ _impact_details(text, score, relevance) → Classify impact level
-    │   ├─ relevance_details(article, ticker) → Compute relevance metrics
-    │   └─ RAG_QUERY_PATTERNS: Dict of query templates per analysis type
-    ├─ FinBERT Model: ProsusAI/finbert (pre-trained on financial text)
-    ├─ Output: Comprehensive sentiment record with evidence
-    ├─ Source Weighting:
-    │   ├─ Reuters/Bloomberg/FT: weight = 1.1
-    │   └─ Others: weight = 1.0
-    ├─ Labels: Bullish, Bearish, Risk-off, Mixed, Neutral
-    ├─ Called By: Backtesting, manual analysis (not yet in UI)
-    └─ Dependencies: NewsRetriever, fetch_ticker_articles, numpy
-
-43. src/news/retriever.py
-    ├─ Purpose: Hybrid FAISS + TF-IDF retrieval (original architecture)
-    ├─ Lines: ~88
-    ├─ Key Class: NewsRetriever
-    │   ├─ retrieve(articles, query, recency_days) → Main method
-    │   ├─ Workflow:
-    │   │   ├─ Filter articles by recency (datetime handling)
-    │   │   ├─ Chunk articles via chunk_article()
-    │   │   ├─ Try FAISS embedding retrieval
-    │   │   ├─ Fallback to TF-IDF cosine similarity
-    │   │   └─ Return top_k chunks with relevance scores
-    │   ├─ Primary: FAISS with sentence-transformers/all-MiniLM-L6-v2
-    │   │   └─ Embedding dim: 384
-    │   ├─ Fallback: TF-IDF + cosine_similarity (if FAISS unavailable)
-    │   └─ Graceful degradation (no hard failures)
-    ├─ Called By: analyze_ticker_sentiment()
-    └─ Dependencies: EmbeddingRetriever, sklearn, pathlib
-
-44. src/news/chunker.py
-    ├─ Purpose: Split articles into chunks with deduplication
-    ├─ Lines: ~45
-    ├─ Key Functions:
-    │   ├─ chunk_article(article) → Generator of chunks
-    │   │   └─ Yields dict with chunk_id, chunk_text, metadata
-    │   ├─ split_text_into_chunks(text, chunk_size, overlap) → Sliding window
-    │   │   └─ 500 tokens per chunk, 120 token overlap
-    │   └─ Chunk ID: SHA-1(url:index:chunk_text) for deduplication
-    ├─ Metadata: Preserved article fields per chunk (title, source, url, etc.)
-    ├─ Called By: NewsRetriever.retrieve()
-    └─ Dependencies: hashlib, re (regex)
-
-45. src/news/embeddings.py
-    ├─ Purpose: FAISS index management with persistence
-    ├─ Lines: ~150
-    ├─ Key Class: EmbeddingRetriever
-    │   ├─ __init__(model_name, persist_dir) → Initialize with sentence-transformers
-    │   ├─ encode(texts) → Generate embeddings (384-dim)
-    │   ├─ save_index() → Serialize FAISS index + metadata to disk
-    │   ├─ load_index() → Deserialize from disk
-    │   ├─ available (property) → Check if FAISS + model available
-    │   └─ compute_id(text) → SHA-1 hash for deduplication
-    ├─ Persistence:
-    │   ├─ Index file: data/.cache/news/embeddings/faiss.index
-    │   └─ Metadata: data/.cache/news/embeddings/metadata.json
-    ├─ Model: sentence-transformers/all-MiniLM-L6-v2 (auto-downloaded)
-    ├─ Index Type: FAISS FlatL2 (exhaustive L2 distance search)
-    ├─ Called By: NewsRetriever.retrieve()
-    └─ Dependencies: faiss, sentence_transformers, json, pathlib
-
-46. src/news/ingest.py
-    ├─ Purpose: Batch article ingestion + indexing
-    ├─ Lines: ~230
-    ├─ Key Functions:
-    │   ├─ ingest_ticker(ticker, articles, persist_dir) → Ingest one ticker
-    │   ├─ fetch_from_newsapi() → Fetch articles from NewsAPI
-    │   ├─ load_cached_articles() → Load previous cache
-    │   ├─ save_cached_articles() → Persist cache
-    │   ├─ dedupe_articles() → Remove duplicates
-    │   ├─ index_articles_for_ticker() → Create FAISS index
-    │   ├─ run_scheduler() → Continuous ingestion loop
-    │   └─ Rate limiting: 0.5-1s delay between tickers
-    ├─ Used For: Scheduled news refresh (scripts/news_ingest.py)
-    └─ Dependencies: requests, pathlib, json, faiss
-
-
-SCRIPTS/ (Standalone CLI Utilities)
-────────────────────────────────────
-
-47. scripts/refresh_all_news.py
-    ├─ Purpose: Batch refresh news cache for all tickers
-    ├─ Lines: ~65
-    ├─ Function: main() - Entry point
-    ├─ Workflow:
-    │   ├─ Iterate all 49 tickers
-    │   ├─ Call fetch_ticker_articles(ticker, force_refresh=True)
-    │   ├─ Batch pause: 2s every 5 tickers
-    │   └─ Report: Article count, sources, summary
-    ├─ Usage: python scripts/refresh_all_news.py
-    ├─ Output: Updated data/news_cache/*.json
-    ├─ Result: 48 of 49 tickers refreshed (verified sources)
-    └─ Dependencies: src.news.fetcher, config
-
-48. scripts/complete_all_training.py
-    ├─ Purpose: Complete training from scratch (all steps)
-    ├─ Lines: ~230
-    ├─ Workflow:
-    │   ├─ Step 1: Download all data (src/data_loader.py)
-    │   ├─ Step 2: Preprocess (src/preprocessor.py)
-    │   ├─ Step 3: Create sequences (src/data_sequencer.py)
-    │   ├─ Step 4: Train models (train_ticker_models)
-    │   └─ Logging: Per-ticker progress to logs/
-    ├─ Duration: ~90 minutes
-    ├─ Usage: python scripts/complete_all_training.py
-    ├─ Output: 229 models (49 × 4 horizons + variants)
-    └─ Dependencies: Multiple src modules
-
-49. scripts/train_manager.py
-    ├─ Purpose: Parallel training orchestrator
-    ├─ Lines: ~145
-    ├─ Function: main(workers, horizons, window_size, epochs)
-    ├─ Parallelization:
-    │   ├─ ThreadPoolExecutor with N workers
-    │   ├─ Each worker trains one ticker
-    │   └─ Progress JSON written per ticker
-    ├─ Usage: python scripts/train_manager.py [--workers 4]
-    ├─ Output: Trained models + logs
-    └─ Dependencies: concurrent.futures, config
-
-50. scripts/convert_models.py
-    ├─ Purpose: Convert .h5 models to .keras format
-    ├─ Lines: ~40
-    ├─ Function: main(dry_run=False) - Entry point
-    ├─ Conversion: model.save() with new format
-    ├─ Usage: python scripts/convert_models.py
-    └─ Dependencies: TensorFlow
-
-51. scripts/fix_missing_scalers.py
-    ├─ Purpose: Regenerate missing scalers
-    ├─ Lines: ~105
-    ├─ Function: main() - Regenerates scalers for all tickers
-    ├─ Input: data/processed/*.csv
-    ├─ Output: data/train_data/scaler_*.pkl
-    ├─ Usage: python scripts/fix_missing_scalers.py
-    └─ Dependencies: sklearn, pandas, joblib
-
-52. scripts/news_ingest.py
-    ├─ Purpose: Scheduled news fetching daemon
-    ├─ Lines: ~45
-    ├─ Function: main() - Reads env vars, starts scheduler
-    ├─ Environment Variables:
-    │   ├─ NEWS_API_KEY: API key for NewsAPI
-    │   ├─ NEWS_TICKERS: Comma-separated list
-    │   └─ INTERVAL_SECONDS: Refresh interval
-    ├─ Usage: python scripts/news_ingest.py &  # Run in background
-    └─ Dependencies: config, src.news
-
-53. scripts/quick_run.py
-    ├─ Purpose: Quick test workflow (for development)
-    ├─ Lines: ~160
-    ├─ Functions:
-    │   ├─ preprocess_one(ticker) → Preprocess single stock
-    │   ├─ sequence_one(ticker, ...) → Create sequences
-    │   ├─ train_one(ticker, ...) → Train one model
-    │   ├─ predict_once(...) → Make prediction
-    │   └─ main() → Runs all steps
-    ├─ Usage: python scripts/quick_run.py
-    └─ Dependencies: Multiple src modules
-
-54. scripts/train_all_missing_models.py
-    ├─ Purpose: Train only incomplete models
-    ├─ Lines: ~85
-    ├─ Functions:
-    │   ├─ check_model_exists(ticker, horizon)
-    │   ├─ get_tickers_with_scalers()
-    │   ├─ train_model_for_ticker(ticker, horizon, epochs)
-    │   └─ main() → Train all missing
-    ├─ Usage: python scripts/train_all_missing_models.py
-    └─ Dependencies: config, glob, joblib
-
-55. scripts/update_csvs.py
-    ├─ Purpose: Incremental CSV updates (append rows)
-    ├─ Lines: ~140
-    ├─ Functions:
-    │   ├─ parse_last_date_from_file(path) → Find last date in CSV
-    │   ├─ append_rows_to_csv(path, df_new) → Append without duplicates
-    │   ├─ update_csv(path, dry_run) → Update one file
-    │   └─ main() → Update all CSVs
-    ├─ Purpose: Faster than re-downloading 10 years
-    ├─ Usage: python scripts/update_csvs.py
-    └─ Dependencies: pandas, datetime, yfinance
-
-56. scripts/evaluate_lstm.py
-    ├─ Purpose: Evaluate LSTM model on test set
-    ├─ Lines: ~65
-    ├─ Function: main() - Evaluate all models
-    ├─ Metrics: MAE, RMSE, directional accuracy
-    ├─ Output: Per-ticker metrics
-    ├─ Usage: python scripts/evaluate_lstm.py
-    └─ Dependencies: TensorFlow, numpy
-
-57. scripts/evaluate_watchlist.py
-    ├─ Purpose: Portfolio evaluation
-    ├─ Lines: ~50
-    ├─ Function: main() - Evaluate custom watchlist
-    ├─ Input: User-specified tickers
-    ├─ Usage: python scripts/evaluate_watchlist.py
-    └─ Dependencies: src modules
-
-58. scripts/run_sequencer_train.py
-    ├─ Purpose: Background job launcher (from Streamlit UI)
-    ├─ Lines: ~35
-    ├─ Workflow:
-    │   ├─ Run src/data_sequencer.py
-    │   ├─ Run src/train_model.py
-    │   └─ Log output to logs/run_sequencer_train.log
-    ├─ Usage: python scripts/run_sequencer_train.py &
-    └─ Dependencies: subprocess, datetime
-
-
-TESTS/ (pytest Suite)
-─────────────────────
-
-59. tests/__init__.py
-    ├─ Purpose: Test module initialization
-    └─ Used By: pytest discovery
-
-60. tests/test_smoke.py
-    ├─ Purpose: Quick sanity checks
-    ├─ Lines: ~50
-    ├─ Tests:
-    │   ├─ test_smoke() → Basic imports
-    │   ├─ test_train_model_build() → Can build LSTM model
-    │   ├─ test_project_paths_are_resolved() → Path resolution works
-    │   └─ test_live_index_snapshot() → Index snapshots distinct ✓ PASSING
-    ├─ Run: pytest tests/test_smoke.py
-    └─ Status: 4/4 passing
-
-61. tests/test_news_sentiment.py
-    ├─ Purpose: News pipeline + sentiment validation
-    ├─ Lines: ~120
-    ├─ Tests:
-    │   ├─ test_news_fetcher_returns_normalized_articles() ✓
-    │   ├─ test_force_refresh_for_latest_articles() ✓
-    │   ├─ test_finance_relevance_filter() ✓
-    │   ├─ test_untrusted_articles_rejected() ✓
-    │   ├─ test_sentiment_contains_evidence() ✓
-    │   ├─ test_named_query_and_market_context() ✓
-    │   ├─ test_prediction_contract_shared_score() ✓
-    │   └─ test_prediction_evaluation_accuracy() ✓
-    ├─ Coverage: News fetching, filtering, sentiment, contracts
-    ├─ Run: pytest tests/test_news_sentiment.py -v
-    └─ Status: 8/8 passing
-
-62. tests/test_data_sequencer.py
-    ├─ Purpose: Sequence creation validation
-    ├─ Lines: ~20
-    ├─ Tests:
-    │   ├─ test_create_sequences() → Single-step sequences
-    │   └─ test_create_multi_step_sequences() → Multi-horizon
-    ├─ Run: pytest tests/test_data_sequencer.py
-    └─ Status: 2/2 passing
-
-63. tests/test_train_model.py
-    ├─ Purpose: Model architecture validation
-    ├─ Lines: ~30
-    ├─ Tests:
-    │   └─ test_build_model_shapes() → Output shape correct
-    ├─ Run: pytest tests/test_train_model.py
-    └─ Status: 1/1 passing
-
-
-DOCUMENTATION FILES (CONTINUED)
-────────────────────────────────
-
-64. [STATISTICS SUMMARY]
-    ├─ Total files analyzed: 64+ (code, tests, docs, data, models, logs)
-    ├─ Code files: 47 (Python + batch/PowerShell)
-    ├─ Test files: 4
-    ├─ Documentation: 5 (README + generated reports)
-    ├─ Data files: Thousands (CSVs, NPYs, JSONs, PKLs)
-    ├─ Model files: 229
-    ├─ Log files: 52
-    ├─ Total project size: ~300 MB
-    ├─ Code lines: ~3,500 total
-    ├─ Test coverage: ~60%
-    └─ Test pass rate: 100% (12 passing)
-
-
-================================================================================
-FILE RELATIONSHIPS & DEPENDENCIES
-================================================================================
-
-IMPORT HIERARCHY
-────────────────
-
-config.py (CENTRAL HUB)
-  ├─ Used by: Almost all modules (path resolution)
-  ├─ Provides: get_project_root(), resolve_app_path(), constants
-  └─ Critical: Must load first
-
-app.py (PRIMARY ENTRY)
-  ├─ Imports: views.render_home_view, utils
-  └─ Renders: Home page UI
-
+EQUIMASTER-AI: MAINTAINED PROJECT STRUCTURE
+Updated: 19 November 2026
+
+This inventory describes the actual source layout and runtime contracts. Runtime
+counts and dated validation belong in PROJECT_STATUS.md and reports/; line counts
+and artifact sizes are intentionally not hard-coded.
+
+ROOT
+  app.py                    Streamlit markets/screener/news entry point
+  config.py                 Configured 58 companies + NIFTY index, horizons and paths
+  daily_pipeline.py         Locked, bounded subprocess workflow with incremental status
+  run_pipeline.bat          Uses the project .venv Python
+  utils.py                  Cached quote and data access for the UI
+  README.md                 Setup, operating commands and supported environment
+  PROJECT_STATUS.md         Current verified evidence and research limitations
+  RELEASE_CHECKLIST.md      Release closure and administrator action
+  VALIDATION_PROTOCOL.md    Temporal splits, baselines, intervals and fusion protocol
+  FUNDAMENTALS_GUIDE.md     98 supported parameters, provenance and valuation methods
+  RAG_BLUEPRINT.md           News/LLM contracts and point-in-time restrictions
+  UI_DESIGN.md              Theme, interaction and browser verification
+  requirements*.txt        Core lockfile, direct dependencies and optional tools
+  .github/workflows/        Windows/Python 3.13 offline CI
+  .streamlit/config.toml    Application theme/settings
+
+SOURCE AREAS
+  components/               Shared navigation, theme, index quotes and market widgets
+  views/                    Home markets/screener/news presentation
+  pages/                    Stock analyzer and lazy research navigation
+  tabs/                     Overview, technicals, forecasts, news and fundamentals
+  src/                      Data, forecasting, artifacts, news, LLM and valuation logic
+  scripts/                  Supported CLIs and compatibility entry points
+  tests/                    Offline unit and Streamlit interaction regression suite
+  assets/                   CSS and shared visual assets
+  images/                   Existing project images and dated browser evidence
+  reports/release-20261119/  Dated validation copies and model inventory
+  xyz/                      Research paper (.txt/.docx), technical report and indexes
+  notebooks/                Exploratory work; not the canonical training entry point
+  webapp/                   Preserved separate prototype; not the release dashboard
+
+PERSISTENT RUNTIME ARTIFACTS (PRESERVED LOCALLY, EXCLUDED FROM SOURCE GIT TRACKING)
+  data/raw/                 Provider OHLCV; older histories are retained on refresh
+  data/processed/           Feature CSVs; unchanged active snapshots are retained
+  data/train_data/          Legacy/experimental sequence arrays and scalers
+  data/fundamentals/        Company snapshots, units, periods, sources and statements
+  data/fundamental_history.sqlite3  Point-in-time fundamentals archive
+  data/news_cache/          Short-lived current news caches
+  data/news_archive/        Timestamped observations for historical retrieval
+  data/benchmarks/          Sentiment benchmark provenance and annotation batches
+  data/evaluation/          Frozen-model, cost, quality, valuation and inference reports
+  models/active_<ticker>.json  Atomic pointer to an immutable active version
+  models/versions/<ticker>/<version>/
+      metadata.json         Features, dates, hashes, horizons, news gate and metrics
+      processed.csv         Exact immutable fitting/evaluation dataset snapshot
+      scaler.pkl            Matching training-fitted scaler
+      h1/h5/h22/h63.weights.h5  Direct multi-session model weights
+      backtest_h*.csv       Chronological test origins, target dates and prices
+  models/fundamental_ml/    Return-model artifacts only after maturity/validation gates
+  logs/                     Progress, pipeline state, readiness and provider failures
+
+The local release ZIP contains a clean source snapshot plus current bundles and
+selected runtime directories. RELEASE_MANIFEST.json records the exact source
+commit, model inventory, successful remote CI and per-file checksums. Python
+virtual environments, provider cookies and secrets are excluded.
+
+SOURCE FILE INDEX
+
+app.py
+components/__init__.py
+components/indices_ticker.py
+components/layout.py
+components/market_movers.py
+components/sensex_ticker.py
+config.py
+daily_pipeline.py
 pages/stock_analyzer.py
-  ├─ Imports: tabs (overview, technicals, lstm_model, news_sentinel, fundamentals)
-  ├─ Imports: utils.load_data
-  └─ Renders: 5-tab analysis interface
-
-src/news/fetcher.py (NEWS DATA FLOW)
-  ├─ Imports: config (TRUSTED_NEWS_DOMAINS, NEWS_API_KEY_ENV)
-  ├─ Provides: fetch_ticker_articles()
-  └─ Used by: sentiment.py, backtesting
-
-src/news/sentiment.py (SENTIMENT PIPELINE)
-  ├─ Imports: fetcher.py, retriever.py
-  ├─ Imports: finbert (HuggingFace)
-  └─ Provides: analyze_ticker_sentiment()
-
-src/news/retriever.py (RAG LAYER)
-  ├─ Imports: embeddings.py, chunker.py
-  ├─ Imports: sklearn (TF-IDF fallback)
-  └─ Provides: NewsRetriever.retrieve()
-
-src/train_model.py (TRAINING HUB)
-  ├─ Imports: config
-  ├─ Imports: tensorflow, numpy
-  └─ Provides: build_model(), train_all()
-
-daily_pipeline.py (ORCHESTRATOR)
-  ├─ Imports: config, logging
-  ├─ Calls: subprocess.run() on:
-  │   ├─ src/update_data.py
-  │   ├─ src/preprocessor.py
-  │   ├─ src/data_sequencer.py
-  │   └─ src/train_model.py
-  └─ Logs: master_pipeline.log
-
-
-DATA FLOW DIAGRAM
-──────────────────
-
-yfinance API
-    ↓
-[src/update_data.py] → data/raw/*.csv (OHLCV, 10 years)
-    ↓
-[src/preprocessor.py] → data/processed/*.csv (+ indicators)
-    ↓
-[src/data_sequencer.py] → data/train_data/ (X, y, scaler)
-    ↓
-[src/train_model.py] → models/*.keras (229 trained models)
-    ↓
-[pages/stock_analyzer.py]
-    ├─→ [tabs/lstm_model.py] → Predictions + chart
-    ├─→ [tabs/technicals.py] → Indicators + candlestick
-    └─→ [tabs/overview.py] → Company info
-
-NewsAPI + Yahoo Finance
-    ↓
-[src/news/fetcher.py] → data/news_cache/*.json (articles)
-    ↓
-[src/news/chunker.py] → Chunk objects (split text)
-    ↓
-[src/news/embeddings.py] (or TF-IDF fallback)
-    ↓
-[src/news/retriever.py] → Retrieved chunks (top-k)
-    ↓
-[src/news/sentiment.py] → Sentiment scores + evidence
-    ↓
-[tabs/news_sentinel.py] (Future: display sentiment)
-
-
-================================================================================
-CONFIGURATION & CONSTANTS
-================================================================================
-
-MAIN CONFIGURATION (config.py)
-──────────────────────────────
-
-Ticker Lists:
-  ├─ NIFTY_50_TICKERS: 49 stocks (main universe)
-  ├─ BANK_NIFTY_TICKERS: 12 banks (large-cap focus)
-  ├─ ALL_DOWNLOAD_TICKERS: 61 unique (combined, deduped)
-  ├─ SENSEX_30_TICKERS: 30 BSE large-cap
-  ├─ MARKET_MOVERS_TICKERS: 10 selected for movers widget
-  └─ WATCHLIST_TICKERS: User-defined (from EQUIMASTER_WATCHLIST env var)
-
-Index Symbols:
-  ├─ "NIFTY 50": "^NSEI"
-  ├─ "SENSEX": "^BSESN"
-  ├─ "BANK NIFTY": "^NSEBANK"
-  ├─ "NIFTY 100": "^CNX100"
-  ├─ "NIFTY IT": "^CNXIT"
-  └─ "NIFTY PHARMA": "^CNXPHARMA"
-
-Trusted News Publishers (14):
-  ├─ reuters.com
-  ├─ bloomberg.com
-  ├─ cnbc.com
-  ├─ ft.com
-  ├─ wsj.com
-  ├─ economictimes.indiatimes.com
-  ├─ moneycontrol.com
-  ├─ mint.com
-  ├─ business-standard.com
-  ├─ thehindubusinessline.com
-  ├─ businesstoday.com
-  ├─ ndtv.com
-  └─ finance.yahoo.com
-
-Directory Structure Constants:
-  ├─ data/
-  ├─ data/raw/
-  ├─ data/processed/
-  ├─ data/train_data/
-  ├─ data/news_cache/
-  ├─ models/
-  └─ logs/
-
-Environment Variables:
-  ├─ NEWS_API_KEY: API key for NewsAPI.org
-  ├─ EQUIMASTER_WATCHLIST: User watchlist (comma-separated)
-  ├─ MODEL_STORAGE_PATH_ENV: Override model directory
-  └─ NEWS_CACHE_PATH_ENV: Override cache directory
-
-Parameters:
-  ├─ NEWS_CACHE_TTL_HOURS: 1
-  ├─ NEWS_RECENCY_DAYS: 2
-  ├─ NEWS_MAX_ARTICLES: 8
-  ├─ WINDOW_SIZE: 60 (input window)
-  ├─ HORIZONS: Day/Week/Month/Quarter = [1, 5, 22, 88] trading sessions
-  └─ MODEL_OUTPUT_SIZE: 4 (4-horizon output)
-
-
-================================================================================
-CONCLUSION & SUMMARY
-================================================================================
-
-Total Project Composition:
-  ├─ Codebase: 47 Python files (3,500+ lines)
-  ├─ Tests: 4 test files (12 passing tests)
-  ├─ Documentation: 5 comprehensive reports (15,000+ lines)
-  ├─ Data: 49 tickers × 10 years = 2,500 rows each
-  ├─ Models: 229 trained LSTM models (115 MB)
-  ├─ Logs: 52 active log files (rolling retention)
-  ├─ Configuration: Centralized (config.py)
-  └─ Total Size: ~300 MB (project root)
-
-Key Design Principles:
-  ✓ Modularity: Separate concerns (fetcher, sentiment, retriever, etc.)
-  ✓ Reusability: Components, tabs, utilities as building blocks
-  ✓ Centralization: Single config source, project-root-safe paths
-  ✓ Testability: Unit + integration tests, high coverage
-  ✓ Maintainability: Clear naming, extensive documentation
-  ✓ Reproducibility: Immutable prediction records, versioned models
-  ✓ Robustness: Error handling, graceful degradation, logging
-
-Project Status: Production Ready
-  ✓ 49 LSTM models trained (229 total with variants)
-  ✓ News pipeline validated (8/8 tests passing)
-  ✓ UI fully functional (5 tabs operational)
-  ✓ Automated pipeline (daily scheduling via Windows Task Scheduler)
-  ✓ Performance baseline: 50-55% directional accuracy (vs 50% random)
-  ⚠ Caveats: 1-day predictions noisy, sentiment analysis early-stage
-
-================================================================================
-END OF FOLDER STRUCTURE & FILE INFORMATION
-================================================================================
-
-Generated: 2026-09-03
-Format: Comprehensive text document
-Audience: Developers, stakeholders, new team members
-Use: Project reference, onboarding guide, architecture documentation
-
-For questions on specific files or modules, refer to:
-  → TECHNICAL_REPORT_COMPLETE.txt (system design)
-  → CODE_ORIGINALITY_ANALYSIS.txt (code quality)
-  → ACTIVE_FUNCTIONS_MAP.txt (function usage)
-  → README.md (setup guide)
-
-================================================================================
+scripts/archive_current_fundamentals.py
+scripts/audit_universe.py
+scripts/complete_all_training.py
+scripts/convert_models.py
+scripts/demo_ingest_run.py
+scripts/download_news_benchmark.py
+scripts/evaluate_cost_sensitivity.py
+scripts/evaluate_lstm.py
+scripts/evaluate_news.py
+scripts/evaluate_watchlist.py
+scripts/export_news_annotation_batch.py
+scripts/fetch_nifty.py
+scripts/fix_missing_scalers.py
+scripts/news_ingest.py
+scripts/package_release.py
+scripts/quick_run.py
+scripts/refresh_all_news.py
+scripts/refresh_fundamentals.py
+scripts/run_sequencer_train.py
+scripts/test_predict.py
+scripts/train_all_missing_models.py
+scripts/train_fundamental_model.py
+scripts/train_manager.py
+scripts/train_nifty.py
+scripts/ui_screenshot.py
+scripts/update_csv_dates.py
+scripts/update_csvs.py
+scripts/update_logs_timestamp.py
+scripts/validate_browser.py
+scripts/validate_runtime.py
+scripts/valuation_coverage.py
+src/artifacts.py
+src/company_names.py
+src/dashboard_data.py
+src/data_loader.py
+src/data_sequencer.py
+src/download_nifty500.py
+src/evaluate_predictions.py
+src/forecast.py
+src/fundamental_calculations.py
+src/fundamental_catalog.py
+src/fundamental_history.py
+src/fundamental_ml.py
+src/fundamental_sources.py
+src/fundamental_swot.py
+src/fundamental_valuation.py
+src/fundamentals.py
+src/fusion_artifacts.py
+src/fusion_dataset.py
+src/fusion_evaluation.py
+src/fusion_gate.py
+src/fusion_model.py
+src/fusion_split.py
+src/llm/__init__.py
+src/llm/evaluation.py
+src/llm/evidence.py
+src/llm/provider.py
+src/lstm_features.py
+src/market_context.py
+src/market_data.py
+src/news/__init__.py
+src/news/chunker.py
+src/news/embeddings.py
+src/news/evaluation.py
+src/news/fetcher.py
+src/news/ingest.py
+src/news/retriever.py
+src/news/sentiment.py
+src/panel_training.py
+src/pipeline_lock.py
+src/predict_model.py
+src/prediction_contract.py
+src/prediction_fusion.py
+src/preprocessor.py
+src/recommendation.py
+src/repair_models.py
+src/test_setup.py
+src/train_model.py
+src/training.py
+src/update_data.py
+tabs/__init__.py
+tabs/fundamentals.py
+tabs/lstm_model.py
+tabs/news_sentinel.py
+tabs/overview.py
+tabs/technicals.py
+utils.py
+views/__init__.py
+views/home_view.py

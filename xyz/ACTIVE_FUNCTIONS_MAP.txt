@@ -1,659 +1,584 @@
-================================================================================
-EQUIMASTER-AI: ACTIVE FUNCTIONS USAGE MAP
-================================================================================
-
-This document categorizes all 150+ functions by execution context: which ones
-are actively called during normal app operation vs. helper/utility functions.
-
-Last Updated: 2026-09-02
-Functions Analyzed: 150+ across 47 files
-
-================================================================================
-SECTION 1: PRIMARY ENTRY POINTS (ALWAYS ACTIVE)
-================================================================================
-
-These functions are called when the app/pipeline starts and run every time.
-
-1.1 STREAMLIT APP ENTRY POINT
-──────────────────────────────
-
-File: app.py
-  ✓ ALWAYS ACTIVE - Main app initialization
-  - Page config: st.set_page_config()
-  - CSS styling: st.markdown() with custom styles
-  - Sidebar: st.sidebar with Quick Actions
-  - Main content: st.markdown(), st.divider()
-  - Navigation: render_home_view()
-
-Execution Flow:
-  app.py startup
-    └─→ st.set_page_config()
-    └─→ render_home_view()  [views/home_view.py]
-         └─→ render_indices_ticker()
-         └─→ render_sensex_ticker()
-         └─→ render_market_movers()
-         └─→ fetch_index_snapshot()
-
-1.2 STOCK ANALYZER PAGE
-───────────────────────
-
-File: pages/stock_analyzer.py
-  ✓ ALWAYS ACTIVE when user selects a stock
-  - Ticker selection logic
-  - Load data: load_data()
-  - Render tabs:
-    └─→ render_overview_tab()
-    └─→ render_technicals()
-    └─→ render_lstm_tab()
-    └─→ render_news_tab()
-    └─→ render_fundamentals_tab()
-
-
-1.3 DAILY PIPELINE ENTRY POINT
-────────────────────────────────
-
-File: daily_pipeline.py (CLI)
-  ✓ CALLED BY: run_pipeline.bat (scheduled, or manual)
-  - main() entry point (if __name__ == "__main__")
-  - run_script() orchestrator
-    └─→ Sequential execution of data/model pipeline
-
-Entry Point Signature:
-  if __name__ == "__main__":
-      # Parse CLI args (--force, --skip-training)
-      # Run pipeline steps sequentially
-      # Log results to master_pipeline.log
-
-
-================================================================================
-SECTION 2: ACTIVE UI COMPONENTS (CALLED ON PAGE RENDER)
-================================================================================
-
-These functions are active whenever their parent page/tab is viewed.
-
-2.1 HOME VIEW COMPONENTS
-────────────────────────
-
-File: views/home_view.py → render_home_view()
-  ✓ ACTIVE when: User on main app.py page
-
-  Calls:
-    render_indices_ticker()          [components/indices_ticker.py]
-      └─→ Renders HTML ticker strip with index prices
-      └─→ Injected via st.components.v1.html()
-
-    render_sensex_ticker()           [components/sensex_ticker.py]
-      └─→ Renders 30 Sensex stocks (animated ticker)
-      └─→ Calls _fetch_single_sensex_stock() for each stock
+EQUIMASTER-AI: SOURCE AND FUNCTION MAP
+Updated: 19 November 2026
+
+This is a static inventory of maintained application/pipeline modules. It does
+not imply that every function is called on every render or has runtime coverage.
+Tests, notebooks, the legacy webapp prototype and generated files are separate.
+
+NORMAL EXECUTION FLOWS
+
+1. app.py -> views.home_view.render_home_view: markets, screener and latest news.
+2. pages/stock_analyzer.py lazily selects Overview, Technical Chart, LSTM Model,
+   News Sentiment or Fundamentals. Quote, history and model-training dates differ.
+3. daily_pipeline.main -> pipeline_lock -> run_pipeline -> run_stage subprocesses:
+   market refresh, preprocessing, canonical training, evaluation, fundamentals
+   refresh and the gated fundamentals-model readiness check.
+4. scripts.train_manager.main checks active data/model hashes, fetches at least
+   20 fresh verified stories for each ticker needing training, then delegates to
+   src.training.train_ticker. Immutable bundles publish through atomic pointers.
+5. src.forecast.predict_forecast resolves matching features/scaler/weights and
+   returns a direct price path and empirical intervals for 1/5/22/63 sessions.
+6. News providers -> publisher/issuer/time filters -> deduplication -> archive ->
+   retrieval and sentiment. Hosted LLM synthesis is optional; learned forecast
+   fusion and pooled-model work remain separate experiments unless activated.
+7. Fundamentals providers -> build_details -> snapshots/history ->
+   calculate_fundamental_valuation -> estimate_stock_valuation. The 252-session
+   return model remains unavailable until matured point-in-time labels pass gates.
+8. Release CLIs: audit_universe, valuation_coverage, validate_runtime,
+   evaluate_watchlist, evaluate_cost_sensitivity, evaluate_news, validate_browser,
+   export_news_annotation_batch and package_release.
+
+NAMED FUNCTION INVENTORY
+Signatures and line numbers are extracted from Python ASTs; lambdas are omitted.
+
+Production modules: 98; named definitions: 354.
+
+app.py
+
+components/__init__.py
+
+components/indices_ticker.py
+  L8: render_indices_ticker(indices_data=None)
 
-    render_market_movers()           [components/market_movers.py]
-      └─→ Renders top 5 gainers/losers
-      └─→ Calls fetch_market_movers()
-          └─→ _fetch_single_ticker() for each symbol
-          └─→ Computes pct change, formats with format_change_pct()
-
-    fetch_index_snapshot()           [utils.py]
-      └─→ @st.cache_data(ttl=600) - Cached 10 minutes
-      └─→ Calls _fetch_single_index() for 6 indices
-      └─→ Returns dict: {label: {last, delta, pct}}
+components/layout.py
+  L25: apply_theme()
+  L32: render_shell(active='Markets')
+  L43: section_title(title, subtitle=None, badge=None)
+  L49: research_card(title, value, detail, tone='blue')
+  L54: render_footer()
 
+components/market_movers.py
+  L9: fetch_market_movers()
+  L17: render_market_movers(frame=None)
 
-2.2 STOCK ANALYZER TABS
-───────────────────────
+components/sensex_ticker.py
+  L18: _fetch_single_sensex_stock(ticker_item)
+  L44: fetch_sensex_data()
+  L71: render_sensex_ticker()
 
-File: pages/stock_analyzer.py → Tabbed interface
-  ✓ ACTIVE when: User selects a stock to analyze
+config.py
+  L10: provider_symbol(ticker: str)
+  L14: get_project_root()
+  L19: resolve_app_path(*parts: str)
+  L24: ensure_runtime_directories()
+  L154: horizon_description(horizon: int)
 
-  Tab 1: Overview
-    render_overview_tab(df, ticker)  [tabs/overview.py]
-      └─→ Shows 52-week range
-      └─→ Company summary
+daily_pipeline.py
+  L18: run_stage(command, log, timeout)
+  L38: run_pipeline(args)
+  L44: run_pipeline.save(state, current_step=None)
+  L98: main()
 
-  Tab 2: Technical Chart
-    render_technicals(df, ticker)    [tabs/technicals.py]
-      └─→ Plotly candlestick chart
-      └─→ Volume subplot
-      └─→ Moving averages (20, 50)
+pages/stock_analyzer.py
 
-  Tab 3: LSTM Model
-    render_lstm_tab(df, ticker, MODEL_PATH, SCALER_PATH)  [tabs/lstm_model.py]
-      └─→ Loads trained LSTM model
-      └─→ Loads scaler
-      └─→ Generates predictions (Day/Week/Month/Quarter: 1/5/22/88 sessions)
-      └─→ Shows prediction chart + accuracy metrics
-
-  Tab 4: News Sentiment
-    render_news_tab(ticker)          [tabs/news_sentinel.py]
-      └─→ Currently shows "Coming Soon" placeholder
-      └─→ Will call analyze_ticker_sentiment() when implemented
-
-  Tab 5: Fundamentals
-    render_fundamentals_tab(ticker)  [tabs/fundamentals.py]
-      └─→ Shows company info, ratios
-      └─→ Placeholder implementation
-
-
-================================================================================
-SECTION 3: ACTIVE DATA FUNCTIONS (RUNTIME EXECUTION)
-================================================================================
-
-These functions are called during data loading and analysis.
-
-3.1 DATA LOADING & CACHING
-──────────────────────────
-
-load_data(selected_ticker, data_path, _data_fingerprint)  [utils.py]
-  ✓ @st.cache_data(ttl=300) - Cached 5 minutes
-  ✓ ACTIVE: Called by stock_analyzer.py for every stock view
-
-  Execution Path:
-    1. Check if local CSV exists (data/processed/{ticker}_processed.csv)
-    2. If yes: Load CSV with pd.read_csv()
-    3. If no: Fetch live data from yfinance
-       └─→ For "NIFTY 50": Fetch ^NSEI
-       └─→ For others: yf.download(ticker, period="1y")
-    4. Return DataFrame sorted by index
-
-
-3.2 INDEX & STOCK SNAPSHOTS
-────────────────────────────
-
-fetch_index_snapshot()                          [utils.py]
-  ✓ @st.cache_data(ttl=600) - Cached 10 minutes
-  ✓ ACTIVE: Called by render_home_view()
-
-  Execution Path:
-    for each index in INDEX_TICKERS:
-      _fetch_single_index(label, symbol)
-        └─→ yf.download(symbol, period="1d")
-        └─→ Extract Close, compute delta, pct change
-    return snapshot dict
-
-
-fetch_stock_snapshot(symbol: str)               [utils.py]
-  ✓ @st.cache_data(ttl=300)
-  ✓ ACTIVE: Called by stock_analyzer.py header display
-
-  Execution Path:
-    yf.Ticker(symbol).info
-      └─→ Extract current price, name, sector, market cap
-    return dict with live data
-
-
-3.3 LSTM MODEL PREDICTION
-──────────────────────────
-
-From tabs/lstm_model.py → render_lstm_tab():
-
-  1. Load model:
-     joblib.load(SCALER_PATH)
-     tf.keras.models.load_model(MODEL_PATH)
-
-  2. Prepare data:
-     X_test = np.array([...])  # Last 60 days
-
-  3. Predict:
-     predictions = model.predict(X_test)  # Shape: (1, 4) for 4 horizons
-
-  4. Scale back:
-     scaler.inverse_transform()
-
-  5. Visualize:
-     Plotly chart with predictions + actuals
-
-
-================================================================================
-SECTION 4: SCHEDULED/PIPELINE FUNCTIONS (BATCH EXECUTION)
-================================================================================
-
-These functions run on a schedule (daily) or manual trigger, NOT during app views.
-
-4.1 DAILY DATA REFRESH PIPELINE
-────────────────────────────────
-
-Entry Point: daily_pipeline.py → main()
-  ✓ Called by: run_pipeline.bat (scheduled via Windows Task Scheduler)
-  ✓ Frequency: Once per day before market open (6:00 AM)
-
-  Pipeline Steps (Sequential):
-
-  Step 1: Fetch Fresh Market Data
-    src/update_data.py → main()
-      └─→ update_all_stocks()
-          └─→ For each ticker:
-              - _update_single_ticker(ticker)
-                  └─→ yf.download() latest data
-                  └─→ Append to data/raw/{ticker}.csv
-              - Check for stale tickers
-
-  Step 2: Calculate Technical Indicators
-    src/preprocessor.py → main()
-      └─→ process_all_files()
-          └─→ For each raw CSV:
-              - add_technical_indicators(df)
-                  └─→ Compute SMA(20), SMA(50), RSI, MACD, Bollinger Bands
-              - Save to data/processed/{ticker}_processed.csv
-
-  Step 3: Generate LSTM Sequences
-    src/data_sequencer.py → main()
-      └─→ process_and_save_all()
-          └─→ For each processed CSV:
-              - Load data
-              - create_sequences(data, window_size=60, horizons=[1,5,22,88])
-              - Save: data/train_data/X_train_{ticker}.npy
-                      data/train_data/y_train_{ticker}.npy
-                      data/train_data/X_test_{ticker}.npy
-                      data/train_data/y_test_{ticker}.npy
-              - Save scaler: data/train_data/scaler_{ticker}.pkl
-
-  Step 4: Train LSTM Models
-    src/train_model.py → main()
-      └─→ train_all()
-          └─→ For each X_train_{ticker}.npy:
-              - Build model: build_model(input_shape, output_size=4)
-              - Train: model.fit(epochs=10, batch_size=32, verbose=0)
-              - Save: models/lstm_{ticker}.keras
-
-
-4.2 NEWS REFRESH (MANUAL OR SCHEDULED)
-──────────────────────────────────────
-
-scripts/refresh_all_news.py → main()
-  ✓ Called by: Manual execution (python refresh_all_news.py)
-  ✓ Purpose: Refresh news cache for all tickers
-
-  Execution:
-    refresh_news_for_tickers(tickers=ALL_DOWNLOAD_TICKERS)
-      └─→ For each ticker (batch_size=5):
-          - fetch_ticker_articles(ticker, force_refresh=True)
-              └─→ Try _newsapi_articles(ticker)
-              └─→ Fallback to _yahoo_articles(ticker)
-              └─→ Validate with _is_trusted_article()
-              └─→ Cache to data/news_cache/{ticker}.json
-          - Sleep 2s between batches (rate limiting)
-      └─→ Report success count, article sources
-
-
-================================================================================
-SECTION 5: CORE ANALYSIS FUNCTIONS (CALLED BY PIPELINE/UI)
-================================================================================
-
-These are the main algorithms called by pipelines and UI components.
-
-5.1 SENTIMENT ANALYSIS
-──────────────────────
-
-analyze_ticker_sentiment(ticker, max_articles=8, query_type="recent sentiment")
-  ✓ File: src/news/sentiment.py
-  ✓ WHEN CALLED:
-    - Currently: Not integrated into UI (placeholder in news_sentinel.py)
-    - Future: render_news_tab() will call this
-    - Pipeline: Manual execution via scripts
-
-  Execution Steps:
-    1. fetch_ticker_articles(ticker, max_articles)
-       └─→ Get verified news articles
-
-    2. NewsRetriever(top_k=8).retrieve(articles, query, recency_days=2)
-       └─→ Filter articles by recency
-       └─→ Try EmbeddingRetriever (FAISS + sentence-transformers)
-       └─→ Fallback to TF-IDF + cosine_similarity
-       └─→ Return top_k relevant chunks with scores
-
-    3. Score each article:
-       └─→ _finbert_score(text) or _keyword_score(text)
-       └─→ Adjust by relevance: score * (0.7 + relevance)
-       └─→ Apply source weight (Reuters=1.1, others=1.0)
-
-    4. Aggregate:
-       └─→ Weighted mean: sum(score * source_weight * (0.55 + relevance*1.2))
-       └─→ Classify label: Bullish/Bearish/Neutral/Risk-off/Mixed
-
-    5. Return:
-       {
-           "ticker": str,
-           "overall_score": float [-1.0, 1.0],
-           "label": str,
-           "confidence": float,
-           "articles": [scored articles],
-           "evidence": [attribution records],
-           "drivers": [reasons],
-           "summary": str
-       }
-
-
-5.2 MARKET CONTEXT BUILDER
-──────────────────────────
-
-build_market_context(ticker, horizon=5)
-  ✓ File: src/market_context.py
-  ✓ WHEN CALLED: Currently unused in UI
-  ✓ PURPOSE: Combine technical + sentiment for recommendations
-
-  Execution Steps:
-    1. Sentiment signal: analyze_ticker_sentiment(ticker)
-    2. Technical signal: _technical_signal(dataframe)
-       └─→ trend = (short_momentum + long_momentum) / 4
-       └─→ Combined with price trend
-    3. Hybrid score: technical * 0.5 + sentiment * 0.5
-    4. Label: Bullish (>0.03), Bearish (<-0.03), Neutral
-
-
-5.3 RECOMMENDATION ENGINE
-─────────────────────────
-
-build_recommendation(ticker, price_trend=0.0, horizon=5)
-  ✓ File: src/recommendation.py
-  ✓ WHEN CALLED: Currently unused in UI
-  ✓ PURPOSE: Generate buy/hold/sell recommendations
-
-  Output:
-    {
-        "action": "BUY" | "HOLD" | "SELL",
-        "confidence": float,
-        "target_price": float,
-        "stop_loss": float,
-        "rationale": str
-    }
-
-
-5.4 RISK SCORING
-────────────────
-
-build_risk_score(ticker, horizon=5)
-  ✓ File: src/risk_score.py
-  ✓ WHEN CALLED: Currently unused in UI
-  ✓ PURPOSE: Compute risk metrics for position sizing
-
-  Output:
-    {
-        "risk_score": float [0, 1],
-        "volatility": float,
-        "max_drawdown": float,
-        "sharpe_ratio": float
-    }
-
-
-================================================================================
-SECTION 6: HELPER / UTILITY FUNCTIONS (SUPPORTING ROLES)
-================================================================================
-
-These are called by primary functions but don't execute independently.
-
-6.1 NEWS PIPELINE HELPERS
-─────────────────────────
-
-fetch_ticker_articles(ticker, max_articles=10, force_refresh=False)
-  ✓ CALLED BY: analyze_ticker_sentiment()
-  └─→ Returns list of news articles for a ticker
-  └─→ Uses cache with 1-hour TTL
-  └─→ Validates articles against TRUSTED_NEWS_DOMAINS
-
-
-_newsapi_articles(ticker, max_articles)
-  ✓ CALLED BY: fetch_ticker_articles()
-  └─→ Queries NewsAPI.org with domain filter
-  └─→ Returns articles list
-
-
-_yahoo_articles(ticker, max_articles)
-  ✓ CALLED BY: fetch_ticker_articles() as fallback
-  └─→ Queries yfinance.Ticker.news
-  └─→ Returns articles list
-
-
-_is_trusted_article(article)
-  ✓ CALLED BY: fetch_ticker_articles()
-  └─→ Validates URL against TRUSTED_NEWS_DOMAINS
-  └─→ Returns bool
-
-
-normalize_article(article, ticker)
-  ✓ CALLED BY: fetch_ticker_articles()
-  └─→ Standardizes article fields
-  └─→ Returns normalized dict
-
-
-chunk_article(article)
-  ✓ CALLED BY: NewsRetriever.retrieve()
-  └─→ Splits article into chunks (500 tokens, 120 overlap)
-  └─→ Returns generator of chunk dicts
-
-
-split_text_into_chunks(text, chunk_size=500, overlap=120)
-  ✓ CALLED BY: chunk_article()
-  └─→ Sliding-window text chunking
-  └─→ Returns list of chunk strings
-
-
-6.2 DATA PROCESSING HELPERS
-────────────────────────────
-
-add_technical_indicators(df)
-  ✓ CALLED BY: preprocessor.py → process_all_files()
-  └─→ Computes SMA, RSI, MACD, Bollinger Bands
-  └─→ Adds columns to DataFrame
-
-
-create_sequences(data, window_size, close_col_idx)
-  ✓ CALLED BY: data_sequencer.py → process_and_save_all()
-  └─→ Creates X_train, y_train arrays
-  └─→ Single-step sequences (1-day ahead)
-
-
-create_multi_step_sequences(data, window_size, horizon, close_col_idx)
-  ✓ CALLED BY: data_sequencer.py → process_and_save_all()
-  └─→ Creates sequences for multi-horizon prediction
-  └─→ Returns X, y for Day/Week/Month/Quarter: 1, 5, 22, 88 sessions
-
-
-6.3 MODEL UTILITIES
-────────────────────
-
-build_model(input_shape, output_size=1)
-  ✓ CALLED BY: train_model.py → train_all()
-  └─→ Builds Sequential LSTM model
-  └─→ Returns compiled model
-
-
-_extract_close_series(hist, symbol)
-  ✓ CALLED BY: utils.py → _fetch_single_index()
-  └─→ Extracts Close price from yfinance MultiIndex DataFrame
-  └─→ Handles column name variations
-
-
-_technical_signal(dataframe)
-  ✓ CALLED BY: market_context.py → build_market_context()
-  └─→ Computes momentum-based technical signal
-  └─→ Returns (price_trend, technical_signal)
-
-
-6.4 PATH & CONFIGURATION HELPERS
-─────────────────────────────────
-
-get_project_root()
-  ✓ CALLED BY: Many files (config imports)
-  └─→ Returns PROJECT_ROOT Path object
-  └─→ Platform-independent path resolution
-
-
-resolve_app_path(*parts)
-  ✓ CALLED BY: All files needing absolute paths
-  └─→ Converts relative paths to absolute (PROJECT_ROOT based)
-  └─→ Example: resolve_app_path("data", "raw", "RELIANCE.NS.csv")
-
-
-ensure_runtime_directories()
-  ✓ CALLED BY: train_model.py, daily_pipeline.py startup
-  └─→ Creates all required directories
-  └─→ Creates: data/, models/, logs/, etc.
-
-
-================================================================================
-SECTION 7: INACTIVE / PLACEHOLDER FUNCTIONS (NOT CURRENTLY USED)
-================================================================================
-
-These functions are defined but not called during normal operation.
-
-7.1 NEWS SENTIMENT TAB (PLACEHOLDER)
-────────────────────────────────────
-
-render_news_tab(ticker)  [tabs/news_sentinel.py]
-  ✗ CURRENTLY: Shows "Coming Soon" placeholder
-  ✗ NOT CALLED: analyze_ticker_sentiment() never invoked
-
-  Future Integration:
-    render_news_tab() should call:
-      └─→ analyze_ticker_sentiment(ticker)
-      └─→ Display sentiment score + evidence
-
-
-7.2 RECOMMENDATION & RISK ENGINES (DEFINED BUT UNUSED)
-───────────────────────────────────────────────────────
-
-build_recommendation(ticker, horizon)    [src/recommendation.py]
-  ✗ Defined but never called
-  ✗ No UI component displays recommendations
-
-build_risk_score(ticker, horizon)        [src/risk_score.py]
-  ✗ Defined but never called
-  ✗ No UI component displays risk metrics
-
-build_market_context(ticker, horizon)    [src/market_context.py]
-  ✗ Defined but never called
-  ✗ Hybrid technical + sentiment scoring available but unused
-
-
-7.3 TEST FUNCTIONS (DEVELOPMENT ONLY)
-───────────────────────────────────────
-
-test_smoke()                             [tests/test_smoke.py]
-test_train_model_build()
-test_project_paths_are_resolved()
-test_live_index_snapshot_returns_distinct_values()
-  ✗ ACTIVE ONLY: During pytest runs
-  ✗ NOT IN PRODUCTION: No UI calls these
-
-
-test_create_sequences()                  [tests/test_data_sequencer.py]
-test_create_multi_step_sequences()
-  ✗ ACTIVE ONLY: During pytest runs
-
-
-test_news_fetcher_returns_normalized_articles()  [tests/test_news_sentiment.py]
-test_news_fetcher_supports_force_refresh()
-test_finance_relevance_filter_rejects_unrelated_text()
-test_untrusted_articles_are_rejected()
-test_sentiment_result_contains_retrieved_evidence()
-test_named_query_and_market_context_contract()
-test_prediction_contract_has_shared_score_and_accuracy_rules()
-test_prediction_evaluation_reports_lstm_and_combined_accuracy()
-  ✗ ACTIVE ONLY: During pytest runs
-
-
-7.4 REPAIR/MAINTENANCE SCRIPTS (MANUAL ONLY)
-──────────────────────────────────────────────
-
-src/repair_models.py → main()
-  ✗ Called manually: python src/repair_models.py [--epochs N]
-  ✗ Purpose: Fix missing scalers, retrain models
-
-scripts/convert_models.py → main()
-  ✗ Called manually: python scripts/convert_models.py
-  ✗ Purpose: Convert .h5 models to .keras format
-
-scripts/fix_missing_scalers.py → main()
-  ✗ Called manually: python scripts/fix_missing_scalers.py
-  ✗ Purpose: Regenerate missing scalers
-
-scripts/train_manager.py → main()
-  ✗ Called manually: python scripts/train_manager.py [--workers N]
-  ✗ Purpose: Parallel training orchestration
-
-
-================================================================================
-SECTION 8: EXECUTION FLOW DIAGRAM
-================================================================================
-
-                         ┌─────────────────┐
-                         │   app.py START  │
-                         └────────┬────────┘
-                                  │
-                    ┌─────────────┴──────────────┐
-                    │                            │
-              st.set_page_config()      render_home_view()
-                    │                            │
-                    │            ┌───────────────┼───────────────┐
-                    │            │               │               │
-                    │      render_indices_   render_sensex_  render_market_
-                    │      ticker()          ticker()        movers()
-                    │            │               │               │
-                    │      fetch_index_   fetch_sensex_   fetch_market_
-                    │      snapshot()     data()          movers()
-                    │            │               │               │
-                    │      ┌──────┴───────┬──────┴─────────┐
-                    │      │              │                │
-                    │  _fetch_single_index()        fetch_stock_snapshot()
-                    │      │              │
-                    │      yf.download()  │
-                    │                     │
-                    │         ┌───────────┴───────────┐
-                    │         │                       │
-              [Sidebar]    [User clicks stock] ──→ stock_analyzer.py
-                    │                       │
-                    │                   load_data()
-                    │                       │
-                    │         ┌─────────────┼─────────────┐
-                    │         │             │             │
-                    │      Tab1:        Tab2:         Tab3:
-                    │      Overview    Technicals    LSTM
-                    │         │             │             │
-                    │      render_      render_      render_lstm_tab()
-                    │      overview_    technicals()      │
-                    │      tab()                    ┌─────┴──────┐
-                    │                               │            │
-                    │                       Load model  Predict
-                    │                       Load scaler  Plot results
-                    │
-                    └─→ [Daily Pipeline]
-                            │
-                    daily_pipeline.py → main()
-                            │
-                    ┌───────┴─────────┬──────────┬──────────┐
-                    │                 │          │          │
-              update_data.py    preprocessor  sequencer  train_model.py
-                    │                 │          │          │
-             For all tickers   update CSVs  create X,y   train LSTM
-                    │                 │          │          │
-            data/raw/*.csv    data/processed  train_data  models/
-
-================================================================================
-SUMMARY TABLE: FUNCTION ACTIVITY LEVELS
-================================================================================
-
-FREQUENCY       COUNT   EXAMPLES
-────────────────────────────────────────────────────────────────────────────
-ALWAYS          ~30    render_home_view, render_lstm_tab, load_data,
-(Every Page                fetch_index_snapshot, _fetch_single_index,
- View)                     _fetch_single_ticker, build_model, st.* functions
-
-OFTEN           ~50    add_technical_indicators, create_sequences,
-(Multiple Times          create_multi_step_sequences, chunk_article,
- Per Session)            split_text_into_chunks, _newsapi_articles,
-                         _yahoo_articles, normalize_article
-
-SCHEDULED       ~40    daily_pipeline.main, train_all, update_all_stocks,
-(Once Daily              process_and_save_all, refresh_all_news,
- or Batch)               process_and_train_ticker
-
-SOMETIMES       ~20    analyze_ticker_sentiment, build_market_context,
-(Manual Trigger          build_recommendation, build_risk_score,
- or Unused)              fetch_ticker_articles, _is_trusted_article
-
-NEVER           ~10    render_news_tab (placeholder), repair_models.main,
-(Placeholder or          convert_models.main, test functions
- Development)
-
-TOTAL:          ~150   Functions across 47 files
-
-================================================================================
+scripts/archive_current_fundamentals.py
+
+scripts/audit_universe.py
+  L18: audit_frame(frame)
+  L44: main()
+
+scripts/complete_all_training.py
+
+scripts/convert_models.py
+  L18: convert(h5_path, dry_run=False)
+  L36: main(dry_run=False)
+
+scripts/demo_ingest_run.py
+
+scripts/download_news_benchmark.py
+  L15: main()
+
+scripts/evaluate_cost_sensitivity.py
+  L25: select_non_overlapping_forecasts(frame: pd.DataFrame)
+  L51: _evaluate_trades(decisions: list[dict], cost_bps: int)
+  L69: evaluate(tickers: list[str])
+  L121: main()
+
+scripts/evaluate_lstm.py
+  L20: _model_path(ticker: str, horizon: int, model_dir: Path)
+  L29: evaluate_lstm(ticker: str, horizon: int, sentiment_scores: list[float] | None=None)
+  L58: main()
+
+scripts/evaluate_news.py
+
+scripts/evaluate_watchlist.py
+  L16: configured_model_tickers()
+  L21: main()
+
+scripts/export_news_annotation_batch.py
+  L24: _timestamp(value: object)
+  L34: _canonical_url(value: str)
+  L41: build_annotation_rows(archive_root: Path, tickers: list[str], since: datetime, until: datetime)
+  L93: export_batch(output: Path, days: int=NEWS_RECENCY_DAYS, as_of: datetime | None=None)
+  L127: main()
+
+scripts/fetch_nifty.py
+
+scripts/fix_missing_scalers.py
+
+scripts/news_ingest.py
+  L21: _env_list(key: str, default: str='AAPL,MSFT,GOOGL')
+  L26: main()
+
+scripts/package_release.py
+  L21: main()
+
+scripts/quick_run.py
+  L11: main()
+
+scripts/refresh_all_news.py
+  L16: refresh_news_for_tickers(tickers, batch_size=5, required_articles=NEWS_MAX_ARTICLES, report_name='news_refresh.json')
+
+scripts/refresh_fundamentals.py
+  L17: refresh(ticker, only_stale=False)
+  L36: main()
+
+scripts/run_sequencer_train.py
+
+scripts/test_predict.py
+
+scripts/train_all_missing_models.py
+
+scripts/train_fundamental_model.py
+
+scripts/train_manager.py
+  L19: write_progress(ticker, data)
+  L24: configured_model_tickers()
+  L29: active_bundle_matches_data(ticker, horizons, data_dir=None, model_root=None)
+  L62: process_and_train_ticker(ticker, horizons, window_size, epochs, only_missing=False, news_validation=None)
+  L86: main(workers=1, horizons=None, window_size=60, epochs=60, only_missing=False, tickers=None)
+  L141: main.save_status(state)
+
+scripts/train_nifty.py
+
+scripts/ui_screenshot.py
+  L7: main()
+
+scripts/update_csv_dates.py
+  L6: normalize_csv_dates(path: Path)
+  L19: main()
+
+scripts/update_csvs.py
+  L43: parse_last_date_from_file(path: str)
+  L66: append_rows_to_csv(path: str, df_new: pd.DataFrame)
+  L106: update_csv(path: str, dry_run: bool=False)
+  L143: main()
+
+scripts/update_logs_timestamp.py
+
+scripts/validate_browser.py
+  L18: main()
+  L36: main.check(name, action)
+  L50: main.download(name)
+  L60: main.home()
+  L68: main.screener()
+  L72: main.overview()
+  L76: main.technical()
+  L81: main.forecast()
+  L89: main.news()
+  L93: main.fundamentals()
+  L101: main.unavailable()
+  L119: main.mobile()
+
+scripts/validate_runtime.py
+  L19: main()
+
+scripts/valuation_coverage.py
+  L29: _finite_number(value: Any)
+  L39: _valuation_errors(estimate: Mapping[str, Any])
+  L53: _snapshot_age_hours(details: Mapping[str, Any])
+  L63: _input_records(details: Mapping[str, Any])
+  L85: build_coverage_report(tickers: list[str], *, refresh_missing: bool=False)
+  L170: write_report(report: Mapping[str, Any], json_path: Path, csv_path: Path)
+  L190: main(argv: list[str] | None=None)
+
+src/artifacts.py
+  L12: model_directory()
+  L16: canonical_ticker(ticker: str)
+  L20: sha256(path: Path)
+  L24: atomic_write_bytes(path: Path, content: bytes)
+  L44: atomic_json(path: Path, payload: dict)
+  L48: resolve_artifact(ticker: str, horizon: int=1, prefer_panel: bool=True)
+
+src/company_names.py
+
+src/dashboard_data.py
+  L11: data_fingerprint()
+  L22: load_dashboard_rows(fingerprint=())
+  L37: load_dashboard_rows.value(key)
+  L58: index_history(fingerprint=())
+  L66: apply_screen(frame, sector='All sectors', preset='All companies', query='')
+  L86: cached_news(limit=6)
+
+src/data_loader.py
+  L31: _download_single_ticker(ticker)
+  L48: download_data(max_workers=3)
+
+src/data_sequencer.py
+  L22: create_sequences(data, window_size, close_col_idx)
+  L34: create_multi_step_sequences(data, window_size, horizon, close_col_idx)
+  L48: chronological_split_index(row_count, window_size=60, train_fraction=0.8)
+  L55: split_sequences(data, window_size, horizon, close_col_idx, split_row)
+  L67: process_and_save_all()
+
+src/download_nifty500.py
+  L24: _normalize_symbol_column(df: pd.DataFrame)
+  L41: fetch_nifty500_constituents()
+  L94: build_nse_tickers(df: pd.DataFrame)
+  L102: download_nifty500_data()
+
+src/evaluate_predictions.py
+  L10: regression_metrics(actual: Iterable[float], predicted: Iterable[float])
+  L24: signal_metrics(current_close: Iterable[float], predicted_close: Iterable[float], actual_close: Iterable[float], sentiment_scores: Iterable[float] | None=None)
+  L65: evaluate_predictions(current_close: Iterable[float], predicted_close: Iterable[float], actual_close: Iterable[float], sentiment_scores: Iterable[float] | None=None)
+
+src/forecast.py
+  L13: predict_forecast(df, ticker, horizon=1, recursive=False)
+  L47: predict_forecast.infer(data)
+
+src/fundamental_calculations.py
+  L11: build_details(ticker, info, screener=None, annual=None, warnings=None)
+  L20: build_details.put(key, value, source='Yahoo Finance', period='TTM / latest reported', basis='Provider reported', note=None)
+  L60: build_details.annual_currency(category)
+  L78: build_details.derived(key, value, formula)
+
+src/fundamental_catalog.py
+  L7: group(name, unit, rows)
+
+src/fundamental_history.py
+  L26: _connect()
+  L50: archive_snapshot(details: Mapping[str, Any], observed_at: datetime | None=None)
+  L97: load_snapshots()
+
+src/fundamental_ml.py
+  L32: _prices(ticker: str)
+  L47: _starting_index(series: pd.Series, date: pd.Timestamp)
+  L51: _labeled_samples()
+  L97: _pipeline()
+  L109: _walk_forward_predictions(samples: list[dict[str, Any]])
+  L165: train_fundamental_model()
+  L205: read_model_status()
+  L222: predict_excess_return(features: Mapping[str, Any])
+
+src/fundamental_sources.py
+  L12: number(value)
+  L30: ratio(numerator, denominator)
+  L35: parse_table(table, unit='INR crore', basis='Consolidated')
+  L54: parse_screener_html(html, url)
+  L73: fetch_screener(ticker)
+  L88: statement_currencies(client, ticker)
+  L105: cell(frame, keys, date=None)
+  L119: find_row(table, names)
+  L126: latest(table, names)
+  L135: cagr(table, names, years)
+
+src/fundamental_swot.py
+  L21: load_valuation_assumptions(ticker: str, company_beta: float | None=None)
+  L32: _value(details: Mapping[str, Any], key: str)
+  L43: _financial_dcf(details: Mapping[str, Any], cost_of_equity: float, terminal_growth: float)
+  L72: _industrial_dcf(details: Mapping[str, Any], cost_of_equity: float, terminal_growth: float, forecast_growth: float)
+  L121: _peer_value(details: Mapping[str, Any], peers, financial_sector: bool)
+  L174: _relative_factors(details: Mapping[str, Any], peers, keys: tuple[tuple[str, bool], ...], bucket: str, family: str='Fundamental risk')
+  L205: _valuation_profitability_review(details: Mapping[str, Any], peers)
+  L302: _news_factor(news: Mapping[str, Any] | None, positive: bool)
+  L320: calculate_fundamental_valuation(details: Mapping[str, Any], peer_frame, assumptions: Mapping[str, float], current_price: float | None=None, valuation_universe=None)
+  L401: analyze_fundamental_swot(ticker: str, details: Mapping[str, Any], peer_frame, current_price: float | None, news: Mapping[str, Any] | None, assumptions: Mapping[str, float], valuation_universe=None)
+
+src/fundamental_valuation.py
+  L19: _number(value: Any)
+  L29: _metric(details: Mapping[str, Any], key: str)
+  L35: _value(details: Mapping[str, Any], key: str, currency: str | None=None)
+  L47: _snapshot_is_recent(details: Mapping[str, Any])
+  L61: _universe_values(universe: Any)
+  L70: _matching_peers(details: Mapping[str, Any], universe: Any, metric_key: str, currency: str | None, scope: str)
+  L116: _peer_scope(details: Mapping[str, Any], universe: Any, metric_key: str, currency: str | None)
+  L130: _component(metric_key: str, method: str, value: float, multiple: float | None=None, peers: list[tuple[Mapping[str, Any], float]] | None=None)
+  L141: _peer_scenario(details: Mapping[str, Any], universe: Any, currency: str | None)
+  L218: _supplied_model(model: Any, currency: str | None, name: str)
+  L231: _unavailable(currency: str | None, missing: list[str], limitations: list[str], peer_scope: str='unavailable')
+  L242: estimate_stock_valuation(details: Mapping[str, Any], companies: Any, *, current_price: float | None=None, dcf: Mapping[str, Any] | None=None, strict_peer: Mapping[str, Any] | None=None)
+
+src/fundamentals.py
+  L27: read_cached_details(ticker)
+  L47: company_details(ticker, refresh=False)
+  L57: company_details.fetch_yahoo()
+  L107: snapshot_from_details(details)
+  L121: details_from_snapshot(snapshot)
+  L137: company_snapshot(ticker, refresh=False)
+  L141: compare_peers(tickers, refresh=False)
+  L144: compare_peers.fetch(ticker)
+  L159: peer_reference(frame, details, key)
+  L183: valuation_summary(frame, ticker)
+  L202: format_value(value, unit, currency='INR')
+  L221: assess_metric(key, metric, details=None, peer_values=None)
+
+src/fusion_artifacts.py
+  L30: _artifact_root(artifact_root: str | Path | None)
+  L35: save_fusion_artifact(model_result: Mapping[str, Any], split: Mapping[str, Any], artifact_root: str | Path | None=None)
+  L132: load_fusion_artifact(version: str, artifact_root: str | Path | None=None)
+
+src/fusion_dataset.py
+  L14: normalize_as_of(value: Any)
+  L29: normalize_target_date(value: Any)
+  L45: _finite_number(value: Any, field: str, *, positive: bool=False)
+  L58: validate_fusion_record(record: Mapping[str, Any])
+  L153: validate_fusion_dataset(records: Sequence[Mapping[str, Any]])
+  L164: llm_feature_row_from_sentiment(ticker: str, as_of: datetime | str, sentiment_result: Mapping[str, Any])
+  L201: build_fusion_dataset(forecast_rows: Sequence[Mapping[str, Any]], llm_feature_rows: Sequence[Mapping[str, Any]])
+
+src/fusion_evaluation.py
+  L34: _evaluate_group(rows: list[dict[str, Any]])
+  L91: evaluate_fusion_baselines(records: Sequence[Mapping[str, Any]])
+
+src/fusion_gate.py
+  L10: _metric(metrics: Mapping[str, Any], key: str, partition: str)
+  L23: assess_fusion_staged_trial(model_result: Mapping[str, Any])
+
+src/fusion_model.py
+  L33: _price_from_log_return(log_returns: np.ndarray, current: np.ndarray)
+  L50: _features(rows: list[dict[str, Any]])
+  L61: _request_number(value: Any, field: str, *, positive: bool=False)
+  L74: _checked_splits(split: Mapping[str, Any])
+  L102: _evaluate_partition(rows: list[dict[str, Any]], fused_prices: np.ndarray)
+  L153: fit_fusion_model(split: Mapping[str, Any], alpha: float=1.0)
+  L173: fit_fusion_model.evaluate(rows)
+  L196: predict_fused_forecast(artifact: Mapping[str, Any], request: Mapping[str, Any])
+
+src/fusion_split.py
+  L10: chronological_purged_split(records: Sequence[Mapping[str, Any]], train_fraction: float=0.6, validation_fraction: float=0.2)
+
+src/llm/__init__.py
+
+src/llm/evaluation.py
+  L12: _classification_metrics(expected: list[str], predicted: list[str])
+  L34: evaluate_llm_synthesis_dataset(payload: Mapping[str, Any], provider: LLMProvider)
+
+src/llm/evidence.py
+  L21: _parse_timestamp(value: Any, field: str)
+  L36: _string_list(value: Any, field: str, allowed_ids: set[str])
+  L48: synthesize_retrieved_evidence(ticker: str, evidence: Sequence[Mapping[str, Any]], as_of: datetime | str, provider: LLMProvider | None=None)
+
+src/llm/provider.py
+  L23: LLMProvider.generate(self, messages: Sequence[Mapping[str, str]], response_format: Mapping[str, object] | None=None)
+  L38: OpenAICompatibleConfig.__post_init__(self)
+  L50: _is_local_host(hostname: str)
+  L63: OpenAICompatibleProvider.__init__(self, config: OpenAICompatibleConfig)
+  L66: OpenAICompatibleProvider.generate(self, messages: Sequence[Mapping[str, str]], response_format: Mapping[str, object] | None=None)
+  L112: create_llm_provider()
+
+src/lstm_features.py
+  L16: build_lstm_features(frame: pd.DataFrame)
+
+src/market_context.py
+  L12: _data_path(ticker: str)
+  L16: _technical_signal(dataframe: pd.DataFrame | None)
+  L30: build_market_context(ticker: str, horizon: int=5, sentiment: dict[str, Any] | None=None, include_llm: bool=False)
+
+src/market_data.py
+  L12: remove_incomplete_current_daily_bar(frame: pd.DataFrame, now: datetime | None=None)
+  L37: merge_history_without_window_loss(previous: pd.DataFrame, current: pd.DataFrame)
+
+src/news/__init__.py
+
+src/news/chunker.py
+  L9: _article_identity(article: dict)
+  L23: split_text_into_chunks(text: str, chunk_size: int=500, overlap: int=120)
+  L42: chunk_article(article: dict)
+
+src/news/embeddings.py
+  L32: EmbeddingRetriever.__init__(self, model_name: str='sentence-transformers/all-MiniLM-L6-v2', persist_dir: str | None=None)
+  L58: EmbeddingRetriever.available(self)
+  L62: EmbeddingRetriever.compute_id(text: str)
+  L65: EmbeddingRetriever._ensure_storage(self)
+  L68: EmbeddingRetriever.encode(self, texts: Sequence[str])
+  L73: EmbeddingRetriever.save_index(self)
+  L89: EmbeddingRetriever.load_index(self)
+  L111: EmbeddingRetriever.build_index(self, texts: Sequence[str], metadata: Sequence[Dict[str, Any]] | None=None)
+  L130: EmbeddingRetriever.add_documents(self, texts: Sequence[str], metadata: Sequence[Dict[str, Any]] | None=None)
+  L181: EmbeddingRetriever.search(self, query: str, k: int=5)
+
+src/news/evaluation.py
+  L13: _canonical_evidence_url(value)
+  L18: _retrieval_metrics(hits, relevant_urls, k)
+  L50: evaluate_news_dataset(payload)
+
+src/news/fetcher.py
+  L64: _normalize_ticker(symbol: str)
+  L68: _normalize_timestamp(value)
+  L88: canonicalize_article_url(url: str)
+  L110: deduplicate_articles(articles: list[dict])
+  L160: normalize_article(article: dict, ticker: str)
+  L186: _published_timestamp(article: dict)
+  L197: _is_trusted_article(article: dict)
+  L206: _is_trusted_article.is_trusted_host(host)
+  L215: is_finance_relevant(article: dict, ticker: str)
+  L224: is_finance_relevant.matches(alias)
+  L290: _company_name_aliases(ticker: str)
+  L315: _company_search_name(ticker: str)
+  L324: _google_news_query(ticker: str)
+  L335: _google_news_search_queries(ticker: str)
+  L352: _matches_recent_window(article: dict)
+  L361: _rss_articles(ticker: str, max_articles: int)
+  L364: _rss_articles.load_feed(source, url)
+  L434: _google_news_articles(ticker: str, max_articles: int)
+  L438: _google_news_articles.search(query)
+  L512: relevance_details(article: dict, ticker: str)
+  L523: _cache_path_for_ticker(ticker: str)
+  L528: _read_cache(ticker: str)
+  L551: read_cached_ticker_articles(ticker: str)
+  L556: _write_cache(ticker: str, articles)
+  L574: load_archived_articles(ticker: str, as_of: datetime)
+  L617: _newsapi_articles(ticker: str, max_articles: int, api_key: str | None=None)
+  L662: _yahoo_articles(ticker: str, max_articles: int)
+  L695: fetch_ticker_articles(ticker: str, max_articles: int=10, force_refresh: bool=False, api_key: str | None=None, refresh_shared_sources: bool=True, require_live: bool=False)
+  L750: clear_news_cache(ticker: str | None=None)
+
+src/news/ingest.py
+  L23: _ensure_dir(path: Path)
+  L27: fetch_from_newsapi(ticker: str, api_key: str, max_articles: int=20, max_attempts: int=3, timeout: int=15)
+  L73: _cache_path_for(ticker: str, cache_dir: Path)
+  L77: load_cached_articles(ticker: str, cache_dir: Path)
+  L89: save_cached_articles(ticker: str, articles: List[Dict[str, Any]], cache_dir: Path)
+  L99: dedupe_articles(existing: List[Dict[str, Any]], new: List[Dict[str, Any]])
+  L103: index_articles_for_ticker(ticker: str, articles: List[Dict[str, Any]], persist_dir: Path)
+  L168: ingest_ticker(ticker: str, api_key: Optional[str], cache_dir: Optional[str]=None, persist_dir: Optional[str]=None, max_articles: int=20)
+  L242: run_scheduler(tickers: List[str], interval_seconds: int=3600, api_key: Optional[str]=None, cache_dir: Optional[str]=None, persist_dir: Optional[str]=None, max_articles: int=20, stop_event: Optional[threading.Event]=None)
+
+src/news/retriever.py
+  L18: NewsRetriever.__init__(self, top_k: int=5, embedding_cache_dir: str | None=None)
+  L22: NewsRetriever.retrieve(self, articles: list[dict[str, Any]], query: str, recency_days: int | None=NEWS_RECENCY_DAYS, as_of: datetime | None=None)
+
+src/news/sentiment.py
+  L56: _VisibleTextParser.__init__(self)
+  L60: _VisibleTextParser.handle_data(self, data)
+  L64: _visible_text(value: str)
+  L71: _sentiment_text(article: dict)
+  L85: _load_finbert()
+  L107: _finbert_score(text: str)
+  L120: _keyword_score(text: str)
+  L144: _article_freshness_weight(article: dict, now: datetime)
+  L156: _article_is_in_window(article: dict, recency_days: int | None, as_of=None)
+  L184: _impact_details(text: str, score: float, relevance: float)
+  L202: analyze_ticker_sentiment(ticker: str, max_articles: int=8, query_type: str='recent sentiment', recency_days: int | None=NEWS_RECENCY_DAYS, as_of=None, articles=None, include_llm: bool=False)
+
+src/panel_training.py
+  L29: _load_panel(tickers: list[str] | None=None)
+  L60: _date_boundaries(frames: dict[str, pd.DataFrame])
+  L69: _make_samples(frames: dict[str, pd.DataFrame], horizon: int, calibration_start: pd.Timestamp, test_start: pd.Timestamp)
+  L116: _make_samples.pack(xs, ys, metas)
+  L124: _build_panel_lstm(horizon: int, compile_model: bool=True)
+  L138: build_panel_inference_model(horizon: int)
+  L143: _load_existing(hashes: dict[str, str])
+  L161: train_panel_model(epochs: int=60, window_size: int=WINDOW_SIZE, only_missing: bool=False, tickers: list[str] | None=None)
+  L239: train_panel_model.EpochProgress.on_epoch_end(self, epoch, logs=None)
+  L351: evaluate_panel_prices(current, predicted, actual)
+
+src/pipeline_lock.py
+  L8: pipeline_lock(path: Path)
+
+src/predict_model.py
+  L9: predict_and_plot(ticker='RELIANCE.NS', horizon=1)
+
+src/prediction_contract.py
+  L25: PredictionRecord.with_actual(self, actual_close: float)
+  L28: PredictionRecord.to_dict(self)
+  L32: bounded_signal(value: float)
+  L40: forecast_signal(predicted_return: float)
+  L44: combined_signal(predicted_return: float, sentiment: float)
+  L48: classify_signal(score: float, threshold: float=0.05)
+  L57: directional_accuracy(predicted_return: float, actual_return: float)
+
+src/prediction_fusion.py
+  L22: _number(value: Any)
+  L32: _bounded(value: float)
+  L36: _fresh(details: Mapping[str, Any], now: datetime)
+  L47: _metric(details: Mapping[str, Any], key: str)
+  L53: fundamental_signal(ticker: str, now: datetime | None=None)
+  L104: fuse_forecast(current_close: float, lstm_prices, horizon: int, close_history, sentiment: Mapping[str, Any] | None, fundamentals: Mapping[str, Any] | None)
+
+src/preprocessor.py
+  L28: can_reuse_active_snapshot(snapshot, candidate, rtol=1e-06, atol=1e-06)
+  L59: _load_active_processed_snapshot(ticker)
+  L84: add_technical_indicators(df)
+  L119: process_all_files()
+
+src/recommendation.py
+  L8: build_recommendation(ticker: str, price_trend: float=0.0, horizon: int=5, context=None)
+
+src/repair_models.py
+  L13: find_tickers()
+  L20: model_input_features(model_path)
+  L33: scaler_features(scaler_path)
+  L41: retrain_ticker(ticker, epochs=3)
+  L52: main(epochs=3)
+
+src/test_setup.py
+
+src/train_model.py
+  L23: build_model(input_shape, output_size=1, close_index=None, compile_model=True)
+  L64: train_all()
+
+src/training.py
+  L34: inverse_close(values, scaler, close_index)
+  L39: train_ticker(ticker, horizons=None, epochs=10, window_size=60, only_missing=False, news_validation=None)
+  L147: train_ticker.dataset(x, y=None)
+
+src/update_data.py
+  L31: equivalent_history(previous, current)
+  L39: _latest_date(path: str)
+  L52: run_downstream_pipeline(skip_training: bool=False)
+  L73: _update_single_ticker(ticker)
+  L115: update_all_stocks(skip_downstream: bool=False, skip_training: bool=False, max_workers=3)
+
+tabs/__init__.py
+
+tabs/fundamentals.py
+  L24: _cached_fundamentals_by_ticker()
+  L28: _cached_frame(tickers, details_by_ticker)
+  L39: _parse_peer_symbols(raw, subject_ticker)
+  L54: _metric_rows(details, peers)
+  L68: _statement_view(table, name, ticker)
+  L78: _render_swot_view(ticker, details, peers, current_price)
+  L180: _build_universe_swot(details_by_ticker)
+  L226: _render_universe_swot(details_by_ticker)
+  L245: _render_snapshot_cards(details, price_history=None)
+  L271: render_fundamentals_tab(ticker, current_price=None, price_history=None)
+
+tabs/lstm_model.py
+  L20: _run_fusion_shadow(df, forecast, artifact, ticker, horizon, shadow_version)
+  L78: _forecast_chart(df, result, window_size, horizon, horizon_label)
+  L143: render_lstm_tab(df, ticker, MODEL_PATH=None, SCALER_PATH=None)
+
+tabs/news_sentinel.py
+  L14: _format_published_at(value)
+  L23: _render_news_tab_content(ticker)
+  L116: render_news_tab(ticker)
+
+tabs/overview.py
+  L14: _fetch_company_summary(ticker)
+  L23: render_overview_tab(df, ticker)
+
+tabs/technicals.py
+  L8: render_technicals(df: pd.DataFrame, ticker: str)
+
+utils.py
+  L18: load_lottieurl(url: str)
+  L37: _extract_close_series(hist, symbol)
+  L64: _fetch_single_index(label_symbol)
+  L125: fetch_index_snapshot()
+  L140: fetch_stock_snapshot(symbol: str)
+  L175: load_data(selected_ticker, data_path, _data_fingerprint)
+
+views/__init__.py
+
+views/home_view.py
+  L20: market_session_status(now=None)
+  L31: _render_market_clock(status, status_class)
+  L78: _company_table(frame, key)
+  L97: _render_live_index_cards(fingerprint)
+  L113: _benchmark(history)
+  L179: _breadth(frame)
+  L201: _open_latest_news()
+  L205: _news_panel(limit=5, show_all=True)
+  L225: _live_index_snapshot()
+  L240: render_home_view()
