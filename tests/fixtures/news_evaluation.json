@@ -1,0 +1,129 @@
+{
+  "kind": "synthetic_smoke",
+  "sentiment": [
+    {
+      "text": "Strong profit growth and upbeat demand",
+      "label": "positive"
+    },
+    {
+      "text": "Analyst upgrade after a recovery",
+      "label": "positive"
+    },
+    {
+      "text": "Shares rally following expansion",
+      "label": "positive"
+    },
+    {
+      "text": "Positive outlook supports gains",
+      "label": "positive"
+    },
+    {
+      "text": "Weak demand and declining profit margins",
+      "label": "negative"
+    },
+    {
+      "text": "Analyst downgrade on recession risk",
+      "label": "negative"
+    },
+    {
+      "text": "Shares slump after a loss",
+      "label": "negative"
+    },
+    {
+      "text": "Bearish outlook with liquidity pressure",
+      "label": "negative"
+    },
+    {
+      "text": "The company published its annual meeting date",
+      "label": "neutral"
+    },
+    {
+      "text": "The board met on Tuesday",
+      "label": "neutral"
+    },
+    {
+      "text": "The office will move to a new building",
+      "label": "neutral"
+    },
+    {
+      "text": "The exchange issued a calendar notice",
+      "label": "neutral"
+    }
+  ],
+  "retrieval": [
+    {
+      "query": "factory expansion demand",
+      "as_of": "2026-01-02T00:00:00+00:00",
+      "articles": [
+        {
+          "ticker": "TEST",
+          "title": "TEST factory expansion",
+          "summary": "New factory expansion supports demand",
+          "source": "Fixture",
+          "url": "https://example.test/expansion",
+          "published_at": "2026-01-01T00:00:00+00:00",
+          "observed_at": "2026-01-01T00:00:00+00:00"
+        },
+        {
+          "ticker": "TEST",
+          "title": "TEST board calendar",
+          "summary": "Board meeting calendar notice",
+          "source": "Fixture",
+          "url": "https://example.test/calendar",
+          "published_at": "2026-01-01T00:00:00+00:00",
+          "observed_at": "2026-01-01T00:00:00+00:00"
+        },
+        {
+          "ticker": "TEST",
+          "title": "TEST factory expansion future",
+          "summary": "Future factory expansion announcement",
+          "source": "Fixture",
+          "url": "https://example.test/future",
+          "published_at": "2026-02-01T00:00:00+00:00",
+          "observed_at": "2026-02-01T00:00:00+00:00"
+        }
+      ],
+      "relevant_urls": [
+        "https://example.test/expansion"
+      ],
+      "k": 1
+    },
+    {
+      "query": "board calendar meeting",
+      "as_of": "2026-01-02T00:00:00+00:00",
+      "articles": [
+        {
+          "ticker": "TEST",
+          "title": "TEST factory expansion",
+          "summary": "New factory expansion supports demand",
+          "source": "Fixture",
+          "url": "https://example.test/expansion",
+          "published_at": "2026-01-01T00:00:00+00:00",
+          "observed_at": "2026-01-01T00:00:00+00:00"
+        },
+        {
+          "ticker": "TEST",
+          "title": "TEST board calendar",
+          "summary": "Board meeting calendar notice",
+          "source": "Fixture",
+          "url": "https://example.test/calendar",
+          "published_at": "2026-01-01T00:00:00+00:00",
+          "observed_at": "2026-01-01T00:00:00+00:00"
+        },
+        {
+          "ticker": "TEST",
+          "title": "TEST factory expansion future",
+          "summary": "Future factory expansion announcement",
+          "source": "Fixture",
+          "url": "https://example.test/future",
+          "published_at": "2026-02-01T00:00:00+00:00",
+          "observed_at": "2026-02-01T00:00:00+00:00"
+        }
+      ],
+      "relevant_urls": [
+        "https://example.test/calendar"
+      ],
+      "k": 1
+    }
+  ]
+}

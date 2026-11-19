@@ -26,12 +26,16 @@ ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if ROOT not in sys.path:
     sys.path.insert(0, ROOT)
 from config import ALL_DOWNLOAD_TICKERS as TICKERS
+from src.market_data import remove_incomplete_current_daily_bar
 
 def _download_single_ticker(ticker):
     """Download data for a single ticker."""
     try:
         # Fetch 10 years of data
         df = yf.download(ticker, period="10y", interval="1d", progress=False)
+        df = remove_incomplete_current_daily_bar(df)
+        if df is None or df.empty:
+            return (ticker, 0, "No complete daily data available")
 
         # Save to CSV (to raw directory, consistent with update_data.py)
         file_path = f"{DATA_DIR}/raw/{ticker}.csv"

@@ -1,158 +1,205 @@
 #!/usr/bin/env python3
-"""Train manager: sequence and train per-ticker with progress files and concurrency.
-
-Writes per-ticker progress to `logs/progress_{ticker}.json` that the UI can poll.
-"""
-import os
-import sys
-import json
-import time
-from datetime import datetime, timezone
+"""Canonical model training CLI and background progress reporting."""
+import argparse
 from concurrent.futures import ProcessPoolExecutor, as_completed
-
-ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-if ROOT not in sys.path:
-    sys.path.insert(0, ROOT)
-
-import numpy as np
-import pandas as pd
-import joblib
-from sklearn.preprocessing import MinMaxScaler
-
-from src.data_sequencer import create_sequences, create_multi_step_sequences
-from src.train_model import build_model
-
-LOG_DIR = os.path.join(ROOT, 'logs')
-TRAIN_DIR = os.path.join(ROOT, 'data', 'train_data')
-PROCESSED_DIR = os.path.join(ROOT, 'data', 'processed')
-MODELS_DIR = os.path.join(ROOT, 'models')
-os.makedirs(LOG_DIR, exist_ok=True)
-os.makedirs(TRAIN_DIR, exist_ok=True)
-os.makedirs(MODELS_DIR, exist_ok=True)
+from datetime import datetime, timezone
+import hashlib
+import json
+import os
+from pathlib import Path
+import sys
+ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+from config import ALL_DOWNLOAD_TICKERS, HORIZONS, NEWS_MAX_ARTICLES, PIPELINE_VERSION
+from src.artifacts import atomic_json, model_directory, sha256
+from scripts.refresh_all_news import refresh_news_for_tickers
 
 
 def write_progress(ticker, data):
-    path = os.path.join(LOG_DIR, f'progress_{ticker}.json')
-    tmp = path + '.tmp'
-    # use timezone-aware UTC timestamp
-    data['last_updated'] = datetime.now(timezone.utc).isoformat()
-    with open(tmp, 'w', encoding='utf-8') as f:
-        json.dump(data, f, ensure_ascii=False, indent=2)
-    os.replace(tmp, path)
+    atomic_json(ROOT / "logs" / f"progress_{ticker}.json",
+                {**data, "last_updated": datetime.now(timezone.utc).isoformat()})
 
 
-def process_and_train_ticker(ticker, horizons, window_size, epochs, only_missing=False):
-    # Called in worker process
+def configured_model_tickers():
+    """Current stock universe plus the NIFTY index model."""
+    return list(dict.fromkeys([*ALL_DOWNLOAD_TICKERS, "NSEI"]))
+
+
+def active_bundle_matches_data(ticker, horizons, data_dir=None, model_root=None):
+    """Return whether an active bundle fully matches current data and files."""
+    data_dir = Path(data_dir or ROOT / "data" / "processed")
+    model_root = Path(model_root or model_directory()).resolve()
     try:
-        write_progress(ticker, {'status': 'starting', 'step': 'init', 'message': 'Starting'})
-
-        proc_path = os.path.join(PROCESSED_DIR, f'{ticker}_processed.csv')
-        if not os.path.exists(proc_path):
-            write_progress(ticker, {'status': 'error', 'step': 'load', 'message': 'Processed CSV missing'})
-            return {'ticker': ticker, 'ok': False}
-
-        df = pd.read_csv(proc_path, index_col=0)
-        if 'Close' not in df.columns:
-            write_progress(ticker, {'status': 'error', 'step': 'load', 'message': 'Close column missing'})
-            return {'ticker': ticker, 'ok': False}
-
-        close_idx = df.columns.get_loc('Close')
-        dataset = df.values
-
-        # scale
-        write_progress(ticker, {'status': 'sequencing', 'step': 'scaling', 'message': 'Fitting scaler'})
-        scaler = MinMaxScaler(feature_range=(0, 1))
-        scaled = scaler.fit_transform(dataset)
-        joblib.dump(scaler, os.path.join(TRAIN_DIR, f'scaler_{ticker}.pkl'))
-
-        # single-step
-        write_progress(ticker, {'status': 'sequencing', 'step': 'single_step', 'message': 'Creating single-step sequences'})
-        X, y = create_sequences(scaled, window_size, close_idx)
-        np.save(os.path.join(TRAIN_DIR, f'X_train_{ticker}.npy'), X[:int(len(X)*0.8)])
-        np.save(os.path.join(TRAIN_DIR, f'y_train_{ticker}.npy'), y[:int(len(y)*0.8)])
-        np.save(os.path.join(TRAIN_DIR, f'X_test_{ticker}.npy'), X[int(len(X)*0.8):])
-        np.save(os.path.join(TRAIN_DIR, f'y_test_{ticker}.npy'), y[int(len(y)*0.8):])
-
-        # multi-horizon
-        for h in horizons:
-            if h <= 1:
-                continue
-            write_progress(ticker, {'status': 'sequencing', 'step': f'h{h}', 'message': f'Creating sequences horizon {h}'})
-            Xm, Ym = create_multi_step_sequences(scaled, window_size, h, close_idx)
-            if Xm.size == 0 or Ym.size == 0:
-                # not enough rows
-                continue
-            split = int(len(Xm) * 0.8)
-            np.save(os.path.join(TRAIN_DIR, f'X_train_{ticker}_h{h}.npy'), Xm[:split])
-            np.save(os.path.join(TRAIN_DIR, f'y_train_{ticker}_h{h}.npy'), Ym[:split])
-            np.save(os.path.join(TRAIN_DIR, f'X_test_{ticker}_h{h}.npy'), Xm[split:])
-            np.save(os.path.join(TRAIN_DIR, f'y_test_{ticker}_h{h}.npy'), Ym[split:])
-
-        # training per-horizon
-        # 1: single-step
-        train_tasks = []
-        # determine if we need to train (only_missing check)
-        # single-step model path (check for .keras since that's what we save)
-        msingle = os.path.join(MODELS_DIR, f'lstm_{ticker}.keras')
-        if not (only_missing and os.path.exists(msingle)):
-            train_tasks.append((1, os.path.join(TRAIN_DIR, f'X_train_{ticker}.npy'), os.path.join(TRAIN_DIR, f'y_train_{ticker}.npy')))
-
-        for h in horizons:
-            if h <= 1:
-                continue
-            mpath = os.path.join(MODELS_DIR, f'lstm_{ticker}_h{h}.keras')
-            if only_missing and os.path.exists(mpath):
-                continue
-            xfile = os.path.join(TRAIN_DIR, f'X_train_{ticker}_h{h}.npy')
-            yfile = os.path.join(TRAIN_DIR, f'y_train_{ticker}_h{h}.npy')
-            if os.path.exists(xfile) and os.path.exists(yfile):
-                train_tasks.append((h, xfile, yfile))
-
-        for (h, xfile, yfile) in train_tasks:
-            write_progress(ticker, {'status': 'training', 'step': f'h{h}', 'message': f'Training horizon {h}'})
-            X_train = np.load(xfile)
-            y_train = np.load(yfile)
-            out_size = 1 if y_train.ndim == 1 else y_train.shape[1]
-            model = build_model((X_train.shape[1], X_train.shape[2]), output_size=out_size)
-            model.fit(X_train, y_train, epochs=epochs, batch_size=32, verbose=0)
-            suffix = f'_h{h}' if h > 1 else ''
-            model_path = os.path.join(MODELS_DIR, f'lstm_{ticker}{suffix}.keras')
-            model.save(model_path)
-            write_progress(ticker, {'status': 'trained', 'step': f'h{h}', 'message': f'Trained horizon {h}'})
-
-        write_progress(ticker, {'status': 'done', 'step': 'complete', 'message': 'All done'})
-        return {'ticker': ticker, 'ok': True}
-    except Exception as e:
-        write_progress(ticker, {'status': 'error', 'step': 'exception', 'message': str(e)})
-        return {'ticker': ticker, 'ok': False, 'error': str(e)}
+        source = data_dir / f"{ticker}_processed.csv"
+        source_hash = hashlib.sha256(source.read_bytes()).hexdigest()
+        pointer = json.loads((model_root / f"active_{ticker}.json").read_text(encoding="utf-8"))
+        bundle = (model_root / pointer["bundle"]).resolve()
+        if not bundle.is_relative_to(model_root):
+            return False
+        metadata = json.loads((bundle / "metadata.json").read_text(encoding="utf-8"))
+        if metadata.get("pipeline_version") != PIPELINE_VERSION or metadata.get("data_sha256") != source_hash:
+            return False
+        required_horizons = {str(int(horizon)) for horizon in horizons}
+        if not required_horizons.issubset(metadata.get("horizons", {})):
+            return False
+        scaler = bundle / "scaler.pkl"
+        processed = bundle / "processed.csv"
+        if not scaler.is_file() or sha256(scaler) != metadata.get("scaler_sha256"):
+            return False
+        if not processed.is_file() or sha256(processed) != metadata.get("data_sha256"):
+            return False
+        for horizon in required_horizons:
+            entry = metadata["horizons"][horizon]
+            model = bundle / entry["model"]
+            if not model.is_file() or sha256(model) != entry.get("model_sha256"):
+                return False
+        return True
+    except (OSError, KeyError, TypeError, ValueError, json.JSONDecodeError):
+        return False
 
 
-def main(workers=2, horizons=[1,5,22,88], window_size=60, epochs=3, only_missing=False):
-    # collect tickers
-    files = [f for f in os.listdir(PROCESSED_DIR) if f.endswith('_processed.csv')]
-    tickers = [os.path.basename(f).replace('_processed.csv', '') for f in files]
+def process_and_train_ticker(
+    ticker, horizons, window_size, epochs, only_missing=False, news_validation=None
+):
+    from src.training import train_ticker
+    try:
+        write_progress(ticker, {"status": "training", "step": "fit", "pid": os.getpid(), "message": "Training versioned models"})
+        result = train_ticker(
+            ticker,
+            horizons,
+            epochs,
+            window_size,
+            only_missing,
+            news_validation=news_validation,
+        )
+        write_progress(ticker, {"status": "done", "step": "complete", "message": f"Active version {result['version']}"})
+        return {"ticker": ticker, "ok": True}
+    except Exception as exc:
+        write_progress(ticker, {"status": "error", "step": "exception", "message": str(exc)})
+        return {"ticker": ticker, "ok": False, "error": str(exc)}
+    except KeyboardInterrupt:
+        write_progress(ticker, {"status": "interrupted", "step": "fit", "message": "Training was interrupted; the previous active bundle is retained"})
+        raise
 
-    # initialize progress files
-    for t in tickers:
-        write_progress(t, {'status': 'queued', 'step': 'queued', 'message': 'Queued for processing'})
 
-    with ProcessPoolExecutor(max_workers=workers) as ex:
-        futures = {ex.submit(process_and_train_ticker, t, horizons, window_size, epochs, only_missing): t for t in tickers}
-        for fut in as_completed(futures):
-            t = futures[fut]
-            try:
-                res = fut.result()
-            except Exception as e:
-                write_progress(t, {'status': 'error', 'step': 'crash', 'message': str(e)})
+def main(workers=1, horizons=None, window_size=60, epochs=60, only_missing=False, tickers=None):
+    horizons = HORIZONS if horizons is None else horizons
+    tickers = tickers or configured_model_tickers()
+    tickers = list(dict.fromkeys(ticker.strip().upper() for ticker in tickers if ticker.strip()))
+    if only_missing:
+        tickers = [ticker for ticker in tickers
+                   if not active_bundle_matches_data(ticker, horizons)]
+        if not tickers:
+            skipped = {"as_of": datetime.now(timezone.utc).isoformat(), "state": "complete",
+                       "skipped": True, "reason": "All active bundles match current data",
+                       "tickers": [], "completed": [], "failures": []}
+            atomic_json(ROOT / "logs" / "training_status.json", skipped)
+            atomic_json(ROOT / "logs" / "training_news.json", {**skipped, "results": []})
+            print("All configured active bundles match the current data; no training or news refresh is needed.", flush=True)
+            return
+        print(f"Training is needed for {len(tickers)} ticker(s): {', '.join(tickers)}", flush=True)
+    failures = []
+    news_results = refresh_news_for_tickers(
+        tickers, required_articles=NEWS_MAX_ARTICLES
+    )
+    atomic_json(ROOT / "logs" / "training_news.json", {
+        "as_of": datetime.now(timezone.utc).isoformat(), "results": news_results})
+    news_by_ticker = {result["ticker"]: result for result in news_results}
+    insufficient_news = [
+        {
+            "ticker": ticker,
+            "articles": news_by_ticker.get(ticker, {}).get("articles", 0),
+            "error": news_by_ticker.get(ticker, {}).get(
+                "error", "No fresh news validation was returned"
+            ),
+        }
+        for ticker in tickers
+        if (
+            ticker not in news_by_ticker
+            or not news_by_ticker[ticker].get("ok")
+            or news_by_ticker[ticker].get("articles", 0) < NEWS_MAX_ARTICLES
+        )
+    ]
+    for item in insufficient_news:
+        failure = {"ticker": item["ticker"], "ok": False, "error": item["error"],
+                   "articles": item["articles"], "blocked_by": "training news gate"}
+        failures.append(failure)
+        write_progress(item["ticker"], {"status": "blocked", "step": "news_validation",
+                                        "message": item["error"]})
+        print(failure, flush=True)
+    trainable_tickers = [ticker for ticker in tickers if ticker not in {item["ticker"] for item in insufficient_news}]
+    news_validation_by_ticker = {
+        ticker: {
+            "article_count": news_by_ticker[ticker]["articles"],
+            "fetched_at": news_by_ticker[ticker]["fetched_at"],
+        }
+        for ticker in trainable_tickers
+    }
+    completed = []
+
+    def save_status(state):
+        atomic_json(ROOT / "logs" / "training_status.json", {
+            "as_of": datetime.now(timezone.utc).isoformat(), "state": state,
+            "pid": os.getpid(), "tickers": tickers, "horizons": horizons,
+            "epochs": epochs, "workers": workers, "news_results": news_results,
+            "completed": completed, "failures": failures})
+
+    save_status("running")
+    if workers <= 1:
+        results = (
+            process_and_train_ticker(
+                ticker,
+                horizons,
+                window_size,
+                epochs,
+                only_missing,
+                news_validation_by_ticker[ticker],
+            )
+            for ticker in trainable_tickers)
+        for result in results:
+            completed.append(result)
+            if not result["ok"]:
+                failures.append(result)
+                print(result, flush=True)
+            save_status("running")
+    else:
+        with ProcessPoolExecutor(max_workers=workers) as executor:
+            futures = {
+                executor.submit(
+                    process_and_train_ticker,
+                    ticker,
+                    horizons,
+                    window_size,
+                    epochs,
+                    only_missing,
+                    news_validation_by_ticker[ticker],
+                ): ticker
+                for ticker in trainable_tickers}
+            for future in as_completed(futures):
+                ticker = futures[future]
+                try:
+                    result = future.result()
+                except Exception as exc:
+                    result = {"ticker": ticker, "ok": False, "error": str(exc)}
+                if not result["ok"]:
+                    failures.append(result)
+                    print(result, flush=True)
+                completed.append(result)
+                save_status("running")
+    save_status("failed" if failures else "complete")
+    if failures:
+        raise RuntimeError(f"Training incomplete; blocked or failed tickers: {failures}")
 
 
-if __name__ == '__main__':
-    import argparse
-    p = argparse.ArgumentParser()
-    p.add_argument('--workers', type=int, default=2)
-    p.add_argument('--epochs', type=int, default=3)
-    p.add_argument('--only-missing', action='store_true')
-    p.add_argument('--horizons', default='1,5,22,88')
-    args = p.parse_args()
-    horizons = [int(x) for x in args.horizons.split(',') if x]
-    main(workers=args.workers, horizons=horizons, epochs=args.epochs, only_missing=args.only_missing)
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--workers", type=int, default=1, help="Number of ticker training processes; each uses bounded TensorFlow threads.")
+    parser.add_argument("--epochs", type=int, default=60)
+    parser.add_argument("--only-missing", action="store_true")
+    parser.add_argument("--horizons", default=",".join(map(str, HORIZONS)),
+                        help="Comma-separated session counts: 1=Day, 5=Week, 22=Month, 63=Quarter.")
+    parser.add_argument("--tickers", help="Comma-separated internal symbols; default: configured stocks plus NSEI")
+    args = parser.parse_args()
+    main(args.workers, [int(x) for x in args.horizons.split(",")], epochs=args.epochs,
+         only_missing=args.only_missing, tickers=args.tickers.split(",") if args.tickers else None)

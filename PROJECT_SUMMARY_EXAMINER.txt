@@ -1,0 +1,1476 @@
+CURRENT RELEASE REVIEW - 19 November 2026
+
+This addendum supersedes earlier coverage and test counts. The historical report
+below retains its original dated research measurements and implementation context.
+Current application evidence: 168 clean-environment tests; 59 current model
+bundles; 236 finite inference checks; 58 company valuation scenarios; 10 browser
+checks; and a successful registered daily pipeline run. Data ends 2026-11-19.
+All four horizons are active, including JIOFIN.NS and MAXHEALTH.NS. No news gate was bypassed.
+
+CURRENT FROZEN-MODEL EVALUATION
+
+| Horizon | Models | Direction accuracy | LSTM MAPE | Persistence MAPE | MAE wins | Terminal interval coverage | Path coverage |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| Day (1) | 59 | 27.25% | 1.299% | 1.296% | 13/59 | 77.80% | 77.80% |
+| Week (5) | 59 | 35.18% | 2.972% | 2.960% | 19/59 | 76.09% | 77.21% |
+| Month (22) | 59 | 38.34% | 6.653% | 6.565% | 16/59 | 59.94% | 68.52% |
+| Quarter (63) | 59 | 39.08% | 9.800% | 9.129% | 18/59 | 37.79% | 52.66% |
+
+Terminal and path coverage are distinct. The nominal interval target is 90%.
+Software validation does not establish a trading edge. Refitted walk-forward tests,
+independent Indian-market news labels, independent interval calibration, historical
+fusion validation and matured 252-session fundamentals labels remain research work.
+One administrator task remains: disable the inaccessible legacy daily schedule;
+the shared lock already prevents concurrent pipeline execution.
+
+Detailed methods, costs, provenance and limitations: PROJECT_STATUS.md and
+reports/release-20261119/. The final local runtime archive includes exact-source CI
+provenance and per-file checksums in RELEASE_MANIFEST.json.
+
+END CURRENT RELEASE REVIEW
+
+EQUIMASTER-AI
+PROJECT SUMMARY FOR EXAMINER
+
+Prepared: 27 October 2026
+Project type: Financial-market research dashboard and experimental forecasting system
+Repository: Equimaster-Ai
+Primary interface: Python and Streamlit
+Report format: 100 numbered page sections, with explicit page-break markers
+
+IMPORTANT PAGINATION NOTE
+This deliverable is plain text. Its 100 numbered sections are separated by
+explicit page-break markers so they can be split into pages in a text editor or
+word processor. Printed pagination can vary with font, margins, and line width.
+Do not treat page numbering as proof of a specific physical paper size.
+
+EVIDENCE AND CLAIMS NOTE
+This report summarizes implementation and verification evidence checked on
+27 October 2026. Project coverage and research measurements are attributed to
+PROJECT_STATUS.md, whose latest dated review is 26 October 2026. The report
+distinguishes delivered application features from open model, data, and
+operational validation. It does not claim a trading edge, guaranteed forecast
+accuracy, or production activation of learned LLM/LSTM fusion.
+
+==================== PAGE 001 OF 100 ====================
+TITLE AND PROJECT IDENTITY
+
+Equimaster-Ai is a Streamlit stock-research dashboard for Indian-market
+companies. It brings market overview, stock screening, price charts, LSTM
+forecasting, company fundamentals, news retrieval, and evidence-linked
+sentiment into one research interface. Backend scripts support data refresh,
+training, evaluation, and scheduled operations.
+
+The system is a research and decision-support tool, not an automated trading
+system. Recommendations and market summaries are heuristic; forecasts are
+uncertain; news sources can be incomplete. The interface should be interpreted
+as a convenient view of available evidence and model outputs, not as
+investment advice or a guarantee of future returns.
+
+==================== PAGE 002 OF 100 ====================
+REPORT PURPOSE AND AUDIENCE
+
+This report is intended for an examiner who needs a coherent description of
+the project: its motivation, requirements, architecture, data flows, model
+contracts, interface, validation evidence, limitations, and next steps. It
+consolidates information that otherwise lives in README.md, PROJECT_STATUS.md,
+RAG_BLUEPRINT.md, FUNDAMENTALS_GUIDE.md, and UI_DESIGN.md.
+
+The report distinguishes implemented features from measured performance and
+from future research. When a metric appears, the report identifies it as a
+previously reported result rather than a new measurement. Operational
+availability, data-source changes, and model performance can change after the
+source documentation date.
+
+==================== PAGE 003 OF 100 ====================
+DOCUMENT CONTROL AND SOURCE BASIS
+
+The latest project-status review is dated 26 October 2026. This report was updated
+on 27 October using that status, current implementation, and local verification.
+
+| Verification item | Result | Scope |
+|---|---|---|
+| Full offline test suite | 154 passed, 1 failed; 4 subtests passed | One AppTest navigation check failed to expose `research_section` after a multipage switch |
+| Focused Fundamentals tests | 16 passed | `tests/test_fundamentals.py`, after the latest UI change |
+| Focused valuation tests | 21 passed | `tests/test_fundamental_valuation.py` |
+| Browser check | HTTP 200, no page errors | TCS analyzer route; Overview summary; SWOT; cards only in Fundamentals |
+| Streamlit health check | `ok` | Local app launch on port 8501 |
+
+The test and browser results are separate evidence. The full suite did not pass
+cleanly, remote CI was not run, and the research metrics below do not establish
+future accuracy. For reproducibility, confirm the Git revision, Python
+environment, runtime data, model bundles, environment variables, and scheduled
+task state at examination time.
+
+==================== PAGE 004 OF 100 ====================
+EXECUTIVE SUMMARY
+
+Equimaster-Ai provides a Streamlit workspace for configured Indian equities.
+Users can inspect market breadth, search covered companies, view a company
+profile and price history, request LSTM forecasts, compare fundamentals, and
+review timestamped news evidence. Backend workflows refresh data, train and
+evaluate models, and maintain versioned artifacts.
+
+The company analyzer keeps its financial snapshot, valuation context, and
+price-momentum cards inside the Fundamentals section. Overview includes a
+company summary paragraph from the saved profile or a cached Yahoo Finance
+profile lookup. The LSTM page presents a final research estimate beside the
+LSTM baseline; the news-and-fundamentals blend is a fixed heuristic, not a
+validated improvement. Learned fusion remains opt-in and shadow-only.
+
+==================== PAGE 005 OF 100 ====================
+ABSTRACT
+
+This project implements a financial-market research dashboard focused on
+Indian equities. Its main components are a market landing page and screener,
+company analysis sections, technical charts, direct multi-session LSTM
+forecasting, fundamentals and peer comparisons, news normalization and
+retrieval, deterministic sentiment scoring, optional structured LLM
+synthesis, evaluation utilities, and backend refresh workflows.
+
+The system emphasizes inspectable evidence and model provenance. Forecasts
+are evaluated against persistence; data splits are chronological; overlapping
+forecast targets are purged at boundaries; and model artifacts retain
+metadata. The project also contains an experimental fusion dataset, model,
+artifact contract, inference guard, staged-trial gate, and opt-in UI display.
+It does not yet demonstrate that fusion improves generalizable accuracy.
+
+==================== PAGE 006 OF 100 ====================
+PROJECT MOTIVATION
+
+Market research often requires switching among price histories, company
+financials, news feeds, and model outputs. That fragmentation makes it harder
+to compare evidence at a consistent point in time. Equimaster-Ai provides a
+single dashboard that groups these research surfaces around a selected
+company while retaining market-wide context.
+
+The project also addresses a common presentation problem: a forecast number
+without a baseline or provenance can appear more certain than it is. The
+system therefore surfaces measured metrics, historical origins, target dates,
+source details, and experimental labels where available. It prioritizes
+traceability and honest status reporting over promotional accuracy claims.
+
+==================== PAGE 007 OF 100 ====================
+PROBLEM STATEMENT
+
+The engineering problem is to assemble market, company, and news information
+into a usable application while preserving enough provenance to evaluate
+forecasts fairly. Data may be missing, delayed, corrected, or reported in
+different currencies. Headlines can be ambiguous. Historical evidence must
+not leak information observed after a forecast origin.
+
+The modeling problem is separate: a usable interface does not imply that an
+LSTM beats a simple persistence forecast, or that sentiment improves it. The
+project therefore treats interface delivery, data reliability, and predictive
+validity as distinct dimensions. Each requires separate tests and evidence.
+
+==================== PAGE 008 OF 100 ====================
+PROJECT OBJECTIVES
+
+The project objectives are to provide a coherent stock-research workflow;
+make market and company data easier to inspect; generate horizon-based LSTM
+forecasts; provide deterministic news sentiment with traceable evidence;
+preserve historical cutoff information; and support reproducible training
+and evaluation through backend workflows.
+
+An additional objective is to study whether a learned fusion of price-model
+and news/LLM features can improve forecast diagnostics. This objective is
+experimental. It is pursued with schema validation, chronological splits,
+artifact provenance, guarded inference, and a conservative evaluation gate.
+No objective implies a guaranteed trading return.
+
+==================== PAGE 009 OF 100 ====================
+PROJECT SCOPE
+
+The current scope includes a Streamlit dashboard, configured company and
+index coverage, data refresh and preprocessing, versioned LSTM training,
+backtest metrics, charting, fundamentals, news retrieval, sentiment, optional
+LLM synthesis, fusion research utilities, and scheduled refresh on Windows.
+The dashboard includes exports and session-level watchlist behavior.
+
+The documented scope does not include account-backed user profiles, a
+persistent multi-user watchlist, a broker connection, order execution, a
+production inference API, a guaranteed high-availability deployment, or
+validated profitability. Some operations depend on public external providers
+whose coverage and behavior are outside this repository's control.
+
+==================== PAGE 010 OF 100 ====================
+FUNCTIONAL REQUIREMENTS
+
+The application should show a market overview, allow users to find covered
+companies, and expose company-level market, technical, forecast, news, and
+fundamental research. It supports multiple direct forecast horizons where
+matching models exist. It should show
+available evidence and expose exports useful for further review.
+
+Backend functions should refresh source data, normalize and store observations,
+train models, save versioned artifacts, evaluate forecasts, and provide
+operational status. Experimental fusion should be explicitly opt-in, validate
+its inputs and provenance, and never replace the LSTM output silently.
+
+==================== PAGE 011 OF 100 ====================
+NON-FUNCTIONAL REQUIREMENTS
+
+Important quality requirements include reproducibility, temporal correctness,
+clear error reporting, maintainable module boundaries, and a responsive
+research interface. Financial values should retain their units, currency,
+source, and reporting period. Missing values should remain unavailable rather
+than being invented. Model performance should be compared against a simple
+baseline.
+
+The codebase uses automated tests for deterministic behavior and selected
+Streamlit interactions. Optional providers and model downloads are not
+required for the core offline test path. This reduces reliance on network
+services during routine regression tests, but it does not remove the need to
+monitor live provider availability.
+
+==================== PAGE 012 OF 100 ====================
+SYSTEM USERS AND USE CASES
+
+The primary user is a researcher or student exploring covered equities. The
+user can start from market context, filter companies, open a company page,
+review historical prices and indicators, request an LSTM forecast, inspect
+news sentiment, and compare selected financial measures. CSV and JSON
+exports can support independent analysis.
+
+An operator or developer uses command-line scripts to refresh data, train
+models, evaluate watchlists, review logs, or install the scheduled task. The
+current watchlist is held in the Streamlit session; it is not a persistent
+account service. Administrative training remains a backend operation, not a
+frontend Training Manager.
+
+==================== PAGE 013 OF 100 ====================
+HIGH-LEVEL ARCHITECTURE
+
+The runtime architecture has three cooperating paths. Market data flows
+through download, normalization, preprocessing, and LSTM inference. News
+flows through source retrieval, normalization, archival, chunking, retrieval,
+and sentiment. Company data flows through public sources, snapshot caching,
+calculation, and comparison.
+
+The Streamlit interface connects those paths into market and company pages.
+Separate scripts handle recurring refresh and training. The fusion research
+path joins aligned LSTM backtest rows to point-in-time news/LLM features,
+splits the dataset chronologically, fits a model, stores an immutable
+artifact, and exposes guarded experimental inference.
+
+==================== PAGE 014 OF 100 ====================
+TECHNOLOGY AND RUNTIME
+
+The project is Python-based and uses Streamlit for the interface. The
+documented environment is Windows with Python 3.13. Core dependencies are
+pinned through requirements files, with optional requirements for development,
+news models, and browser UI tooling. The application can run with the core
+sentiment fallback and TF-IDF retrieval without optional model downloads.
+
+Modeling uses TensorFlow/Keras for LSTM inference/training, scikit-learn for
+preprocessing and the Ridge fusion experiment, and joblib for serialized
+artifacts. Pandas and NumPy support data processing; Plotly renders charts.
+External market, news, company-financial, and optional LLM services are
+configured at runtime.
+
+==================== PAGE 015 OF 100 ====================
+REPOSITORY ORGANIZATION
+
+The `src` directory contains model, forecast, artifact, preprocessing,
+fundamentals, news, LLM, and fusion logic. `tabs` contains company research
+sections; `views` contains the market landing view; `components` contains
+shared interface pieces. `scripts` holds training, refresh, evaluation, and
+maintenance commands. `tests` contains regression and interaction tests.
+
+Documentation is divided by purpose: README.md covers setup and operations;
+PROJECT_STATUS.md reports implementation and measured results; RAG_BLUEPRINT.md
+describes retrieval and fusion contracts; FUNDAMENTALS_GUIDE.md documents
+financial values and their interpretation; UI_DESIGN.md records dashboard
+design and verification guidance.
+
+==================== PAGE 016 OF 100 ====================
+APPLICATION ENTRY AND NAVIGATION
+
+The application is started through `app.py`, which initializes the Streamlit
+application and its multipage navigation. Shared layout logic resides in
+`components/layout.py`. The market view is implemented in
+`views/home_view.py`; company research is divided into smaller tab modules.
+Native Streamlit navigation helps preserve browser session state.
+
+The shared structure reduces duplicated styling and navigation. Selective
+rendering of company research sections avoids loading every section's
+dependencies on the default overview. Native widgets retain keyboard
+accessibility and Streamlit's standard interaction behavior.
+
+==================== PAGE 017 OF 100 ====================
+MARKET HOME PAGE
+
+The Markets page is designed as a research-oriented landing view. Documented
+features include index quotations, benchmark history, coverage breadth,
+sector moves, gainers and losers, recent news, and navigation into company
+research. Market session status and a real-time clock are displayed in the
+header as described by the UI work history.
+
+The coverage breadth describes the project's configured universe, not the
+entire exchange. Quotes may be unavailable or stale when a provider fails.
+The interface should preserve that state rather than substitute invented
+market movements.
+
+==================== PAGE 018 OF 100 ====================
+MARKET SESSION AND INDEX COMPONENTS
+
+Market-session status is calculated using the Indian exchange trading
+schedule documented in tests: weekdays and market hours are handled in the
+Asia/Kolkata timezone. The tests cover open and closed time boundaries,
+including weekends. The home view separates the status from dated index
+quotes.
+
+Index tickers and market movers are implemented as reusable components.
+These components allow the landing page to present compact market context
+without duplicating quote-fetching logic across research sections. Provider
+failure and data freshness remain operational concerns; a market status
+indicator is not evidence that every quote is live.
+
+==================== PAGE 019 OF 100 ====================
+STOCK SCREENER
+
+The documented screener filters the saved company coverage by sector, name,
+P/E, ROE, debt/equity, or recent returns. Search results can be exported,
+and company links lead to the associated research page. Generic leverage
+screens exclude financial companies because their balance-sheet ratios are
+not directly comparable with industrial firms.
+
+Screen results are constrained by the coverage universe and freshness of
+underlying data. A filter match is not a recommendation or a suitability
+assessment. The screen is a navigation and discovery aid that should be used
+with source periods and company-specific context.
+
+==================== PAGE 020 OF 100 ====================
+SESSION WATCHLIST AND USER STATE
+
+The Markets interface supports adding and removing symbols from a watchlist
+during the current Streamlit session. Native navigation is used so the
+watchlist can survive movement between application pages in that session.
+This supports short-lived browsing and comparison workflows.
+
+The watchlist is not persisted to a user account or database and will not
+survive a new session. The application has no documented authentication or
+multi-user account model. Any examiner assessment should distinguish this
+session convenience from a durable user portfolio feature.
+
+==================== PAGE 021 OF 100 ====================
+COMPANY RESEARCH PAGE
+
+The company research page has a compact quote header followed by five selectable
+sections: Overview, Technical Chart, LSTM Model, News Sentiment, and Fundamentals.
+Selective rendering limits unnecessary section work.
+
+The financial snapshot, valuation-context, and price-momentum cards are rendered
+inside Fundamentals rather than repeated across every section. The quote header
+remains shared. Overview includes a company-summary paragraph from the saved
+fundamentals profile or a cached public-profile lookup. Each section retains its
+own source and freshness constraints.
+
+==================== PAGE 022 OF 100 ====================
+OVERVIEW AND PRICE HISTORY
+
+Overview presents a company summary, price history, key facts, a 52-week range,
+historical returns, and price-history export. The summary uses the saved Yahoo
+Finance business description when present and otherwise caches a public-profile
+lookup for one day. If neither source provides a summary, the page says so rather
+than inventing a description.
+
+Price history comes from processed local data. Provider updates can correct
+historical rows, and model bundles retain the data snapshot and hash used for
+training. Overview is a descriptive research surface, not a substitute for
+verifying an exchange record.
+
+==================== PAGE 023 OF 100 ====================
+TECHNICAL CHARTING
+
+The technical chart supports date-range selection and daily, weekly, or
+monthly candles. Weekly and monthly aggregation should combine prices and
+volumes according to their respective meanings. The interface also includes
+volume, Average True Range, annualized volatility, and period return.
+
+These indicators summarize historical market behavior. They are not
+independent forecasts and should not be read as guaranteed future direction.
+Consistent chart styling is provided by shared Plotly theme and layout
+helpers. Technical calculations should be interpreted against the displayed
+period and available data quality.
+
+==================== PAGE 024 OF 100 ====================
+FORECAST USER EXPERIENCE
+
+The LSTM section supports Day, Week, Month, and Quarter forecasts. Its output
+shows a final research estimate alongside a visible LSTM baseline, an estimate
+chart, a step-by-step table, empirical intervals when available, and CSV export.
+The estimate blends LSTM return with retrieved news and fresh fundamentals using
+a fixed research heuristic; LSTM-only holdout metrics do not validate that
+blended estimate.
+
+Forecast results persist in Streamlit session state when the ticker, horizon,
+model artifact, data origin, and experimental fusion configuration match. An
+optional learned fusion candidate has separate experimental labeling. The LSTM
+page's explanatory captions were simplified; source and model limitations remain
+documented in the project guides and evaluation artifacts.
+
+==================== PAGE 025 OF 100 ====================
+FORECAST HORIZONS AND CONTRACT
+
+Supported periods are Day (1 session), Week (5), Month (22), and Quarter (63).
+Quarter represents approximately three calendar months of trading sessions.
+The forecast origin is after the close of the most recent available session; the
+target is the close at the selected trading-session horizon. These are not
+calendar-day durations.
+
+The persistence baseline predicts the latest observed close. This benchmark is
+important because a complex model should not be presumed superior. Exchange
+holidays and session calendars are aligned to actual market data rather than
+guessed from ordinary calendar arithmetic.
+
+==================== PAGE 026 OF 100 ====================
+DIRECT AND RECURSIVE FORECASTS
+
+Direct forecasting requests the model output for the selected horizon and
+checks that the output length matches the requested number of future
+sessions. Recursive forecasting repeatedly estimates the next value,
+updates a synthetic OHLC row, recomputes technical indicators, and feeds the
+result back into the model for additional steps.
+
+Recursive results accumulate model error and make assumptions about future
+market fields. The current interface does not expose recursive forecasting;
+its historical metrics and intervals refer to direct models.
+
+==================== PAGE 027 OF 100 ====================
+FORECAST INFERENCE CONTRACT
+
+`src/forecast.py` resolves a ticker/horizon model artifact, verifies that
+input columns match the model feature contract, checks that sufficient
+history exists, loads the matching scaler and model, and scales the input
+window before prediction. It rejects non-finite indicators and mismatched
+direct output length.
+
+The target Close is recovered from the model's scaling range. Artifact
+metadata carries feature order and window size for versioned models. Legacy
+models have less provenance and are explicitly treated as legacy by the
+artifact resolver and interface.
+
+==================== PAGE 028 OF 100 ====================
+DATA COVERAGE AND TICKERS
+
+The 26 October project-status review covers 58 configured stocks plus the NSEI
+index. Its saved coverage snapshot is summarized below.
+
+| Coverage item | Recorded state | Qualification |
+|---|---:|---|
+| Configured stocks | 58 | NIFTY 50 plus configured additional companies |
+| Stocks with raw and processed history | 58/58 | Snapshot from 26 October |
+| Fundamentals refreshed or reused | 58/58 | Parameter availability varies by company |
+| Active model bundles | 57/59 | Two stock models remained gated by fresh-news requirements |
+| Verified news at the 20-article threshold | 47/58 | Provider-dependent, dated pipeline result |
+
+JIOFIN.NS and MAXHEALTH.NS remained below the unchanged 20-verified-article
+training prerequisite. These are dated operational figures, not a guarantee of
+current provider or artifact availability. Ticker canonicalization and provider
+aliases handle differences between internal and source symbols, including the
+LTIM/LTM history alias.
+
+==================== PAGE 029 OF 100 ====================
+MARKET DATA INGESTION
+
+Market-data scripts download source data and create processed company
+datasets. The documented daily pipeline refreshes raw data, computes
+indicators, trains changed datasets, evaluates active bundles, refreshes
+news, and updates stale company fundamentals. Separate scripts support
+targeted downloads and model repair or training tasks.
+
+Provider data can be missing, revised, or rounded differently between
+downloads. The training documentation reports that tiny feed-rounding
+changes are ignored to avoid unnecessary retraining, while material
+corrections trigger retraining. Failed refreshes are not supposed to replace
+the active model bundle.
+
+==================== PAGE 030 OF 100 ====================
+PREPROCESSING AND INDICATORS
+
+Processed market rows are prepared with technical features before LSTM
+training. The sequencing utility can create historical input windows and
+multi-step targets. The canonical training pipeline performs its own
+chronological splits from processed CSV data rather than relying on exported
+arrays as the source of truth.
+
+Indicators and columns form part of the model contract. Input features must
+match the saved model's expected feature set. A changed feature definition
+requires compatible training artifacts; silently reordering or adding
+columns would undermine reproducibility.
+
+==================== PAGE 031 OF 100 ====================
+LSTM MODEL ROLE
+
+The LSTM is the principal learned price-forecasting model in the production
+dashboard. The training documentation describes it as a residual model that
+learns corrections to the last observed close. Each ticker and horizon has
+an evaluated model artifact where available.
+
+The model uses a window of historical features, with a scaler fit only on
+the fitting partition. Forecasting does not use news as an LSTM input tensor
+in the current pipeline. News and technical context contribute to separate
+heuristic signals, while the learned fusion experiment is maintained as an
+independent model path.
+
+==================== PAGE 032 OF 100 ====================
+TRAINING PIPELINE
+
+All model-training entrypoints delegate to `src/training.py`, with
+`scripts/train_manager.py` serving as the canonical bulk-management
+interface. The documented daily pipeline trains when input datasets have
+changed. One-ticker and selected-horizon runs are available through helper
+scripts.
+
+Training uses fitting, calibration/validation, and test periods in
+chronological order. The scaler is fit on fitting rows only. The
+documentation records model parameters, seed, data boundaries, data hash,
+and model versions to support later reproduction and audit.
+
+==================== PAGE 033 OF 100 ====================
+CHRONOLOGICAL SPLITS AND LEAKAGE
+
+Forecast evaluation must preserve the order of time. Training and later
+partitions cannot be randomly mixed because future prices would then
+influence model fitting or tuning. Multi-session labels overlap across
+adjacent origins, so rows whose targets cross a split boundary must be
+purged.
+
+The project documentation describes purged chronological fitting,
+validation, and test boundaries for LSTM models. The fusion experiment
+likewise uses global chronological origin boundaries and purges rows whose
+target close would not yet be observable at the next partition boundary.
+
+==================== PAGE 034 OF 100 ====================
+MODEL BUNDLES AND PROVENANCE
+
+Versioned model bundles are stored under model directories and include
+models, scaler, feature order, metadata, processed-data snapshot, hashes,
+training dates, evaluations, and backtests. An active pointer selects the
+bundle used for normal inference. Publishing is intended to be atomic so a
+failed training run does not leave a partial active model.
+
+Older `.h5` or `.keras` files remain available through a legacy fallback.
+Legacy artifacts do not receive invented training dates or performance
+metrics. Artifact containment and checksums are validated in the relevant
+loading paths.
+
+==================== PAGE 035 OF 100 ====================
+MODEL SELECTION AND BASELINES
+
+The dashboard compares each LSTM model with persistence. The 26 October frozen
+evaluation reports LSTM MAE wins for 16/57 Day, 20/57 Week, 15/57 Month, and
+18/57 Quarter models. Results are mixed across the configured universe; aggregate
+dashboard access does not imply consistent model superiority.
+
+Training and validation choices remain separated from held-out test reporting.
+The README explicitly warns that a baseline can have lower error than an LSTM.
+
+==================== PAGE 036 OF 100 ====================
+FORECAST METRICS
+
+The project uses MAE, RMSE, MAPE, and directional accuracy. MAE and RMSE
+measure price error in the unit of the security, while MAPE expresses
+relative error. Directional accuracy measures whether the predicted price
+movement direction agrees with the realized direction under the project's
+forecast contract.
+
+Price errors should be compared within ticker and horizon because securities
+have different price scales. The fusion evaluation reports per-ticker and
+per-horizon results and macro-averages rather than pooling raw price errors
+across differently priced assets.
+
+==================== PAGE 037 OF 100 ====================
+REPORTED LSTM PERFORMANCE
+
+The 26 October frozen evaluation reports unweighted means across 57 active
+ticker/index models. The table separates directional hit rate from price error;
+MAPE is not a classification accuracy percentage.
+
+| Horizon | Directional accuracy | LSTM MAPE | Persistence MAPE | LSTM MAE wins | Test samples |
+|---|---:|---:|---:|---:|---:|
+| Day (1 session) | 30.13% | 1.286% | 1.281% | 16/57 | Per saved evaluation |
+| Week (5 sessions) | 34.12% | 2.873% | 2.854% | 20/57 | Per saved evaluation |
+| Month (22 sessions) | 36.30% | 6.555% | 6.382% | 15/57 | Per saved evaluation |
+| Quarter (63 sessions) | 41.21% | 10.054% | 9.385% | 18/57 | Per saved evaluation |
+
+Directional accuracy ranges from 30.13% to 41.21%. Mean LSTM MAPE is slightly
+higher than persistence at every horizon. These are historical model results,
+not profits, guaranteed future accuracy, or independent evidence of a trading
+strategy. Per-ticker results vary.
+
+==================== PAGE 038 OF 100 ====================
+UNCERTAINTY INTERVALS
+
+Direct-model empirical intervals use validation residual quantiles, with test
+coverage measured against a 90% nominal target.
+
+| Horizon | Nominal coverage | Observed test coverage | Difference |
+|---|---:|---:|---:|
+| Day (1 session) | 90% | 76.40% | -13.60 percentage points |
+| Week (5 sessions) | 90% | 76.05% | -13.95 percentage points |
+| Month (22 sessions) | 90% | 69.03% | -20.97 percentage points |
+| Quarter (63 sessions) | 90% | 53.76% | -36.24 percentage points |
+
+Coverage is below target at every horizon and materially low at Quarter.
+Validation residuals do not provide guaranteed conformal intervals, and
+validation also participates in early-stopping selection. Coverage is an
+empirical historical measurement that may change across periods.
+
+==================== PAGE 039 OF 100 ====================
+LIMITATIONS OF HISTORICAL BACKTESTS
+
+The README and status report distinguish rolling predictions from a
+repeatedly refitted walk-forward study. The documented backtests use a
+fixed fitted model and observed prior prices as rolling input windows.
+Repeated retraining at each historical origin has not been established as
+the same evaluation.
+
+The current reports do not establish transaction-cost-adjusted performance,
+market impact, liquidity constraints, short-sale feasibility, or realized
+portfolio returns. A forecast metric is therefore not sufficient evidence
+for a deployable investment strategy.
+
+==================== PAGE 040 OF 100 ====================
+NEWS AND SENTIMENT PIPELINE
+
+The news path retrieves articles, normalizes metadata, matches content to
+tickers, archives observations, chunks long text, retrieves relevant
+evidence, and computes sentiment. Evidence records retain sources and
+timestamps used by downstream display and historical evaluation.
+
+News is an independent evidence stream from the LSTM. The deterministic
+sentiment score is not a direct LSTM feature in the normal production
+forecast. The market summary and combined signal use heuristics. The learned
+fusion path consumes selected news and LLM-derived features only when the
+experimental prerequisites are met.
+
+==================== PAGE 041 OF 100 ====================
+NEWS SOURCES AND COVERAGE
+
+Documented sources include Yahoo and public publisher RSS feeds, with
+optional NewsAPI coverage when `NEWS_API_KEY` is configured. The RSS
+fallback is finite and does not contain every company every day. Public
+sources may change their page structure or feed availability.
+
+The status report states that the latest verified refresh returned articles
+for 9 of 57 configured symbols. That snapshot indicates a significant
+coverage limitation; it should not be generalized as the current coverage
+without a new refresh. Missing coverage is preserved as missing evidence
+rather than replaced with a fabricated article.
+
+==================== PAGE 042 OF 100 ====================
+NEWS NORMALIZATION
+
+News normalization records ticker, source, title, summary or text, URLs,
+publication time, and observation time where available. Missing publication
+times are retained as missing instead of being replaced with the retrieval
+time. This distinction matters because retrieval time does not prove when
+an article first became available.
+
+Feed timestamps are normalized to UTC. Publication times can be displayed
+in India time for users. Canonical URL handling removes tracking parameters
+for identity and deduplication while preserving original and canonical
+provenance.
+
+==================== PAGE 043 OF 100 ====================
+TICKER AND COMPANY MATCHING
+
+The news system uses configured ticker and company-name aliases. Short
+symbol matches require financial context to reduce ambiguous matches, since
+many ticker strings also appear as ordinary words. This is an important
+protection against assigning an unrelated article to a company.
+
+Matching is evidence association, not a guarantee that a story materially
+affects the security. Company names can overlap with products, people, or
+other entities. A regional independently labeled dataset is still needed
+to measure matching precision and recall under Indian-market news conditions.
+
+==================== PAGE 044 OF 100 ====================
+ARCHIVAL AND CUTOFF SAFETY
+
+Fresh news observations are archived under `data/news_archive/` for future
+historical studies. Historical retrieval requires both publication and
+observation timestamps at or before the requested forecast origin. An
+article published earlier but first observed after the origin is not
+eligible for a point-in-time reconstruction.
+
+Historical sentiment requires explicitly archived articles and raises when
+no eligible archive exists; it does not silently fall back to live news.
+This policy reduces look-ahead leakage but depends on archive completeness
+and trustworthy timestamp provenance.
+
+==================== PAGE 045 OF 100 ====================
+CHUNKING AND PROVENANCE
+
+Long articles are divided into chunks that preserve article and ticker
+identity, source, original/canonical URLs, publication and observation
+times, and duplicate-source provenance. Stable chunk identifiers are
+derived from canonical article identity and chunk position/content.
+
+Stable IDs let evaluation and LLM synthesis refer to specific evidence.
+Metadata-only changes can be refreshed without forcing re-embedding of
+unchanged text. Provenance is essential for locating a citation and applying
+historical cutoff checks.
+
+==================== PAGE 046 OF 100 ====================
+DEDUPLICATION
+
+URL tracking variants and near-duplicate headlines are deduplicated using
+canonical identity and same-day matching rules documented by the project.
+Source and URL provenance are retained rather than discarded, allowing
+multiple publishers or source records to remain auditable.
+
+Deduplication prevents repeated copies of a story from dominating retrieval
+and metrics. However, overly aggressive deduplication could merge distinct
+updates; identity thresholds and canonicalization rules therefore remain
+part of evaluation quality.
+
+==================== PAGE 047 OF 100 ====================
+RETRIEVAL
+
+The retriever ranks article chunks against a ticker-specific query and can
+apply recency and as-of constraints. TF-IDF retrieval is the core option;
+embedding-based retrieval is optional. Retrieval returns evidence metadata,
+not merely text, so citations and source context can be displayed.
+
+Retrieval should be measured with a labeled set using article-level
+Precision@K, Recall@K, mean reciprocal rank, and normalized discounted
+cumulative gain. The repository contains metric utilities, but the project
+status warns that a tiny synthetic retrieval smoke test is not a real-world
+benchmark.
+
+==================== PAGE 048 OF 100 ====================
+OPTIONAL EMBEDDINGS
+
+Embedding retrieval can be enabled with compatible `sentence-transformers`
+and `faiss-cpu` packages and the `EQUIMASTER_EMBEDDINGS` setting. It is
+optional; TF-IDF retrieval remains available without those dependencies.
+No model download is required by default.
+
+Optional embeddings can improve semantic matching in some conditions, but
+their presence does not automatically improve retrieval quality. Corpus
+coverage, ticker matching, chunk boundaries, model choice, index freshness,
+and a labeled retrieval evaluation all influence performance.
+
+==================== PAGE 049 OF 100 ====================
+DETERMINISTIC SENTIMENT
+
+The default sentiment pipeline scores retrieved articles with FinBERT when
+the optional model is available and enabled; otherwise it uses a keyword
+fallback. Relevance and source weights contribute to a composite ticker
+score. The output also includes label, confidence, drivers, article-level
+scores, and impact indicators.
+
+These scores are heuristics unless calibrated and independently validated.
+The status report explicitly says confidence and impact scores are not
+calibrated probabilities. A displayed score should not be interpreted as
+the probability that a stock will rise or fall.
+
+==================== PAGE 050 OF 100 ====================
+FINBERT AND OPTIONAL MODEL DOWNLOADS
+
+FinBERT dependencies and model use are optional. The README gives a
+separate `requirements-news.txt` installation path and environment flags.
+The core application can run using keyword sentiment. Model downloads are
+disabled unless explicitly permitted by configuration.
+
+The runtime catches model-load failures and falls back to deterministic
+keyword scoring. This keeps the app usable offline but can change the
+sentiment method used for a particular result. The backend identifies the
+scoring backend in article-level output where available.
+
+==================== PAGE 051 OF 100 ====================
+KEYWORD SENTIMENT AND BENCHMARK
+
+The 26 October status report records keyword sentiment evaluation on 2,264
+expert-labeled FinancialPhraseBank sentences. These are sentiment-classification
+metrics, not stock-price forecast accuracy.
+
+| Sentiment benchmark metric | Result |
+|---|---:|
+| Accuracy | 76.19% |
+| Majority-class baseline accuracy | 61.44% |
+| Balanced accuracy | 60.16% |
+| Macro F1 | 0.626 |
+| Negative-class recall | 27.06% |
+| Confidence expected calibration error | 0.240 |
+
+The 76.19% result applies only to classifying English FinancialPhraseBank
+sentences. It must not be described as LSTM, return-direction, price-forecast,
+or trading accuracy. Negative recall remains weak and confidence is not
+calibrated. This benchmark is not an Indian-market timestamped price-signal test.
+
+==================== PAGE 052 OF 100 ====================
+SENTIMENT DISPLAY
+
+The News and Sentiment interface presents the deterministic sentiment
+result, source evidence, publication information, and optional structured
+LLM synthesis. It reports when synthesis is disabled, unavailable, or
+failed. Provider errors do not replace the deterministic sentiment score
+with a synthetic result.
+
+Evidence links allow a user to inspect cited sources. Displayed citations
+provide traceability, but they do not automatically prove semantic
+entailment. A human should verify important claims against the original
+article and its full context.
+
+==================== PAGE 053 OF 100 ====================
+LLM PROVIDER BOUNDARY
+
+The optional LLM adapter supports OpenAI-compatible chat-completions
+endpoints. The provider is disabled by default. Configuration includes
+provider mode, base URL, model, optional API key, and request timeout.
+Hosted endpoints must use HTTPS; loopback HTTP is permitted for local
+inference services.
+
+API keys are read from the process environment and should not be committed
+to source control or written into logs. An external hosted provider receives
+article text sent for synthesis; operators should consider data handling,
+provider retention, and organizational policy before enabling it.
+
+==================== PAGE 054 OF 100 ====================
+STRUCTURED LLM SYNTHESIS
+
+The synthesis function receives ticker-matched retrieved chunks and an
+explicit `as_of` cutoff. It rejects missing evidence, invalid timestamps,
+wrong-ticker records, and evidence published or observed after the cutoff.
+The requested result contains stance, summary, claims, and citation IDs.
+
+The output schema is validated, and citations must refer to supplied
+evidence chunk identifiers. This is a structural check: it ensures that
+the cited IDs exist in the input but cannot establish that the generated
+claim is fully supported by the cited text.
+
+==================== PAGE 055 OF 100 ====================
+PROMPT AND UNTRUSTED INPUTS
+
+Retrieved news text is untrusted external content. The provider prompt
+instructs the model not to follow instructions embedded in article text and
+to synthesize only from supplied evidence. Output is constrained to a
+structured JSON object that the application validates.
+
+Prompt instructions and JSON validation reduce some risks but do not
+eliminate hallucination, prompt-injection influence, or unsupported
+paraphrase. Human review and independent label-based evaluation remain
+important before using LLM output in high-impact decisions.
+
+==================== PAGE 056 OF 100 ====================
+LLM EVALUATION
+
+The LLM evaluation utility accepts an explicitly injected provider and
+independently labeled cases. It reports stance accuracy and macro F1, plus
+citation precision, recall, and F1 against labeled evidence IDs. Invalid
+gold evidence identifiers are rejected before model calls.
+
+Citation overlap is not a semantic entailment metric, and stance quality
+does not establish forecast accuracy. A useful evaluation set must be
+representative, timestamped where historical use is intended, independently
+annotated, and separated from prompts or examples used for development.
+
+==================== PAGE 057 OF 100 ====================
+NEWS EVALUATION
+
+The project supports article-level retrieval metrics and sentiment
+benchmark evaluation. It can evaluate labeled sentiment cases and compare
+against a majority-class baseline. The synthetic fixture provides an
+offline smoke test for expected behavior, not real-world performance
+evidence.
+
+Regional studies should use independently labeled Indian-market articles,
+including publication and first-observed timestamps. Class balance,
+language, company matching, source variation, and recency should be
+reported so aggregate scores do not hide important failure modes.
+
+==================== PAGE 058 OF 100 ====================
+FUSION RESEARCH MOTIVATION
+
+The fusion research path studies whether news features and LLM stance can
+add information beyond an existing LSTM return forecast. It is deliberately
+separated from the established LSTM pipeline to avoid changing already
+trained model inputs or silently altering normal forecasts.
+
+The hypothesis is empirical, not assumed. News features may be noisy,
+incomplete, delayed, or redundant with price history. The fusion model must
+be compared with both LSTM and persistence on chronological held-out data
+before any expansion of its role.
+
+==================== PAGE 059 OF 100 ====================
+FUSION DATASET CONTRACT
+
+The versioned fusion row binds ticker, UTC origin, horizon, target date,
+current close, LSTM-predicted close, realized close, heuristic news score,
+LLM stance, cited evidence IDs, timestamped evidence, and LLM/LSTM model
+identifiers. Validation rejects invalid fields, duplicate samples, missing
+provenance, and evidence outside the permitted cutoff.
+
+This schema makes the forecast origin and target explicit. Its target date
+must come from aligned market data; it does not infer exchange holidays
+from calendar dates. The row contract supports reproducible joining and
+evaluation rather than live feature collection by itself.
+
+==================== PAGE 060 OF 100 ====================
+FUSION FEATURE CONSTRUCTION
+
+The initial learned fusion model uses LSTM log-return, heuristic news
+sentiment, mapped LLM stance, and log horizon. The target is realized
+log-return. Bullish stance maps to positive one, bearish to negative one,
+and neutral or mixed to zero.
+
+Log returns allow the model to learn relative movement rather than raw
+price scale. The design remains small and fixed to limit complexity in the
+initial experiment. More inputs or nonlinear models should not be added
+without sufficient data and a predeclared evaluation design.
+
+==================== PAGE 061 OF 100 ====================
+ALIGNMENT OF FORECAST AND EVIDENCE
+
+`build_fusion_dataset` joins LSTM backtest forecasts to news feature rows
+using exact normalized ticker and origin. A missing feature row is an error
+rather than an invitation to use today's live evidence. Duplicate
+ticker/origin feature rows are rejected.
+
+Exact origin matching avoids accidental alignment to a nearby date. This
+design is essential because even a one-session offset may associate news
+with a different information set. Evidence timestamps remain attached to
+each generated fusion record.
+
+==================== PAGE 062 OF 100 ====================
+CHRONOLOGICAL FUSION SPLIT
+
+`chronological_purged_split` applies global date boundaries across tickers
+and horizons, by default allocating 60% to training, 20% to validation,
+and 20% to test origins. It purges training or validation rows whose target
+would not yet have been observed at the following boundary.
+
+Global boundaries reduce cross-ticker time leakage. The split still depends
+on correct origin and target dates and adequate coverage across partitions.
+The resulting evaluation is only as reliable as its timestamped input
+dataset and its adherence to the declared contract.
+
+==================== PAGE 063 OF 100 ====================
+FUSION BASELINES
+
+The baseline evaluator includes persistence, LSTM-only, news-combined,
+LLM-stance-only, and fixed-rule LSTM-plus-LLM results. It uses a stated
+0.6/0.4 combined-signal rule and reports per-ticker/horizon metrics with
+macro-averages.
+
+The fixed-rule baselines are diagnostic and are not trained fusion models.
+They do not constitute a chronological holdout unless the input rows have
+been split appropriately. The report must not present a positive baseline
+comparison as proof of future accuracy.
+
+==================== PAGE 064 OF 100 ====================
+LEARNED FUSION MODEL
+
+The first learned model is a standardized Ridge regressor. Its scaler and
+regressor are fit on training rows only. Validation and test rows are
+scored separately; their outcomes do not contribute to fitting. A focused
+test checks that changing validation or test labels does not change fitted
+coefficients.
+
+Ridge regression provides a relatively simple, inspectable initial model.
+It does not eliminate risks from small samples, changing regimes, feature
+misspecification, model-selection bias, or repeated use of a held-out test.
+Performance must be assessed across additional untouched periods.
+
+==================== PAGE 065 OF 100 ====================
+FUSION ARTIFACTS
+
+Fusion artifacts are stored in immutable version bundles. Metadata records
+schema and feature versions, stance mapping, model IDs by split, dataset
+hash, split boundaries, sample counts, model version, and evaluation
+metrics. The estimator file is checksummed.
+
+The loader checks the artifact version and containment, feature contract,
+schema, file name, and checksum. Joblib files contain executable pickle
+data; only locally created and controlled artifacts should be loaded.
+There is no active fusion pointer or automatic latest-version selection.
+
+==================== PAGE 066 OF 100 ====================
+GUARDED FUSION INFERENCE
+
+`predict_fused_forecast` validates the loaded artifact contract, ticker,
+origin, supported horizon, prices, score range, stance, evidence IDs,
+timestamp cutoffs, and model provenance. It requires the LLM and LSTM
+model identifiers to exist in the training partition for that ticker.
+
+The result is marked `experimental_not_activated`. It returns a candidate
+fused close alongside the LSTM close and provenance. It does not itself
+publish a model pointer, alter active artifacts, or connect to the standard
+forecast function.
+
+==================== PAGE 067 OF 100 ====================
+STAGED-TRIAL EVALUATION GATE
+
+`assess_fusion_staged_trial` evaluates predefined checks: all configured
+horizons are represented; validation does not regress versus LSTM on MAE
+or directional accuracy; test macro MAE beats both LSTM and persistence;
+and no test ticker/horizon regresses versus LSTM on MAE or direction.
+
+A passing result means only that a staged shadow trial may be considered.
+The gate is an initial diagnostic, not a significance test, production
+approval, or a substitute for evaluating many untouched periods.
+
+==================== PAGE 068 OF 100 ====================
+OPT-IN SHADOW DISPLAY
+
+The LSTM forecast page supports a separately labeled learned-fusion shadow
+candidate when EQUIMASTER_FUSION_SHADOW_VERSION names a local immutable artifact.
+The candidate is built from archived, origin-valid sentiment and structured LLM
+evidence with model provenance.
+
+Shadow display does not replace the LSTM baseline or the fixed final research
+estimate. Unavailable archives, disabled providers, legacy models, or incompatible
+artifacts produce a separate status rather than a substituted forecast.
+
+==================== PAGE 069 OF 100 ====================
+SAFETY OF PRODUCTION FORECASTS
+
+The LSTM remains visible as the learned price baseline. The page also shows a
+final research estimate blending LSTM return, retrieved-news sentiment, and fresh
+fundamentals through a fixed heuristic. This blended figure is not a learned or
+validated production model, and LSTM-only evaluation metrics do not measure it.
+
+The separate learned LLM/LSTM fusion model remains opt-in and shadow-only. It has
+no active pointer, automatic promotion, or silent substitution into the standard
+forecast pipeline.
+
+==================== PAGE 070 OF 100 ====================
+FUNDAMENTALS OVERVIEW
+
+The Fundamentals page combines public-source company snapshots, selected peer
+comparisons, ratio assessments, statements, and an evidence-linked SWOT and
+valuation view. The current catalog contains 98 supported parameters across
+valuation, profitability, growth, debt, liquidity, assets, liabilities, cash flow,
+efficiency, per-share measures, and ownership.
+
+The financial snapshot, valuation-context, and price-momentum cards appear here
+rather than across all analyzer sections. Supported parameter slots do not imply
+that every company publishes every value. Missing or inappropriate fields remain
+unavailable, with source, period, basis, units, and explanation shown where
+available.
+
+==================== PAGE 071 OF 100 ====================
+FUNDAMENTALS SOURCES
+
+Public fundamentals are collected from Screener company pages and Yahoo
+Finance. Screener supplies statements, ratios, and ownership sections; Yahoo
+Finance supplies additional profile and market fields. The project does not
+access private Screener sections.
+
+The company Overview uses Yahoo Finance's public business summary, preferring a
+saved summary in the fundamentals snapshot and otherwise caching a profile lookup
+for one day. External layouts and APIs can change; refresh warnings and saved
+snapshots remain important when provider access fails.
+
+==================== PAGE 072 OF 100 ====================
+FINANCIAL STATEMENTS
+
+The Fundamentals section includes quarterly results, annual profit and
+loss, balance sheets, cash flows, historical ratios, and shareholding
+history where source data is available. Individual statements can be
+exported for closer inspection.
+
+Fiscal period labels and currency matter when comparing records. A
+retrieval date is not the same as the disclosure date. The user should read
+each statement with its period, reporting basis, and source metadata rather
+than assuming all values describe the same fiscal interval.
+
+==================== PAGE 073 OF 100 ====================
+RATIO CATALOG
+
+The catalog covers market valuation, profitability, growth, leverage,
+liquidity, asset quality, cash conversion, efficiency, dividends, per-share
+items, and ownership. Headline cards include market capitalization, P/E,
+P/B, dividend yield, ROE, published ROCE, debt/equity, and trailing EPS
+when available.
+
+Definitions and data availability differ by company and provider.
+Financial-sector companies require distinct interpretations for leverage,
+liquidity, margins, and capital adequacy. Ratios should be read with their
+underlying statement dates and units.
+
+==================== PAGE 074 OF 100 ====================
+DERIVED FINANCIAL METRICS
+
+The guide documents annual derivations using matching fiscal end dates.
+Calculated ROCE uses EBIT divided by average annual capital employed,
+where capital employed is assets less current liabilities. ROIC uses
+effective-tax NOPAT divided by a stated debt-plus-equity-minus-cash
+denominator.
+
+CAGR excludes trailing-twelve-month values and requires positive endpoints
+over an actual fiscal-year span. Derived values can differ from published
+ratios because definitions, period timing, and accounting basis may differ.
+The interface should identify calculated values and their formula.
+
+==================== PAGE 075 OF 100 ====================
+FINANCIAL ASSESSMENTS AND RANGES
+
+The app displays explicit ranges for its ratio assessments, such as P/E,
+P/B, ROE/ROCE, debt/equity, and current ratio. The Fundamentals guide
+clearly labels these as application screening heuristics rather than
+universal standards endorsed by external sources.
+
+A low valuation multiple alone does not imply a high-quality company or a
+buy signal. Negative earnings or book values are not labeled as cheap
+multiples. The assessment is a way to contextualize a value, not a complete
+investment thesis.
+
+==================== PAGE 076 OF 100 ====================
+PEER COMPARISON
+
+Peer comparisons require compatible source, reporting period, basis, currency,
+and company identity. Fundamentals screening bands use 80% to 120% of peer median
+when at least two suitable peers are available.
+
+The shared automatic valuation engine can use supported DCF and strict-peer
+models or fallback per-share scenarios based on comparable P/E, P/B, EV/EBITDA,
+EV/Sales, or P/S inputs. It excludes the subject company's own price and
+valuation multiple as fair-value anchors, checks currencies, and labels scenario
+ranges and lower-confidence sector or single-peer fallbacks. Unavailable inputs
+remain explicit. `scripts/valuation_coverage.py` can produce a per-stock report;
+a complete all-stock coverage report was not part of the 27 October verification.
+
+==================== PAGE 077 OF 100 ====================
+CURRENCY AND UNITS
+
+Monetary totals from Screener are identified as INR crore, with per-share
+values displayed in their appropriate units. The guide documents separate
+currency metadata for companies whose quotation currency differs from
+financial statement currency. Verified USD statements are not relabeled
+as INR.
+
+No unsupported foreign-exchange conversion is invented. Ambiguous
+cross-currency valuation multiples are withheld. Provider-specific
+representations, such as Yahoo debt/equity supplied as a percentage, are
+normalized according to the documented implementation.
+
+==================== PAGE 078 OF 100 ====================
+MISSING VALUES AND SECTOR LIMITATIONS
+
+Missing financial values remain unavailable. Bank-specific information
+such as NPA, NIM, CASA, capital adequacy, or pledged shares is not
+fabricated when current sources do not provide it. Generic industrial
+thresholds are disabled where the financial-sector business model makes
+them inappropriate.
+
+This approach trades completeness for more honest reporting. Examiners
+should assess whether the interface clearly distinguishes unavailable,
+unsupported, and zero values, because these states have different
+meanings.
+
+==================== PAGE 079 OF 100 ====================
+FUNDAMENTALS CACHING AND REFRESH
+
+Company snapshots are cached and refreshed through
+`scripts/refresh_fundamentals.py`, including all-company, stale-only, and
+selected-ticker workflows. The daily pipeline refreshes snapshots older than
+24 hours. The 26 October review recorded successful refreshed or reused
+fundamentals for all 58 configured companies.
+
+This is a dated cache state, not a guarantee that all 98 parameters are available
+for every company or that public providers remain available.
+
+==================== PAGE 080 OF 100 ====================
+FUNDAMENTALS EXPORTS
+
+CSV exports include formatted and raw values, units, ranges, source,
+basis, period, and explanations. JSON snapshots and individual financial
+statement exports are also available. Export metadata supports analysis
+outside the dashboard.
+
+Exports can still be misinterpreted if rows from different fiscal periods
+or currencies are combined. A downstream analyst should retain the
+metadata columns and confirm whether a value is published, calculated, or
+peer-referenced before comparing it.
+
+==================== PAGE 081 OF 100 ====================
+MARKET SUMMARY AND RECOMMENDATION
+
+The Market Summary combines technical momentum and news into a simple
+heuristic label. The documented context calculation uses recent price
+movement and trend averages with a sentiment score, and labels the output
+as a research summary.
+
+Recommendation and risk components are connected to the dashboard, but
+their output is not a regulated suitability assessment or an investment
+guarantee. Their methodology should be read as a transparent heuristic
+layer separate from the LSTM forecast.
+
+==================== PAGE 082 OF 100 ====================
+SIGNAL FORMULA
+
+The project documentation states that forecast/news display and evaluation
+share the formula `0.6 * tanh(predicted_return * 10) + 0.4 * sentiment`.
+The nonlinear return term bounds the price component before combining it
+with a sentiment score.
+
+This is a fixed heuristic, not a learned or empirically proven optimal
+weighting. Its presence provides consistent implementation between
+display and evaluation; it does not demonstrate that the signal predicts
+future returns better than either input alone.
+
+==================== PAGE 083 OF 100 ====================
+ERROR HANDLING
+
+The application and backend workflows surface unavailable data and
+provider failures. Documentation states that news evidence can remain
+empty, failed market refreshes do not replace active models, failed
+fundamentals refreshes preserve prior snapshots, and LLM errors do not
+silently alter deterministic sentiment.
+
+Explicit failure states help prevent success-shaped outputs from being
+mistaken for valid data. Operators should still inspect stage logs and
+refresh status because partial source failures can occur even when the
+dashboard itself launches successfully.
+
+==================== PAGE 084 OF 100 ====================
+LOGGING AND OPERATIONAL STATUS
+
+The daily workflow records logs and stage status under `logs/`. The
+fundamentals refresh status is separately described in
+`logs/fundamentals_refresh.json`. The status report records successful
+manual execution of the documented stages at the time of its review.
+
+Operational logs support diagnosis but can contain local paths or provider
+details. They should be handled as operational data, not automatically
+committed or shared. Runtime cache, generated artifacts, and data are
+distinguished from source code in repository hygiene guidance.
+
+==================== PAGE 085 OF 100 ====================
+SCHEDULED WORKFLOW
+
+The Windows task `Equimaster-Daily-Refresh` is documented for weekdays at
+18:30 Asia/Kolkata while the registering user is logged in. The 26 October
+status review records a rerun after history repair: market refresh, preprocessing,
+and fundamentals succeeded, while training/evaluation returned 1 because two
+stocks remained below the required fresh-news threshold. A second task named
+`Equimaster daily update` remained enabled after an access-denied attempt to
+disable it; its last result was a process-aborted code. A successful future
+scheduled run has not been verified.
+
+==================== PAGE 086 OF 100 ====================
+DEVELOPMENT AND INSTALLATION
+
+The README describes creating a Windows virtual environment, activating it,
+installing `requirements-lock.txt`, and starting Streamlit with
+`python -m streamlit run app.py`. The lockfile is intended to capture a
+tested dependency closure for the documented Windows/Python version.
+
+Optional development, news, and browser packages have separate
+requirements files. Operators should install only the optional dependencies
+needed for their environment and verify the exact Python interpreter used
+by any scheduled task.
+
+==================== PAGE 087 OF 100 ====================
+COMMAND-LINE WORKFLOWS
+
+The README documents commands for the daily pipeline, one-ticker training,
+full training refresh, watchlist evaluation, news evaluation, and full
+pytest suite. Other scripts support data download, fundamentals refresh,
+news ingestion, and screenshot checks.
+
+The canonical training entrypoint is centralized in `src/training.py`;
+compatibility scripts delegate to it. This reduces divergence between
+different ways of training the same model. Command options and source
+configuration should be checked in the README before operational use.
+
+==================== PAGE 088 OF 100 ====================
+TEST STRATEGY
+
+Tests cover training workflows, artifacts, prediction metrics, preprocessing,
+fundamentals calculations and valuation, news retrieval and sentiment, LLM
+contracts, fusion schemas and model behavior, and Streamlit interactions. Most
+core tests are deterministic and independent of external providers.
+
+Focused subsystem checks can localize regressions; the full offline suite is the
+broader integration check. Passing software tests establish expected behavior
+for covered cases, not forecast accuracy on future market data. Browser checks
+are reported separately from AppTest results.
+
+==================== PAGE 089 OF 100 ====================
+REPORTED TEST AND RUNTIME VERIFICATION
+
+The 27 October verification results are separated by method and scope.
+
+| Check | Result | Notes |
+|---|---|---|
+| Full local suite | 154 passed; 1 failed; 4 subtests passed | Failure: `test_analyzer_tabs_and_fundamentals_interaction`; AppTest did not expose `research_section` after a multipage switch |
+| Focused Fundamentals suite | 16 passed | Ran after moving the cards into Fundamentals and adding the Overview summary |
+| Focused valuation suite | 21 passed | Arithmetic, peer matching, scenario ranges, and currency safeguards |
+| Microsoft Edge TCS analyzer | HTTP 200; no page errors | SWOT and valuation rendered; company summary appeared in Overview; three cards appeared only in Fundamentals |
+| Streamlit health endpoint | `ok` | Local startup check |
+
+Browser checks do not erase the AppTest failure. Remote CI and a successful
+normal scheduled run were not verified. Software test results validate only
+the covered behaviors and do not establish forecast accuracy.
+
+==================== PAGE 090 OF 100 ====================
+CONTINUOUS INTEGRATION
+
+The repository contains a Windows/Python 3.13 GitHub Actions workflow that
+runs the offline suite with the lockfile. This provides an automated check in
+the target environment when the workflow runs.
+
+As of the 26 October status review and 27 October local validation, no remote CI
+run or GitHub push had been performed. The local full test run collected 154
+passing tests and one AppTest navigation failure; remote workflow status should
+be inspected before claiming CI verification.
+
+==================== PAGE 091 OF 100 ====================
+SECURITY AND PRIVACY CONSIDERATIONS
+
+Provider API keys are expected in environment variables, not source code.
+Hosted LLM endpoints must use HTTPS; sending retrieved article text to a
+hosted provider shares that text with the provider. Joblib model files
+should be loaded only from trusted local artifact bundles because they
+contain executable pickle data.
+
+The application handles public market and news information, but logs,
+environment configuration, caches, and artifact paths still need
+operational protection. The project does not document authentication or a
+multi-user authorization boundary, so deployment exposure must be assessed.
+
+==================== PAGE 092 OF 100 ====================
+REPRODUCIBILITY
+
+Reproducibility relies on matching processed-data snapshots, feature order,
+scalers, model versions, hashes, training parameters, split boundaries,
+and evaluation files. The fusion artifact similarly stores dataset and
+estimator hashes and split provenance.
+
+External source changes can prevent exact reconstruction if historical
+snapshots were not archived. Reproducible code cannot recreate missing
+point-in-time evidence after the fact. The quality of versioned metadata
+and archives is therefore a central project dependency.
+
+==================== PAGE 093 OF 100 ====================
+KNOWN LIMITATIONS: DATA AND COVERAGE
+
+The latest status review recorded a 58-stock configured universe, 58 saved raw
+and processed price datasets, and refreshed fundamentals. Training was blocked
+for JIOFIN.NS and MAXHEALTH.NS because fresh verified article counts were below
+the 20-article gate. A controlled pipeline run reported at least 20 verified
+articles for 47 of 58 stocks; source coverage is provider-dependent.
+
+Public data providers can change formats, coverage, timestamps, and availability.
+The configured universe is not the entire Indian market. Market breadth and
+screener results describe only the tracked symbols.
+
+==================== PAGE 094 OF 100 ====================
+KNOWN LIMITATIONS: MODEL QUALITY
+
+The frozen 26 October evaluation shows LSTM MAPE slightly above persistence at
+all four horizons. Empirical interval coverage ranges from 76.40% at Day to
+53.76% at Quarter against a 90% nominal target. The keyword sentiment benchmark
+has weak negative recall (27.06%) and uncalibrated confidence (ECE 0.240).
+
+Neither the fixed LSTM/news/fundamentals research estimate nor the learned fusion
+candidate has been established as more accurate than LSTM or persistence. A
+positive diagnostic gate would not prove significance or generalization. Future
+claims require point-in-time evidence, untouched evaluation periods, and suitable
+baselines.
+
+==================== PAGE 095 OF 100 ====================
+KNOWN LIMITATIONS: PRODUCT AND OPERATIONS
+
+The scheduled workflows and Windows/Python 3.13 CI configuration are present.
+The 26 October status review records a primary task run that returned 1 because
+training and evaluation remained blocked by two fresh-news gates. A second daily
+task remained enabled after an access-denied attempt to disable it and had last
+reported a process-aborted result. A normal successful scheduled run and remote
+CI were not confirmed.
+
+The application is a research dashboard, not a broker, order-management system,
+or authenticated production API. Provider failover, multi-user access controls,
+and ongoing operations monitoring remain outside the verified feature scope.
+
+==================== PAGE 096 OF 100 ====================
+IMPLEMENTED COMPLETION SNAPSHOT
+
+The project owner declares the requested application implementation complete.
+The delivered scope includes the market dashboard and screener, company analysis,
+technical charts, four-horizon LSTM forecasts, public fundamentals and statements,
+peer comparisons and scenario valuation, news evidence and sentiment, refresh and
+training workflows, and versioned model artifacts.
+
+| Completed area | Current implementation evidence |
+|---|---|
+| Company research UI | Six selectable sections; company summary in Overview; financial, valuation, and momentum cards only in Fundamentals |
+| Forecasting | Day/Week/Month/Quarter horizons; final research estimate shown alongside the LSTM baseline |
+| Fundamentals | 98 catalog parameters, 58 cached company snapshots in the 26 October status review, SWOT and scenario valuation |
+| Valuation safeguards | Currency checks, subject-price exclusion, explicit missing-input reasons, scenario ranges, lower confidence for fallback cases |
+| Validation | Focused Fundamentals and valuation tests pass; browser route and UI checks pass |
+
+Implementation completion is distinct from research and operational validation.
+The full suite has one AppTest navigation failure; two model bundles remain
+blocked by the fresh-news gate; the learned fusion model is shadow-only; remote
+CI and a successful normal scheduled run remain unverified. No trading-edge or
+above-70% stock-forecast-accuracy claim is supported by the recorded results.
+
+==================== PAGE 097 OF 100 ====================
+REMAINING RESEARCH PRIORITIES
+
+The remaining items are research and operational follow-through rather than
+missing core interface features: collect sufficient fresh verified news for
+JIOFIN.NS and MAXHEALTH.NS and train their four horizons; obtain independent
+Indian-market sentiment labels; evaluate sentiment and fusion on issuer- and
+time-separated data; run refitted walk-forward studies with persistence and
+documented costs; and improve interval coverage on untouched periods.
+
+Operational follow-through includes resolving the AppTest multipage navigation
+check, verifying remote CI, reviewing the scheduled tasks under an appropriate
+Windows account, and reviewing the large tracked model/log changes before any
+commit or push.
+
+==================== PAGE 098 OF 100 ====================
+RECOMMENDED EXAMINER EVALUATION
+
+An examiner can verify setup from README.md; inspect the forecast contract
+and RAG_BLUEPRINT.md; run the offline tests; confirm the model artifact
+metadata; and trace a ticker's data from source snapshot through display.
+The examiner should also compare reported model results with persistence.
+
+For fusion, inspect schema validation, exact-origin joins, purged time
+splits, train-only fitting, artifact hashes, inference guards, the
+staged-trial gate, and the shadow-only UI. Then verify that no normal
+forecast output is changed by enabling or disabling shadow display.
+
+==================== PAGE 099 OF 100 ====================
+CONCLUSION
+
+The project owner considers the requested Equimaster-Ai implementation
+complete. The delivered application integrates market research, company-level
+analysis, LSTM forecasts, fundamentals and scenario valuation, timestamped news,
+and backend data/model workflows. The 27 October checks verified the updated
+company pages and focused fundamentals/valuation behavior.
+
+Completion of this implementation does not establish research readiness or
+predictive advantage. The current evaluation favors persistence on mean MAPE,
+interval coverage is below target, two active model bundles remain blocked by
+news freshness, one AppTest navigation check fails, and remote CI/scheduled
+operation remain unverified. These limits should accompany any examiner claim.
+
+==================== PAGE 100 OF 100 ====================
+APPENDIX: QUICK REFERENCE
+
+Start the app: `python -m streamlit run app.py`
+Run tests: `python -m pytest tests -q`
+Refresh data and fundamentals: `python daily_pipeline.py`
+Refresh fundamentals: `python scripts/refresh_fundamentals.py`
+Create a valuation-coverage report: `python scripts/valuation_coverage.py`
+Evaluate news: `python scripts/evaluate_news.py`
+Enable optional LLM: configure `EQUIMASTER_LLM_PROVIDER` and provider
+settings in the process environment.
+Enable fusion shadow: set `EQUIMASTER_FUSION_SHADOW_VERSION` to a trusted,
+immutable local artifact version.
+
+Key documents: README.md, PROJECT_STATUS.md, RAG_BLUEPRINT.md,
+FUNDAMENTALS_GUIDE.md, UI_DESIGN.md, and VALIDATION_PROTOCOL.md.
+
+END OF REPORT

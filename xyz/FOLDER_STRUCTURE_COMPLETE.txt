@@ -1,0 +1,164 @@
+EQUIMASTER-AI: MAINTAINED PROJECT STRUCTURE
+Updated: 19 November 2026
+
+This inventory describes the actual source layout and runtime contracts. Runtime
+counts and dated validation belong in PROJECT_STATUS.md and reports/; line counts
+and artifact sizes are intentionally not hard-coded.
+
+ROOT
+  app.py                    Streamlit markets/screener/news entry point
+  config.py                 Configured 58 companies + NIFTY index, horizons and paths
+  daily_pipeline.py         Locked, bounded subprocess workflow with incremental status
+  run_pipeline.bat          Uses the project .venv Python
+  utils.py                  Cached quote and data access for the UI
+  README.md                 Setup, operating commands and supported environment
+  PROJECT_STATUS.md         Current verified evidence and research limitations
+  RELEASE_CHECKLIST.md      Release closure and administrator action
+  VALIDATION_PROTOCOL.md    Temporal splits, baselines, intervals and fusion protocol
+  FUNDAMENTALS_GUIDE.md     98 supported parameters, provenance and valuation methods
+  RAG_BLUEPRINT.md           News/LLM contracts and point-in-time restrictions
+  UI_DESIGN.md              Theme, interaction and browser verification
+  requirements*.txt        Core lockfile, direct dependencies and optional tools
+  .github/workflows/        Windows/Python 3.13 offline CI
+  .streamlit/config.toml    Application theme/settings
+
+SOURCE AREAS
+  components/               Shared navigation, theme, index quotes and market widgets
+  views/                    Home markets/screener/news presentation
+  pages/                    Stock analyzer and lazy research navigation
+  tabs/                     Overview, technicals, forecasts, news and fundamentals
+  src/                      Data, forecasting, artifacts, news, LLM and valuation logic
+  scripts/                  Supported CLIs and compatibility entry points
+  tests/                    Offline unit and Streamlit interaction regression suite
+  assets/                   CSS and shared visual assets
+  images/                   Existing project images and dated browser evidence
+  reports/release-20261119/  Dated validation copies and model inventory
+  xyz/                      Research paper (.txt/.docx), technical report and indexes
+  notebooks/                Exploratory work; not the canonical training entry point
+  webapp/                   Preserved separate prototype; not the release dashboard
+
+PERSISTENT RUNTIME ARTIFACTS (PRESERVED LOCALLY, EXCLUDED FROM SOURCE GIT TRACKING)
+  data/raw/                 Provider OHLCV; older histories are retained on refresh
+  data/processed/           Feature CSVs; unchanged active snapshots are retained
+  data/train_data/          Legacy/experimental sequence arrays and scalers
+  data/fundamentals/        Company snapshots, units, periods, sources and statements
+  data/fundamental_history.sqlite3  Point-in-time fundamentals archive
+  data/news_cache/          Short-lived current news caches
+  data/news_archive/        Timestamped observations for historical retrieval
+  data/benchmarks/          Sentiment benchmark provenance and annotation batches
+  data/evaluation/          Frozen-model, cost, quality, valuation and inference reports
+  models/active_<ticker>.json  Atomic pointer to an immutable active version
+  models/versions/<ticker>/<version>/
+      metadata.json         Features, dates, hashes, horizons, news gate and metrics
+      processed.csv         Exact immutable fitting/evaluation dataset snapshot
+      scaler.pkl            Matching training-fitted scaler
+      h1/h5/h22/h63.weights.h5  Direct multi-session model weights
+      backtest_h*.csv       Chronological test origins, target dates and prices
+  models/fundamental_ml/    Return-model artifacts only after maturity/validation gates
+  logs/                     Progress, pipeline state, readiness and provider failures
+
+The local release ZIP contains a clean source snapshot plus current bundles and
+selected runtime directories. RELEASE_MANIFEST.json records the exact source
+commit, model inventory, successful remote CI and per-file checksums. Python
+virtual environments, provider cookies and secrets are excluded.
+
+SOURCE FILE INDEX
+
+app.py
+components/__init__.py
+components/indices_ticker.py
+components/layout.py
+components/market_movers.py
+components/sensex_ticker.py
+config.py
+daily_pipeline.py
+pages/stock_analyzer.py
+scripts/archive_current_fundamentals.py
+scripts/audit_universe.py
+scripts/complete_all_training.py
+scripts/convert_models.py
+scripts/demo_ingest_run.py
+scripts/download_news_benchmark.py
+scripts/evaluate_cost_sensitivity.py
+scripts/evaluate_lstm.py
+scripts/evaluate_news.py
+scripts/evaluate_watchlist.py
+scripts/export_news_annotation_batch.py
+scripts/fetch_nifty.py
+scripts/fix_missing_scalers.py
+scripts/news_ingest.py
+scripts/package_release.py
+scripts/quick_run.py
+scripts/refresh_all_news.py
+scripts/refresh_fundamentals.py
+scripts/run_sequencer_train.py
+scripts/test_predict.py
+scripts/train_all_missing_models.py
+scripts/train_fundamental_model.py
+scripts/train_manager.py
+scripts/train_nifty.py
+scripts/ui_screenshot.py
+scripts/update_csv_dates.py
+scripts/update_csvs.py
+scripts/update_logs_timestamp.py
+scripts/validate_browser.py
+scripts/validate_runtime.py
+scripts/valuation_coverage.py
+src/artifacts.py
+src/company_names.py
+src/dashboard_data.py
+src/data_loader.py
+src/data_sequencer.py
+src/download_nifty500.py
+src/evaluate_predictions.py
+src/forecast.py
+src/fundamental_calculations.py
+src/fundamental_catalog.py
+src/fundamental_history.py
+src/fundamental_ml.py
+src/fundamental_sources.py
+src/fundamental_swot.py
+src/fundamental_valuation.py
+src/fundamentals.py
+src/fusion_artifacts.py
+src/fusion_dataset.py
+src/fusion_evaluation.py
+src/fusion_gate.py
+src/fusion_model.py
+src/fusion_split.py
+src/llm/__init__.py
+src/llm/evaluation.py
+src/llm/evidence.py
+src/llm/provider.py
+src/lstm_features.py
+src/market_context.py
+src/market_data.py
+src/news/__init__.py
+src/news/chunker.py
+src/news/embeddings.py
+src/news/evaluation.py
+src/news/fetcher.py
+src/news/ingest.py
+src/news/retriever.py
+src/news/sentiment.py
+src/panel_training.py
+src/pipeline_lock.py
+src/predict_model.py
+src/prediction_contract.py
+src/prediction_fusion.py
+src/preprocessor.py
+src/recommendation.py
+src/repair_models.py
+src/test_setup.py
+src/train_model.py
+src/training.py
+src/update_data.py
+tabs/__init__.py
+tabs/fundamentals.py
+tabs/lstm_model.py
+tabs/news_sentinel.py
+tabs/overview.py
+tabs/technicals.py
+utils.py
+views/__init__.py
+views/home_view.py

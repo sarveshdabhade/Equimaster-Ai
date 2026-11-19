@@ -1,0 +1,837 @@
+{
+  "as_of": "2026-11-19T15:53:21.068411+00:00",
+  "reference_latest": "2026-11-19",
+  "reference_age_calendar_days": 0,
+  "freshness_basis": "Provider NIFTY dates, not an independent NSE holiday calendar",
+  "requested": 59,
+  "passed": 59,
+  "failures": [],
+  "datasets": [
+    {
+      "ticker": "ADANIENT.NS",
+      "errors": [],
+      "raw": {
+        "rows": 1254,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      },
+      "processed": {
+        "rows": 1055,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      }
+    },
+    {
+      "ticker": "ADANIPORTS.NS",
+      "errors": [],
+      "raw": {
+        "rows": 1254,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      },
+      "processed": {
+        "rows": 1055,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      }
+    },
+    {
+      "ticker": "APOLLOHOSP.NS",
+      "errors": [],
+      "raw": {
+        "rows": 1254,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      },
+      "processed": {
+        "rows": 1055,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      }
+    },
+    {
+      "ticker": "ASIANPAINT.NS",
+      "errors": [],
+      "raw": {
+        "rows": 1254,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      },
+      "processed": {
+        "rows": 1055,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      }
+    },
+    {
+      "ticker": "AXISBANK.NS",
+      "errors": [],
+      "raw": {
+        "rows": 1254,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      },
+      "processed": {
+        "rows": 1055,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      }
+    },
+    {
+      "ticker": "BSE.NS",
+      "errors": [],
+      "raw": {
+        "rows": 1253,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      },
+      "processed": {
+        "rows": 1054,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      }
+    },
+    {
+      "ticker": "BAJAJ-AUTO.NS",
+      "errors": [],
+      "raw": {
+        "rows": 1254,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      },
+      "processed": {
+        "rows": 1055,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      }
+    },
+    {
+      "ticker": "BAJFINANCE.NS",
+      "errors": [],
+      "raw": {
+        "rows": 1254,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      },
+      "processed": {
+        "rows": 1055,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      }
+    },
+    {
+      "ticker": "BAJAJFINSV.NS",
+      "errors": [],
+      "raw": {
+        "rows": 1254,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      },
+      "processed": {
+        "rows": 1055,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      }
+    },
+    {
+      "ticker": "BEL.NS",
+      "errors": [],
+      "raw": {
+        "rows": 1253,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      },
+      "processed": {
+        "rows": 1054,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      }
+    },
+    {
+      "ticker": "BHARTIARTL.NS",
+      "errors": [],
+      "raw": {
+        "rows": 1254,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      },
+      "processed": {
+        "rows": 1055,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      }
+    },
+    {
+      "ticker": "CIPLA.NS",
+      "errors": [],
+      "raw": {
+        "rows": 1254,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      },
+      "processed": {
+        "rows": 1055,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      }
+    },
+    {
+      "ticker": "COALINDIA.NS",
+      "errors": [],
+      "raw": {
+        "rows": 1254,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      },
+      "processed": {
+        "rows": 1055,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      }
+    },
+    {
+      "ticker": "DRREDDY.NS",
+      "errors": [],
+      "raw": {
+        "rows": 1254,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      },
+      "processed": {
+        "rows": 1055,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      }
+    },
+    {
+      "ticker": "EICHERMOT.NS",
+      "errors": [],
+      "raw": {
+        "rows": 1254,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      },
+      "processed": {
+        "rows": 1055,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      }
+    },
+    {
+      "ticker": "ETERNAL.NS",
+      "errors": [],
+      "raw": {
+        "rows": 1253,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      },
+      "processed": {
+        "rows": 1054,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      }
+    },
+    {
+      "ticker": "GRASIM.NS",
+      "errors": [],
+      "raw": {
+        "rows": 1254,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      },
+      "processed": {
+        "rows": 1055,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      }
+    },
+    {
+      "ticker": "HCLTECH.NS",
+      "errors": [],
+      "raw": {
+        "rows": 1254,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      },
+      "processed": {
+        "rows": 1055,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      }
+    },
+    {
+      "ticker": "HDFCBANK.NS",
+      "errors": [],
+      "raw": {
+        "rows": 1254,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      },
+      "processed": {
+        "rows": 1055,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      }
+    },
+    {
+      "ticker": "HDFCLIFE.NS",
+      "errors": [],
+      "raw": {
+        "rows": 1254,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      },
+      "processed": {
+        "rows": 1055,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      }
+    },
+    {
+      "ticker": "HINDALCO.NS",
+      "errors": [],
+      "raw": {
+        "rows": 1254,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      },
+      "processed": {
+        "rows": 1055,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      }
+    },
+    {
+      "ticker": "HINDUNILVR.NS",
+      "errors": [],
+      "raw": {
+        "rows": 1254,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      },
+      "processed": {
+        "rows": 1055,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      }
+    },
+    {
+      "ticker": "ICICIBANK.NS",
+      "errors": [],
+      "raw": {
+        "rows": 1254,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      },
+      "processed": {
+        "rows": 1055,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      }
+    },
+    {
+      "ticker": "ITC.NS",
+      "errors": [],
+      "raw": {
+        "rows": 1254,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      },
+      "processed": {
+        "rows": 1055,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      }
+    },
+    {
+      "ticker": "INFY.NS",
+      "errors": [],
+      "raw": {
+        "rows": 1254,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      },
+      "processed": {
+        "rows": 1055,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      }
+    },
+    {
+      "ticker": "INDIGO.NS",
+      "errors": [],
+      "raw": {
+        "rows": 1253,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      },
+      "processed": {
+        "rows": 1054,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      }
+    },
+    {
+      "ticker": "JSWSTEEL.NS",
+      "errors": [],
+      "raw": {
+        "rows": 1254,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      },
+      "processed": {
+        "rows": 1055,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      }
+    },
+    {
+      "ticker": "JIOFIN.NS",
+      "errors": [],
+      "raw": {
+        "rows": 802,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      },
+      "processed": {
+        "rows": 603,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      }
+    },
+    {
+      "ticker": "KOTAKBANK.NS",
+      "errors": [],
+      "raw": {
+        "rows": 1254,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      },
+      "processed": {
+        "rows": 1055,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      }
+    },
+    {
+      "ticker": "LT.NS",
+      "errors": [],
+      "raw": {
+        "rows": 1254,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      },
+      "processed": {
+        "rows": 1055,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      }
+    },
+    {
+      "ticker": "M&M.NS",
+      "errors": [],
+      "raw": {
+        "rows": 1254,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      },
+      "processed": {
+        "rows": 1055,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      }
+    },
+    {
+      "ticker": "MARUTI.NS",
+      "errors": [],
+      "raw": {
+        "rows": 1254,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      },
+      "processed": {
+        "rows": 1055,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      }
+    },
+    {
+      "ticker": "MAXHEALTH.NS",
+      "errors": [],
+      "raw": {
+        "rows": 1253,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      },
+      "processed": {
+        "rows": 1054,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      }
+    },
+    {
+      "ticker": "NTPC.NS",
+      "errors": [],
+      "raw": {
+        "rows": 1254,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      },
+      "processed": {
+        "rows": 1055,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      }
+    },
+    {
+      "ticker": "NESTLEIND.NS",
+      "errors": [],
+      "raw": {
+        "rows": 1254,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      },
+      "processed": {
+        "rows": 1055,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      }
+    },
+    {
+      "ticker": "ONGC.NS",
+      "errors": [],
+      "raw": {
+        "rows": 1254,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      },
+      "processed": {
+        "rows": 1055,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      }
+    },
+    {
+      "ticker": "POWERGRID.NS",
+      "errors": [],
+      "raw": {
+        "rows": 1254,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      },
+      "processed": {
+        "rows": 1055,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      }
+    },
+    {
+      "ticker": "RELIANCE.NS",
+      "errors": [],
+      "raw": {
+        "rows": 1254,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      },
+      "processed": {
+        "rows": 1055,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      }
+    },
+    {
+      "ticker": "SBILIFE.NS",
+      "errors": [],
+      "raw": {
+        "rows": 1254,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      },
+      "processed": {
+        "rows": 1055,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      }
+    },
+    {
+      "ticker": "SHRIRAMFIN.NS",
+      "errors": [],
+      "raw": {
+        "rows": 1254,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      },
+      "processed": {
+        "rows": 1055,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      }
+    },
+    {
+      "ticker": "SBIN.NS",
+      "errors": [],
+      "raw": {
+        "rows": 1254,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      },
+      "processed": {
+        "rows": 1055,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      }
+    },
+    {
+      "ticker": "SUNPHARMA.NS",
+      "errors": [],
+      "raw": {
+        "rows": 1254,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      },
+      "processed": {
+        "rows": 1055,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      }
+    },
+    {
+      "ticker": "TCS.NS",
+      "errors": [],
+      "raw": {
+        "rows": 1254,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      },
+      "processed": {
+        "rows": 1055,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      }
+    },
+    {
+      "ticker": "TATACONSUM.NS",
+      "errors": [],
+      "raw": {
+        "rows": 1254,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      },
+      "processed": {
+        "rows": 1055,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      }
+    },
+    {
+      "ticker": "TMPV.NS",
+      "errors": [],
+      "raw": {
+        "rows": 1253,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      },
+      "processed": {
+        "rows": 1054,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      }
+    },
+    {
+      "ticker": "TATASTEEL.NS",
+      "errors": [],
+      "raw": {
+        "rows": 1254,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      },
+      "processed": {
+        "rows": 1055,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      }
+    },
+    {
+      "ticker": "TECHM.NS",
+      "errors": [],
+      "raw": {
+        "rows": 1254,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      },
+      "processed": {
+        "rows": 1055,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      }
+    },
+    {
+      "ticker": "TITAN.NS",
+      "errors": [],
+      "raw": {
+        "rows": 1254,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      },
+      "processed": {
+        "rows": 1055,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      }
+    },
+    {
+      "ticker": "TRENT.NS",
+      "errors": [],
+      "raw": {
+        "rows": 1253,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      },
+      "processed": {
+        "rows": 1054,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      }
+    },
+    {
+      "ticker": "ULTRACEMCO.NS",
+      "errors": [],
+      "raw": {
+        "rows": 1254,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      },
+      "processed": {
+        "rows": 1055,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      }
+    },
+    {
+      "ticker": "INDUSINDBK.NS",
+      "errors": [],
+      "raw": {
+        "rows": 1254,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      },
+      "processed": {
+        "rows": 1055,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      }
+    },
+    {
+      "ticker": "BANKBARODA.NS",
+      "errors": [],
+      "raw": {
+        "rows": 1254,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      },
+      "processed": {
+        "rows": 1055,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      }
+    },
+    {
+      "ticker": "PNB.NS",
+      "errors": [],
+      "raw": {
+        "rows": 1254,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      },
+      "processed": {
+        "rows": 1055,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      }
+    },
+    {
+      "ticker": "FEDERALBNK.NS",
+      "errors": [],
+      "raw": {
+        "rows": 1254,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      },
+      "processed": {
+        "rows": 1055,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      }
+    },
+    {
+      "ticker": "IDFCFIRSTB.NS",
+      "errors": [],
+      "raw": {
+        "rows": 1254,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      },
+      "processed": {
+        "rows": 1055,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      }
+    },
+    {
+      "ticker": "BANDHANBNK.NS",
+      "errors": [],
+      "raw": {
+        "rows": 1254,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      },
+      "processed": {
+        "rows": 1055,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      }
+    },
+    {
+      "ticker": "AUBANK.NS",
+      "errors": [],
+      "raw": {
+        "rows": 1254,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      },
+      "processed": {
+        "rows": 1055,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      }
+    },
+    {
+      "ticker": "LICI.NS",
+      "errors": [],
+      "raw": {
+        "rows": 1116,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      },
+      "processed": {
+        "rows": 917,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      }
+    },
+    {
+      "ticker": "NSEI",
+      "errors": [],
+      "raw": {
+        "rows": 1253,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      },
+      "processed": {
+        "rows": 1054,
+        "last_date": "2026-11-19",
+        "missing_recent_sessions": []
+      }
+    }
+  ]
+}

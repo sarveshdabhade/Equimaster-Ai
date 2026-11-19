@@ -1,0 +1,13 @@
+{
+  "as_of": "2026-11-19T15:54:26.380032+00:00",
+  "model": "HistGradientBoostingRegressor",
+  "target": "252-session stock return minus NIFTY 50 return",
+  "samples": 0,
+  "matured_months": 0,
+  "snapshots_archived": 122,
+  "archived_months": 2,
+  "feature_count": 40,
+  "validation_passed": false,
+  "ready": false,
+  "reason": "No 12-month labels have matured from archived point-in-time fundamentals yet."
+}

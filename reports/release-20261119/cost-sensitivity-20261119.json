@@ -1,0 +1,285 @@
+{
+  "as_of": "2026-11-19T15:53:13.688076+00:00",
+  "method": {
+    "dataset": "saved purged chronological test rows from active model bundles",
+    "trade_rule": "long only when the fixed forecast return exceeds the round-trip cost scenario",
+    "position_overlap": "one open holding period per ticker and horizon",
+    "weighting": "equal weight per trade; cash earns zero",
+    "scenarios_bps_round_trip": [
+      0,
+      10,
+      25,
+      50
+    ],
+    "limitations": [
+      "Models are frozen within their holdout; this is not a refitted walk-forward test.",
+      "Cost scenarios are sensitivity assumptions, not broker-specific taxes or fees.",
+      "No portfolio sizing, market impact, liquidity, dividends, or financing is modeled.",
+      "The rule is fixed and not optimized on this holdout; results do not establish a trading edge."
+    ]
+  },
+  "requested_tickers": [
+    "ADANIENT.NS",
+    "ADANIPORTS.NS",
+    "APOLLOHOSP.NS",
+    "ASIANPAINT.NS",
+    "AXISBANK.NS",
+    "BSE.NS",
+    "BAJAJ-AUTO.NS",
+    "BAJFINANCE.NS",
+    "BAJAJFINSV.NS",
+    "BEL.NS",
+    "BHARTIARTL.NS",
+    "CIPLA.NS",
+    "COALINDIA.NS",
+    "DRREDDY.NS",
+    "EICHERMOT.NS",
+    "ETERNAL.NS",
+    "GRASIM.NS",
+    "HCLTECH.NS",
+    "HDFCBANK.NS",
+    "HDFCLIFE.NS",
+    "HINDALCO.NS",
+    "HINDUNILVR.NS",
+    "ICICIBANK.NS",
+    "ITC.NS",
+    "INFY.NS",
+    "INDIGO.NS",
+    "JSWSTEEL.NS",
+    "JIOFIN.NS",
+    "KOTAKBANK.NS",
+    "LT.NS",
+    "M&M.NS",
+    "MARUTI.NS",
+    "MAXHEALTH.NS",
+    "NTPC.NS",
+    "NESTLEIND.NS",
+    "ONGC.NS",
+    "POWERGRID.NS",
+    "RELIANCE.NS",
+    "SBILIFE.NS",
+    "SHRIRAMFIN.NS",
+    "SBIN.NS",
+    "SUNPHARMA.NS",
+    "TCS.NS",
+    "TATACONSUM.NS",
+    "TMPV.NS",
+    "TATASTEEL.NS",
+    "TECHM.NS",
+    "TITAN.NS",
+    "TRENT.NS",
+    "ULTRACEMCO.NS",
+    "INDUSINDBK.NS",
+    "BANKBARODA.NS",
+    "PNB.NS",
+    "FEDERALBNK.NS",
+    "IDFCFIRSTB.NS",
+    "BANDHANBNK.NS",
+    "AUBANK.NS",
+    "LICI.NS",
+    "NSEI"
+  ],
+  "horizons": {
+    "1": {
+      "models": 59,
+      "decision_rows": 11624,
+      "scenarios": [
+        {
+          "round_trip_cost_bps": 0,
+          "opportunities": 11624,
+          "trades": 4093,
+          "participation_pct": 35.21163110805231,
+          "mean_predicted_return_pct": 0.08200757818438141,
+          "mean_realized_net_return_pct": 0.0043111953313337776,
+          "median_realized_net_return_pct": -0.04319654427645814,
+          "profitable_trade_pct": 48.399706816516,
+          "cash_baseline_return_pct": 0.0
+        },
+        {
+          "round_trip_cost_bps": 10,
+          "opportunities": 11624,
+          "trades": 916,
+          "participation_pct": 7.880247763248452,
+          "mean_predicted_return_pct": 0.22765127158981888,
+          "mean_realized_net_return_pct": -0.06572280242641286,
+          "median_realized_net_return_pct": -0.17749372276040778,
+          "profitable_trade_pct": 45.414847161572055,
+          "cash_baseline_return_pct": 0.0
+        },
+        {
+          "round_trip_cost_bps": 25,
+          "opportunities": 11624,
+          "trades": 319,
+          "participation_pct": 2.744322092222987,
+          "mean_predicted_return_pct": 0.39606213398789036,
+          "mean_realized_net_return_pct": -0.312082791246415,
+          "median_realized_net_return_pct": -0.40808640449613837,
+          "profitable_trade_pct": 41.37931034482759,
+          "cash_baseline_return_pct": 0.0
+        },
+        {
+          "round_trip_cost_bps": 50,
+          "opportunities": 11624,
+          "trades": 49,
+          "participation_pct": 0.42154163799036476,
+          "mean_predicted_return_pct": 0.5702185809600242,
+          "mean_realized_net_return_pct": -0.6423993630304232,
+          "median_realized_net_return_pct": -0.7839353302462323,
+          "profitable_trade_pct": 38.775510204081634,
+          "cash_baseline_return_pct": 0.0
+        }
+      ]
+    },
+    "5": {
+      "models": 59,
+      "decision_rows": 2278,
+      "scenarios": [
+        {
+          "round_trip_cost_bps": 0,
+          "opportunities": 2278,
+          "trades": 1022,
+          "participation_pct": 44.863915715539946,
+          "mean_predicted_return_pct": 0.23322750781898138,
+          "mean_realized_net_return_pct": 0.20538951452251944,
+          "median_realized_net_return_pct": -0.14831309137099402,
+          "profitable_trade_pct": 48.336594911937375,
+          "cash_baseline_return_pct": 0.0
+        },
+        {
+          "round_trip_cost_bps": 10,
+          "opportunities": 2278,
+          "trades": 624,
+          "participation_pct": 27.39244951712028,
+          "mean_predicted_return_pct": 0.3514481270292732,
+          "mean_realized_net_return_pct": 0.11443933575935146,
+          "median_realized_net_return_pct": -0.26762195020063595,
+          "profitable_trade_pct": 46.31410256410257,
+          "cash_baseline_return_pct": 0.0
+        },
+        {
+          "round_trip_cost_bps": 25,
+          "opportunities": 2278,
+          "trades": 337,
+          "participation_pct": 14.79367866549605,
+          "mean_predicted_return_pct": 0.5116266353605784,
+          "mean_realized_net_return_pct": 0.10973907388645658,
+          "median_realized_net_return_pct": -0.4414375367800481,
+          "profitable_trade_pct": 45.40059347181009,
+          "cash_baseline_return_pct": 0.0
+        },
+        {
+          "round_trip_cost_bps": 50,
+          "opportunities": 2278,
+          "trades": 106,
+          "participation_pct": 4.653204565408253,
+          "mean_predicted_return_pct": 0.8414350481124457,
+          "mean_realized_net_return_pct": 0.27015674474655094,
+          "median_realized_net_return_pct": -0.42211608259796707,
+          "profitable_trade_pct": 46.22641509433962,
+          "cash_baseline_return_pct": 0.0
+        }
+      ]
+    },
+    "22": {
+      "models": 59,
+      "decision_rows": 524,
+      "scenarios": [
+        {
+          "round_trip_cost_bps": 0,
+          "opportunities": 524,
+          "trades": 338,
+          "participation_pct": 64.50381679389314,
+          "mean_predicted_return_pct": 0.9251214767724909,
+          "mean_realized_net_return_pct": 0.4838044269453145,
+          "median_realized_net_return_pct": 0.09252464615663314,
+          "profitable_trade_pct": 50.29585798816568,
+          "cash_baseline_return_pct": 0.0
+        },
+        {
+          "round_trip_cost_bps": 10,
+          "opportunities": 524,
+          "trades": 314,
+          "participation_pct": 59.9236641221374,
+          "mean_predicted_return_pct": 0.9919282593831515,
+          "mean_realized_net_return_pct": 0.24773063029699563,
+          "median_realized_net_return_pct": -0.19985451220912434,
+          "profitable_trade_pct": 49.36305732484077,
+          "cash_baseline_return_pct": 0.0
+        },
+        {
+          "round_trip_cost_bps": 25,
+          "opportunities": 524,
+          "trades": 269,
+          "participation_pct": 51.33587786259542,
+          "mean_predicted_return_pct": 1.1303595408280112,
+          "mean_realized_net_return_pct": 0.42264386669759424,
+          "median_realized_net_return_pct": 0.20017298188880783,
+          "profitable_trade_pct": 50.92936802973978,
+          "cash_baseline_return_pct": 0.0
+        },
+        {
+          "round_trip_cost_bps": 50,
+          "opportunities": 524,
+          "trades": 180,
+          "participation_pct": 34.35114503816794,
+          "mean_predicted_return_pct": 1.500552523946187,
+          "mean_realized_net_return_pct": -0.0703976753540433,
+          "median_realized_net_return_pct": 0.3488976303329343,
+          "profitable_trade_pct": 51.11111111111111,
+          "cash_baseline_return_pct": 0.0
+        }
+      ]
+    },
+    "63": {
+      "models": 59,
+      "decision_rows": 174,
+      "scenarios": [
+        {
+          "round_trip_cost_bps": 0,
+          "opportunities": 174,
+          "trades": 103,
+          "participation_pct": 59.195402298850574,
+          "mean_predicted_return_pct": 3.3360007761207275,
+          "mean_realized_net_return_pct": 0.9129393305875805,
+          "median_realized_net_return_pct": -0.33850455746625707,
+          "profitable_trade_pct": 49.51456310679612,
+          "cash_baseline_return_pct": 0.0
+        },
+        {
+          "round_trip_cost_bps": 10,
+          "opportunities": 174,
+          "trades": 99,
+          "participation_pct": 56.89655172413793,
+          "mean_predicted_return_pct": 3.469249236095316,
+          "mean_realized_net_return_pct": 0.23279588243677551,
+          "median_realized_net_return_pct": -0.5560530679933894,
+          "profitable_trade_pct": 47.474747474747474,
+          "cash_baseline_return_pct": 0.0
+        },
+        {
+          "round_trip_cost_bps": 25,
+          "opportunities": 174,
+          "trades": 97,
+          "participation_pct": 55.747126436781606,
+          "mean_predicted_return_pct": 3.5369187987766386,
+          "mean_realized_net_return_pct": -0.2789155722128065,
+          "median_realized_net_return_pct": -0.839672636798455,
+          "profitable_trade_pct": 44.329896907216494,
+          "cash_baseline_return_pct": 0.0
+        },
+        {
+          "round_trip_cost_bps": 50,
+          "opportunities": 174,
+          "trades": 93,
+          "participation_pct": 53.44827586206897,
+          "mean_predicted_return_pct": 3.676960135625111,
+          "mean_realized_net_return_pct": -0.7453967706483913,
+          "median_realized_net_return_pct": -1.089672636798455,
+          "profitable_trade_pct": 44.086021505376344,
+          "cash_baseline_return_pct": 0.0
+        }
+      ]
+    }
+  },
+  "failures": []
+}

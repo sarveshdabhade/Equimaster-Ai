@@ -1,0 +1,777 @@
+CURRENT RELEASE REVIEW - 19 November 2026
+
+This addendum supersedes earlier coverage and test counts. The historical report
+below retains its original dated research measurements and implementation context.
+Current application evidence: 168 clean-environment tests; 59 current model
+bundles; 236 finite inference checks; 58 company valuation scenarios; 10 browser
+checks; and a successful registered daily pipeline run. Data ends 2026-11-19.
+All four horizons are active, including JIOFIN.NS and MAXHEALTH.NS. No news gate was bypassed.
+
+CURRENT FROZEN-MODEL EVALUATION
+
+| Horizon | Models | Direction accuracy | LSTM MAPE | Persistence MAPE | MAE wins | Terminal interval coverage | Path coverage |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| Day (1) | 59 | 27.25% | 1.299% | 1.296% | 13/59 | 77.80% | 77.80% |
+| Week (5) | 59 | 35.18% | 2.972% | 2.960% | 19/59 | 76.09% | 77.21% |
+| Month (22) | 59 | 38.34% | 6.653% | 6.565% | 16/59 | 59.94% | 68.52% |
+| Quarter (63) | 59 | 39.08% | 9.800% | 9.129% | 18/59 | 37.79% | 52.66% |
+
+Terminal and path coverage are distinct. The nominal interval target is 90%.
+Software validation does not establish a trading edge. Refitted walk-forward tests,
+independent Indian-market news labels, independent interval calibration, historical
+fusion validation and matured 252-session fundamentals labels remain research work.
+One administrator task remains: disable the inaccessible legacy daily schedule;
+the shared lock already prevents concurrent pipeline execution.
+
+Detailed methods, costs, provenance and limitations: PROJECT_STATUS.md and
+reports/release-20261119/. The final local runtime archive includes exact-source CI
+provenance and per-file checksums in RELEASE_MANIFEST.json.
+
+END CURRENT RELEASE REVIEW
+
+HISTORICAL STUDY - 26 OCTOBER 2026 CHECKPOINT
+
+The study below describes the October checkpoint. References to current results in its body belong to that historical study; the release review above supersedes its coverage and verification counts.
+
+================================================================================
+EQUIMASTER-AI: POINT-IN-TIME NEWS RETRIEVAL AND MULTI-HORIZON LSTM FORECASTING
+FOR FINANCIAL RESEARCH
+================================================================================
+
+ABSTRACT
+
+    This paper describes the current Equimaster-AI research platform, which
+    combines per-ticker Long Short-Term Memory (LSTM) price forecasting with a
+    timestamp-aware financial-news retrieval and sentiment pipeline. The
+    platform supports Indian equities and direct forecasts at Day (1 session),
+    Week (5), Month (22), and Quarter (63) horizons. Quarter is approximately
+    three calendar months of trading sessions. Historical
+    market models use 60-session input
+    windows, fit-only feature scaling, chronological calibration and test
+    periods, and immutable versioned artifacts. News is retrieved from
+    timestamped articles, scored by a keyword method by default, and optionally
+    scored by FinBERT when explicitly enabled. An evidence-grounded language
+    model synthesis is an optional capability; it is not presented as a
+    validated price forecaster.
+
+    The current saved evaluation contains 228 ticker-horizon results across
+    57 active models; two of the 59 configured stock/index models have no
+    bundle because the fresh-news training requirement was not met. Mean MAPE
+    is 1.286%, 2.873%, 6.555%, and 10.054% at Day, Week, Month, and Quarter
+    (1, 5, 22, and 63 sessions); persistence MAPE is 1.281%, 2.854%, 6.382%,
+    and 9.385%. LSTM MAE is lower than persistence for 16/57, 20/57, 15/57,
+    and 18/57 tickers at those horizons. Empirical interval coverage is
+    76.40%, 76.05%, 69.03%, and 53.76% against a 90% nominal target. These
+    observations do not establish a profitable trading strategy or show that news retrieval increases price
+    accuracy. The historical price backtests use one fitted model per ticker
+    and horizon with rolling observed input windows; they are not a repeated
+    walk-forward retraining study. A separate expert-labeled financial
+    sentence benchmark measures sentiment classification, not stock-return
+    prediction. This paper reports the evidence available in the repository
+    and distinguishes measured results from future research proposals.
+
+    Index Terms: financial forecasting, LSTM, retrieval-augmented generation,
+    RAG, financial sentiment, point-in-time data, time-series evaluation,
+    Indian equities.
+
+================================================================================
+1. INTRODUCTION
+================================================================================
+
+    1.1 Background
+
+    Financial prices are noisy, non-stationary, and affected by market-wide,
+    sector-specific, company-specific, and event-driven information. A
+    sequence model can learn temporal patterns in historical features, while
+    news retrieval can expose company-relevant textual evidence to an analyst.
+    These data sources have different roles: an LSTM produces a numerical
+    forecast; retrieval locates supporting documents; a sentiment model
+    estimates the polarity of text. Retrieval or fluent language generation
+    does not by itself establish that a future price move is predictable.
+
+    Equimaster-AI is a Streamlit-based research application for Indian listed
+    equities. It joins market data, technical analysis, company fundamentals,
+    news evidence, price forecasts, and model evaluation in one application.
+    This paper focuses on the implemented LSTM and news/RAG components and
+    their evaluation, rather than treating the application interface as
+    evidence of predictive performance.
+
+    1.2 Research questions
+
+    This implementation and its currently available artifacts support the
+    following questions:
+
+    RQ1: What held-out price and directional metrics are measured for the
+         current per-ticker LSTM models at four trading-session horizons?
+
+    RQ2: How does the LSTM's price error compare with a no-change persistence
+         price forecast?
+
+    RQ3: What has been measured about the news sentiment component, and does
+         the available evidence establish an improvement in stock-price
+         forecasting from combining news with the LSTM?
+
+    RQ4: Which evaluation and data-collection steps are needed before a
+         stronger claim about directional accuracy or trading utility can be
+         made?
+
+    1.3 Contributions and scope
+
+    This paper contributes:
+
+    (1) An implementation-grounded account of the current forecast contract:
+        prediction after the latest available close, with future-close targets
+        Day (1), Week (5), Month (22), or Quarter (63) trading sessions ahead.
+        Quarter is approximately three calendar months.
+
+    (2) A description of per-ticker, per-horizon residual LSTMs, chronological
+        fitting and testing, persisted backtest rows, and the persistence
+        baseline.
+
+    (3) A description of the timestamp-aware news retrieval and sentiment
+        path, including its default keyword scorer, optional FinBERT scorer,
+        and optional evidence-grounded language-model synthesis.
+
+    (4) A report of the saved 57-ticker model results and the independently
+        labeled sentence-level sentiment benchmark, with their limitations.
+
+    (5) A research protocol for testing whether sentiment/RAG actually adds
+        out-of-sample directional information.
+
+    The work does not claim a production trading edge, calibrated confidence,
+    statistically significant excess return, or a measured gain from RAG
+    fusion. No such conclusion follows from the tests or metrics currently
+    saved in the repository.
+
+    1.4 Paper organization
+
+    Section 2 summarizes relevant concepts. Section 3 describes data,
+    forecasting, news retrieval, and fusion. Section 4 describes the software
+    and reproducibility design. Section 5 reports available results. Section
+    6 discusses interpretation and limitations. Section 7 proposes an
+    accuracy-focused research plan. Section 8 concludes.
+
+================================================================================
+2. RELATED CONCEPTS
+================================================================================
+
+    2.1 Recurrent sequence models
+
+    Long Short-Term Memory networks were introduced to address optimization
+    difficulties associated with long dependencies in recurrent neural
+    networks [1]. LSTMs are one possible model family for financial sequences;
+    their use does not imply that prices contain stable, exploitable
+    dependencies. Financial forecast evaluation therefore needs chronological
+    holdouts and simple baselines in addition to model-fitting loss.
+
+    2.2 Financial language and sentiment
+
+    FinBERT adapts BERT-style language modeling to financial text [2].
+    Sentiment classification and return forecasting are distinct tasks:
+    correct identification of positive or negative language does not prove
+    that the text predicts the sign or magnitude of a stock's future return.
+    Class prevalence, event timing, market expectations, and the relationship
+    between an article and a specific ticker all affect the usefulness of a
+    sentiment feature.
+
+    2.3 Retrieval-augmented systems
+
+    Retrieval-augmented generation combines retrieved information with
+    language-model generation [3]. For financial research, retrieval can
+    provide traceable evidence and reduce reliance on unsupported recall.
+    However, retrieval relevance, factual grounding, sentiment accuracy, and
+    return-prediction value must each be evaluated separately. High retrieval
+    relevance is not a forecast-accuracy metric.
+
+    2.4 Time-aware evaluation
+
+    Random train/test partitioning is generally unsuitable for forecasting
+    when it allows future observations to influence earlier predictions.
+    Chronological separation, purging overlapping multi-step targets, fitting
+    preprocessing only on training rows, and point-in-time availability of
+    news help reduce leakage. A fixed-model test and a repeated walk-forward
+    simulation answer different questions; results from one should not be
+    described as results from the other [4].
+
+================================================================================
+3. METHODS
+================================================================================
+
+    3.1 Forecast task and universe
+
+    The canonical forecast task is an after-close prediction from the latest
+    available close, with a future closing-price target at horizon h in
+    {1, 5, 22, 63} trading sessions, displayed as Day, Week, Month, and
+    Quarter. Quarter is approximately three calendar months. A ticker's latest close is the forecast
+    origin. Calendar days, weekends, and market holidays are not counted as
+    trading sessions.
+
+    The current saved watchlist evaluation covers 57 ticker datasets, with
+    one separately trained model for each available ticker-horizon pair.
+    Therefore, the implementation is not one pooled LSTM trained jointly
+    across all stocks. The reported evaluation has 228 ticker-horizon rows.
+    Test-sample totals vary by horizon because the target horizon and available
+    history affect the number of valid samples.
+
+    3.2 Market data and feature preparation
+
+    The application downloads and processes daily market histories using the
+    repository's data pipeline. The canonical trainer loads each ticker's
+    processed CSV and uses its available numeric columns as model features.
+    The exact feature list is recorded with each immutable model bundle;
+    consequently, this paper does not assume that every ticker has an
+    identical fixed-width set of 14 features.
+
+    Model inputs are sequences of 60 consecutive rows. The forecast target is
+    the processed Close column. Duplicate dates and non-finite feature values
+    are rejected by the trainer. A Min-Max scaler is fit on the fitting
+    portion only and then applied to the later calibration and test rows.
+    This prevents the scaler from learning test-period extrema.
+
+    3.3 Chronological training and target separation
+
+    The trainer chooses a chronological test boundary using the available
+    history and a default 0.8 training fraction after the initial lookback.
+    It creates an earlier calibration boundary within the pre-test history.
+    The fitting, calibration, and test data are not randomly shuffled.
+    Multi-session labels crossing split boundaries are excluded by the
+    sequence-splitting routine, so training target dates do not overlap the
+    held-out test target period.
+
+    The calibration segment is used for validation loss and early stopping.
+    The test segment is used for the reported final test metrics. Because
+    calibration also selects early-stopping weights, the residual-based
+    forecast intervals are empirical validation intervals and are not
+    claimed to have guaranteed conformal coverage.
+
+    Each training run records data and model hashes, feature order, dates,
+    training parameters, dependency versions, metrics, and backtest rows in
+    an immutable versioned bundle. An atomic active-model pointer selects a
+    complete model/scaler/snapshot bundle.
+
+    3.4 LSTM architecture and objective
+
+    The current canonical model uses a 60-step input sequence and two
+    recurrent layers of 50 LSTM units each. The first LSTM returns its full
+    sequence; the second returns its final representation. Dropout of 0.2 is
+    used after each LSTM layer, followed by a 25-unit dense layer and an
+    output layer with h values for a direct horizon-h forecast.
+
+    For the canonical close-forecast model, the output is a residual
+    correction added to the last observed feature row's close value. The
+    model is compiled with the Adam optimizer and mean-squared error loss.
+    Training uses batch size 32, a fixed random seed, and early stopping on
+    calibration loss with patience 3 and restoration of the best weights.
+    Epoch count is configurable; these details are recorded in model
+    metadata. The current objective is a price-regression objective, not a
+    classification loss optimized directly for up/down accuracy.
+
+    For a horizon h, the network produces the next h closing values and the
+    saved point forecast and primary evaluation use the final value at that
+    horizon. Intermediate predicted values are not treated as independent
+    model forecasts at every requested horizon.
+
+    3.5 Price and direction metrics
+
+    Given actual target price y_i and predicted price yhat_i:
+
+        MAE  = mean_i |yhat_i - y_i|
+        RMSE = sqrt(mean_i (yhat_i - y_i)^2)
+        MAPE = 100 * mean_i (|yhat_i - y_i| / |y_i|)
+
+    MAPE is a percentage price error; it is not a percentage of correct
+    predictions and must not be converted to "accuracy" by subtracting it
+    from 100%.
+
+    Given origin close p_i, actual target close y_i, and predicted target
+    close yhat_i, the reported directional hit rate compares the signs of:
+
+        actual_return_i    = (y_i - p_i) / p_i
+        predicted_return_i = (yhat_i - p_i) / p_i
+
+    The reported directional accuracy is the mean of matching direction
+    indicators. The existing scoring helper treats an exactly zero predicted
+    or actual return specially: a zero prediction is counted correct only
+    when the actual return is also exactly zero. As a result, the
+    no-change-price forecast is a meaningful MAE/RMSE/MAPE baseline, but its
+    stored directional score is not a useful majority-direction classifier
+    baseline. Future direction studies should report a separately defined
+    up/down classifier baseline and specify how zero-return and neutral cases
+    are handled.
+
+    3.6 Persistence price baseline
+
+    The persistence forecast sets the future price equal to the current close:
+
+        yhat_persistence_i = p_i
+
+    LSTM and persistence regression errors are compared on the same held-out
+    targets. The "models beating persistence MAE" count in Section 5 counts
+    ticker-level comparisons where the LSTM MAE is strictly lower than that
+    ticker's persistence MAE. It is not a count of profitable models and
+    does not adjust for transaction costs, risk, or statistical uncertainty.
+
+    3.7 News collection, retrieval, and scoring
+
+    News sources are selected and validated by the news-fetching pipeline.
+    Article records can include title, summary, content, source, URL,
+    publication time, observation time, and ticker metadata. Runtime news is
+    cached. The configured recent-news window is two days and the maximum
+    article count is eight by default.
+
+    The NewsRetriever chunks articles and ranks chunks for a query. It uses
+    an embedding-backed retrieval path when the embedding model/index is
+    available; otherwise it uses TF-IDF with unigrams and bigrams and cosine
+    similarity. It returns up to five chunks by default, subject to the
+    requested article limit. The code supports named queries such as recent
+    sentiment, negative catalysts, bullish momentum, and risk events.
+
+    For point-in-time queries, articles must have a parseable publication time
+    no later than the forecast origin. The retriever also requires observation
+    time when an as-of cutoff is provided and rejects articles observed after
+    that cutoff. The fusion-dataset contract independently validates that
+    both publication and observation timestamps are no later than the
+    forecast origin. These controls are necessary to avoid using information
+    that was not available when the prediction would have been made.
+
+    The default sentiment method is a keyword scorer. It counts configured
+    positive and negative terms and scales the difference by text length.
+    FinBERT scoring is optional and requires explicit environment
+    configuration; it is not the default scorer. Retrieved-text scores are
+    adjusted by relevance, aggregated with source/relevance weights, and
+    exposed with article evidence. Confidence, impact, and source weights
+    are heuristic quantities, not calibrated probabilities.
+
+    3.8 LLM synthesis and forecast/news fusion
+
+    An optional language-model provider can synthesize retrieved evidence.
+    Fusion records identify the LLM and LSTM versions and link generated
+    claims to evidence identifiers. The validation contract rejects missing
+    or post-origin evidence and invalid citations. These are data-contract
+    safeguards; they do not demonstrate predictive value.
+
+    The shared forecast/news signal formula is:
+
+        forecast_signal(r) = clip(tanh(10 r), -1, 1)
+        combined_signal    = 0.6 forecast_signal(r) + 0.4 sentiment
+
+    where r is the LSTM predicted return from the origin close and sentiment
+    lies in [-1, 1]. This is a fixed rule, not a learned fusion model. The
+    formula is used for displayed forecast/news fusion and evaluation code.
+    The current saved per-ticker LSTM backtests evaluate price forecasts
+    without mixing in today's news. Measuring historical news fusion requires
+    timestamped articles archived as they were available at each historical
+    forecast origin. The repository contains point-in-time fusion schemas
+    and fixed-rule baseline evaluation code, but the saved watchlist price
+    evaluation is not an LSTM-plus-RAG return-accuracy experiment.
+
+    3.9 News-sentiment benchmark
+
+    The repository includes an evaluation on 2,264 expert-labeled English
+    financial sentences from the FinancialPhraseBank all-agree subset. This
+    evaluates sentence-level positive/neutral/negative classification. It
+    does not evaluate article retrieval quality on real-time Indian-market
+    data, next-session stock direction, or portfolio returns. Benchmark
+    provenance, source revision, license, and archive checksum are recorded
+    in the repository.
+
+================================================================================
+4. IMPLEMENTATION AND REPRODUCIBILITY
+================================================================================
+
+    4.1 Components
+
+    The relevant implementation surfaces are:
+
+    • src/training.py: canonical per-ticker chronological model trainer,
+      model evaluation, versioned bundles, and backtest exports.
+    • src/train_model.py: LSTM model architecture and objective.
+    • src/evaluate_predictions.py: regression and directional metrics.
+    • src/prediction_contract.py: signal and fusion contract.
+    • src/news/fetcher.py: article collection, timestamp normalization, and
+      archived article loading.
+    • src/news/retriever.py: timestamp-aware chunk retrieval with embedding
+      and TF-IDF paths.
+    • src/news/sentiment.py: default keyword scoring and optional FinBERT.
+    • src/fusion_dataset.py and src/fusion_evaluation.py: point-in-time
+      fusion data validation and fixed-rule baseline evaluation.
+    • scripts/evaluate_lstm.py and scripts/evaluate_watchlist.py: held-out
+      model evaluation entrypoints.
+
+    4.2 Commands to reproduce evaluations
+
+    Evaluate one saved model and its held-out backtest:
+
+        python scripts/evaluate_lstm.py --ticker TCS.NS --horizon 1
+
+    Evaluate all available tickers and four horizons, writing results to a
+    separate file so the current summary is preserved:
+
+        python scripts/evaluate_watchlist.py --horizons 1,5,22,63 --output data/evaluation/quarter63_research_run.json
+
+    Evaluate the configured labeled-news fixture:
+
+        python scripts/evaluate_news.py
+
+    Run the offline test suite:
+
+        python -m pytest tests -q
+
+    Reproduction requires the matching processed data and versioned model
+    bundles. Model bundles record the fitted data snapshot and hashes.
+    The evaluation command should fail when a requested verified artifact is
+    unavailable rather than treating a legacy model as if it had a verified
+    chronological test contract.
+
+    4.3 Scope of software tests
+
+    Software tests verify contracts, parsing, timestamp cutoffs, model
+    artifacts, dashboard behavior, and metric computation. Passing software
+    tests is evidence of implementation behavior; it is not evidence that a
+    forecast is accurate or profitable.
+
+================================================================================
+5. EXPERIMENTAL RESULTS
+================================================================================
+
+    5.1 Evaluation snapshot
+
+    The current figures are saved in data/evaluation/current-universe-20261026.json.
+    They cover 57 active models at each horizon; Jio Financial Services and
+    Max Healthcare are missing bundles and are excluded. Means are unweighted
+    across tickers, not pooled across all
+    prediction rows. Sample totals are shown for transparency; individual
+    ticker histories have different lengths.
+
+    Period    Ticker pairs   Test samples   Mean directional   Mean MAPE
+    (sessions)                             accuracy           (%)
+    -------------------------------------------------------------------
+    Day (1)      57            11,144         30.13%            1.286
+    Week (5)     57            10,916         34.12%            2.873
+    Month (22)   57             9,947         36.30%            6.555
+    Quarter (63) 57             7,610         41.21%           10.054
+
+    Period    Tickers with lower LSTM MAE than persistence   Mean test
+    (sessions)                                               interval
+                                                              coverage
+    ------------------------------------------------------------------
+    Day (1)                     16 / 57                       76.40%
+    Week (5)                    20 / 57                       76.05%
+    Month (22)                  15 / 57                       69.03%
+    Quarter (63)                18 / 57                       53.76%
+
+    There are 39,617 test prediction rows summed across horizons. The
+    horizon-specific evaluations are not independent samples because
+    multiple horizons use overlapping market histories and target periods.
+    The aggregate counts and means are descriptive; no significance test or
+    confidence interval for the difference between methods is claimed.
+
+    5.2 Interpretation of price and directional metrics
+
+    The Day mean MAPE of 1.286% describes average absolute percentage
+    price error under the stated test protocol. It does not mean that 98.74%
+    of predictions are "accurate." The corresponding mean directional
+    accuracy is 30.13%. Directional accuracy is below 50% at every horizon
+    under the saved metric definition.
+
+    The persistence comparison reinforces that the LSTM does not uniformly
+    improve price error. The LSTM has lower MAE for fewer than half of the
+    evaluated tickers at every horizon. These results justify per-ticker and per-horizon model
+    selection, but that selection itself must be based on validation data,
+    not repeated reuse of the final test period.
+
+    The reported 90% nominal interval target is not reached in the saved
+    average test coverage at any listed horizon. Coverage is particularly low
+    at the Quarter (63 sessions, approximately three months). These intervals are based on validation residual
+    quantiles, and calibration-period early stopping means they should be
+    described as empirical intervals, not guaranteed coverage.
+
+    5.3 Frozen-holdout cost sensitivity
+
+    A fixed long-only rule was applied to non-overlapping holdout forecasts:
+    enter when predicted return exceeds an illustrative round-trip cost, and
+    otherwise remain in cash. At 10 basis points, mean realized net return
+    per trade was -0.142% for Day (647 trades), +0.034% for Week (624),
+    -0.594% for Month (260), and -1.794% for Quarter (111). Trades are
+    equally weighted; cash return is zero. The small positive Week mean has
+    no uncertainty estimate and does not establish an economic edge. The
+    scenarios omit broker-specific taxes, slippage, liquidity, financing,
+    portfolio sizing, and concurrent capital allocation. Models were frozen
+    within their test periods; this is not a refitted walk-forward study.
+    The complete 0/10/25/50 basis-point report is saved in
+    data/evaluation/cost-sensitivity-20261026.json.
+
+    5.4 News classification benchmark
+
+    On 2,264 expert-labeled FinancialPhraseBank sentences, the current
+    keyword-based evaluation reports:
+
+    Metric                                  Result
+    ------------------------------------------------
+    Accuracy                                76.19%
+    Majority-class accuracy baseline       61.44%
+    Balanced accuracy                       60.16%
+    Macro F1                                0.626
+    Negative-class recall                   27.06%
+    Heuristic-confidence ECE                0.240
+
+    Class counts are 1,391 neutral, 570 positive, and 303 negative. The
+    accuracy exceeds the majority-class baseline, but balanced accuracy and
+    negative recall reveal an important weakness on minority classes. The
+    confidence estimate is heuristic and is not well calibrated by this
+    measurement. These are text-label results; they must not be presented as
+    price-direction accuracy.
+
+    Retrieval Recall@1 of 1.0 was observed only on two explicitly synthetic
+    smoke queries. This is a functionality check, not a representative
+    real-world retrieval benchmark. No retrieved-news experiment in the
+    saved model summary establishes an increase in stock forecast accuracy.
+
+    5.4 Fusion evidence
+
+    The repository implements a point-in-time fusion record contract and
+    fixed-rule evaluation functions for LSTM, news sentiment, and optional
+    LLM stance comparisons. A valid fusion dataset requires timestamped
+    evidence available by each forecast origin. The current saved watchlist
+    results do not include that historical evidence aligned to every market
+    test row. Accordingly, this paper reports no measured LSTM-plus-RAG
+    directional-accuracy gain.
+
+================================================================================
+6. DISCUSSION
+================================================================================
+
+    6.1 What the results support
+
+    The evidence supports the following limited conclusions:
+
+    (a) The application can train and evaluate chronological, per-ticker
+        multi-horizon LSTM artifacts and persist reproducible evaluation
+        records.
+
+    (b) The tested models have 30.13% and 34.12% mean directional accuracy
+        at one and five sessions under the saved metric; longer-horizon
+        averages are 36.30% and 41.21%.
+
+    (c) The LSTM's price-error performance is mixed against a no-change
+        persistence baseline and differs by ticker and horizon.
+
+    (d) The keyword news scorer achieves 76.19% accuracy on one
+        sentence-level benchmark, but negative-class recall remains 27.06%
+        and confidence calibration remains weak.
+
+    (e) The software supports evidence retrieval, timestamp checks, and
+        optional language-model synthesis, but these system capabilities
+        alone do not show that retrieved news improves future-price forecasts.
+
+    6.2 Important limitations
+
+    (a) Fixed fitted models: Historical backtests roll observed prior input
+        windows through a fixed fitted model. They do not repeatedly refit
+        during the test period. Performance under recurring retraining and
+        realistic model deployment may differ.
+
+    (b) Limited market history and regime dependence: Each ticker has a
+        finite historical sample. Market regimes, corporate actions,
+        volatility, liquidity, and changes in data quality can alter
+        performance. Aggregate means can hide ticker-level variation.
+
+    (c) Objective mismatch: The LSTM minimizes normalized-price MSE, whereas
+        directional accuracy measures sign agreement. MSE improvements need
+        not increase up/down hit rate.
+
+    (d) Direction baseline definition: The saved no-change price forecast is
+        suitable for regression-error comparison. Its zero predicted return
+        is not a useful directional classifier under the current sign-matching
+        metric. A separately specified majority-class or momentum classifier
+        should be used in direction studies.
+
+    (e) News label mismatch: Sentence sentiment labels do not encode the
+        direction or magnitude of future returns. The FinancialPhraseBank
+        corpus is English financial text and is not an Indian-equity event
+        return dataset.
+
+    (f) Historical news coverage: A reliable fusion backtest requires news
+        publication and observation timestamps, point-in-time article
+        snapshots, ticker/entity relevance, and labels aligned to the market
+        forecast origin. Missing historical articles cannot be replaced with
+        present-day news without look-ahead bias.
+
+    (g) Heuristic fusion: The 0.6/0.4 signal formula is fixed rather than
+        fitted and validated as a directional classifier. Sentiment,
+        relevance, impact, and confidence are not necessarily calibrated.
+
+    (h) Trading costs and execution: Forecast metrics do not account for
+        transaction costs, taxes, bid-ask spreads, slippage, position sizing,
+        market impact, short-sale constraints, or risk-adjusted returns.
+        Directional accuracy is not equivalent to investment performance.
+
+    (i) Statistical uncertainty: The reported table contains descriptive
+        means and win counts. It does not include uncertainty intervals,
+        paired significance tests, or corrections for testing many tickers,
+        horizons, and configurations.
+
+    (j) Interval coverage: Current residual intervals under-cover their
+        nominal 90% target on the saved test data, especially at longer
+        horizons. They should not be interpreted as calibrated probabilities.
+
+    6.3 Threats to validity
+
+    Model comparisons can be biased by repeatedly choosing model settings
+    after observing test results. Repeated overlapping forecast origins
+    induce dependence between samples, and taking a macro-average across
+    tickers weights a small-history ticker equally with a long-history
+    ticker. The exact date range and result depend on the saved processed
+    data and model version. Reproduction should retain the immutable bundle,
+    source snapshot, and evaluation output together.
+
+================================================================================
+7. RESEARCH PLAN FOR IMPROVING DIRECTIONAL ACCURACY
+================================================================================
+
+    The current results do not justify claiming a higher-accuracy model.
+    Improvements should be earned through controlled experiments with a
+    locked final test period.
+
+    7.1 First, establish comparable direction baselines
+
+    Before changing architecture, specify the classification target and
+    compare the model with:
+
+    (1) Always-up / majority-class prediction based on the training period.
+    (2) A simple recent-return momentum rule.
+    (3) A regularized logistic classifier on lagged returns and technical
+        features.
+    (4) The current LSTM translated to up/down probabilities.
+
+    Report balanced accuracy, precision, recall, F1, ROC-AUC where appropriate,
+    and a confusion matrix. Define a neutral band for economically negligible
+    moves before examining test results. Report both coverage (fraction of
+    dates on which the system issues a non-neutral prediction) and hit rate
+    conditional on making a prediction; abstaining can raise the latter while
+    reducing prediction coverage.
+
+    7.2 Align the training objective with the desired metric
+
+    If the product goal is up/down direction, experiment with a return-sign
+    classification target or a joint objective combining return regression
+    and direction classification. Select thresholds and class weights on
+    training/validation data only. Compare against the regression model on
+    identical forecast origins. Do not infer improvement from lower training
+    loss; report held-out directional metrics.
+
+    7.3 Test LSTM and RAG as an ablation
+
+    Build a timestamped dataset with one row per ticker, forecast origin, and
+    horizon. Preserve the exact LSTM forecast available at that origin and
+    only news articles both published and observed by that time. Then compare:
+
+    A. Persistence and simple market baselines.
+    B. LSTM-only.
+    C. News sentiment-only.
+    D. LSTM plus keyword/news features.
+    E. LSTM plus FinBERT features, if enabled and benchmarked.
+    F. LSTM plus cited LLM stance/evidence features, if available.
+
+    All models must use the same rows, horizons, and chronological splits.
+    Train any fusion weights on earlier dates and freeze them before the
+    final test. Report per-horizon and per-ticker results, paired differences,
+    uncertainty estimates that account for temporal dependence, and sample
+    counts. If historical news is missing, report the reduced sample and
+    compare all ablation arms on that same subset.
+
+    7.4 Use walk-forward evaluation
+
+    After a preliminary fixed test, simulate deployment by repeatedly:
+    fitting on past data, selecting settings on a later validation segment,
+    forecasting the next block, then advancing the origin. Use purged
+    boundaries for overlapping multi-session targets. Keep a final untouched
+    period for a single confirmatory evaluation. Record every experiment to
+    avoid selecting a result from many untracked trials.
+
+    7.5 Improve data before increasing model complexity
+
+    Audit adjusted prices, corporate actions, missing rows, volume anomalies,
+    ticker mappings, and feature availability dates. Add market and sector
+    context only when historical values are aligned to each forecast origin.
+    Normalize return-based features using training data only. News features
+    should include freshness, article count, source, entity relevance, and
+    disagreement, but should not leak future revisions or labels.
+
+    7.6 Model selection, uncertainty, and economic evaluation
+
+    Use validation-only model selection; avoid selecting a separate winner
+    for every ticker based on final test performance. Evaluate uncertainty
+    coverage on untouched dates and recalibrate intervals on a disjoint
+    calibration period. If the intended use is trading, test an explicit
+    decision rule with realistic costs, turnover, exposure, drawdown, and
+    risk-adjusted metrics in addition to forecast accuracy. A statistically
+    better direction score may still be economically unusable.
+
+================================================================================
+8. CONCLUSION
+================================================================================
+
+    The current Equimaster-AI implementation is a financial research platform
+    containing per-ticker LSTM close forecasts and a timestamp-aware
+    news-retrieval/sentiment path. Its saved 57-model evaluation reports
+    mean directional accuracy of 30.13% at one session, 34.12% at five,
+    36.30% at 22, and 41.21% at 63 sessions. Its LSTM beats persistence MAE
+    for 16, 20, 15, and 18 tickers at those respective horizons. Two of the
+    59 configured models remain unavailable because the fresh-news training
+    requirement is unmet. The sentence-level news benchmark reports 76.19%
+    accuracy, but that benchmark
+    does not measure stock-price direction and also reveals weak negative
+    recall.
+
+    These findings do not demonstrate substantially higher directional
+    accuracy, a trading edge, or incremental value from RAG. The next
+    scientifically defensible step is not to claim an improvement but to
+    collect point-in-time historical news aligned to forecast origins and
+    run a controlled LSTM-only versus LSTM-plus-news walk-forward ablation,
+    with clear direction baselines and a locked test period. Any model change
+    should be retained only if the improvement repeats on unseen periods and
+    remains meaningful after uncertainty and trading costs are considered.
+
+================================================================================
+REFERENCES
+================================================================================
+
+[1] S. Hochreiter and J. Schmidhuber, "Long short-term memory," Neural
+    Computation, vol. 9, no. 8, pp. 1735-1780, 1997.
+
+[2] D. Araci, "FinBERT: Financial sentiment analysis with pre-trained
+    language models," arXiv:1908.10063, 2019.
+
+[3] P. Lewis et al., "Retrieval-augmented generation for knowledge-intensive
+    NLP tasks," in Advances in Neural Information Processing Systems,
+    vol. 33, 2020, pp. 9459-9474.
+
+[4] M. Lopez de Prado, Advances in Financial Machine Learning. Hoboken, NJ,
+    USA: Wiley, 2018.
+
+[5] P. Malo, A. Sinha, P. Korhonen, J. Wallenius, and P. Takala, "Good debt
+    or bad debt: Detecting semantic orientations in economic texts," Journal
+    of the Association for Information Science and Technology, vol. 65,
+    no. 4, pp. 782-796, 2014.
+
+[6] Equimaster-AI repository, model/evaluation implementation and saved
+    artifacts: src/training.py, src/evaluate_predictions.py,
+    src/news/retriever.py, src/news/sentiment.py,
+    data/evaluation/watchlist_all_horizons.json,
+    data/evaluation/news_financial_phrasebank.json, and PROJECT_STATUS.md.
+    Accessed October 25, 2026.
+
+================================================================================
+RESEARCH ARTIFACT AND LIMITATIONS NOTE
+================================================================================
+
+    This document is an implementation-grounded research report, not a
+    peer-reviewed publication or investment recommendation. Reported results
+    are repository evaluation outputs and may change when source data, models,
+    or evaluation code change. The FinancialPhraseBank benchmark is licensed
+    CC-BY-NC-SA-3.0; its source revision and archive checksum are recorded in
+    data/benchmarks/financial_phrasebank_provenance.json. Verify current
+    artifact hashes and rerun evaluations before external publication.
+
+    Updated: October 25, 2026

@@ -1,0 +1,27 @@
+name: Tests
+on: [push, pull_request]
+permissions:
+  contents: read
+concurrency:
+  group: tests-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  windows-python:
+    runs-on: windows-latest
+    timeout-minutes: 20
+    env:
+      NUMBA_DISABLE_JIT: "1"
+      EQUIMASTER_FINBERT: "0"
+      EQUIMASTER_EMBEDDINGS: "0"
+      TF_NUM_INTRAOP_THREADS: "2"
+      TF_NUM_INTEROP_THREADS: "2"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: requirements-lock.txt
+      - run: python -m pip install -r requirements-lock.txt
+      - run: python -m pip check
+      - run: python -m pytest tests -q
