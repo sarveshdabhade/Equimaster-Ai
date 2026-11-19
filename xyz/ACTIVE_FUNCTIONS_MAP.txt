@@ -31,7 +31,7 @@ NORMAL EXECUTION FLOWS
 NAMED FUNCTION INVENTORY
 Signatures and line numbers are extracted from Python ASTs; lambdas are omitted.
 
-Production modules: 98; named definitions: 354.
+Production modules: 98; named definitions: 355.
 
 app.py
 
@@ -121,7 +121,7 @@ scripts/news_ingest.py
   L26: main()
 
 scripts/package_release.py
-  L21: main()
+  L22: main()
 
 scripts/quick_run.py
   L11: main()
@@ -178,7 +178,8 @@ scripts/validate_browser.py
   L89: main.news()
   L93: main.fundamentals()
   L101: main.unavailable()
-  L119: main.mobile()
+  L119: main.index_forecast()
+  L132: main.mobile()
 
 scripts/validate_runtime.py
   L19: main()
@@ -547,7 +548,7 @@ tabs/fundamentals.py
 tabs/lstm_model.py
   L20: _run_fusion_shadow(df, forecast, artifact, ticker, horizon, shadow_version)
   L78: _forecast_chart(df, result, window_size, horizon, horizon_label)
-  L143: render_lstm_tab(df, ticker, MODEL_PATH=None, SCALER_PATH=None)
+  L144: render_lstm_tab(df, ticker, MODEL_PATH=None, SCALER_PATH=None)
 
 tabs/news_sentinel.py
   L14: _format_published_at(value)

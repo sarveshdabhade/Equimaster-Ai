@@ -90,6 +90,7 @@ def _forecast_chart(df, result, window_size, horizon, horizon_label):
     actual_close = float(history.iloc[-1])
     final_prices = result.get("final_prices")
     estimate = float(np.asarray(final_prices if final_prices is not None else result["prices"], dtype=float)[-1])
+    quote_unit = result.get("quote_unit", "INR")
 
     chart = go.Figure()
     chart.add_trace(go.Scatter(
@@ -98,7 +99,7 @@ def _forecast_chart(df, result, window_size, horizon, horizon_label):
         name="Historical close",
         mode="lines",
         line={"color": "#91A4BD", "width": 2},
-        hovertemplate="Historical close: INR %{y:,.2f}<extra></extra>",
+        hovertemplate=f"Historical close: {quote_unit} %{{y:,.2f}}<extra></extra>",
     ))
     chart.add_trace(go.Scatter(
         x=[last_x, target_x],
@@ -115,7 +116,7 @@ def _forecast_chart(df, result, window_size, horizon, horizon_label):
         name=f"Final estimate · {horizon_label} target",
         mode="markers",
         marker={"color": "#8BE28B", "size": 13, "symbol": "diamond", "line": {"color": "#E5FFE5", "width": 1}},
-        hovertemplate=f"{horizon_label} target estimate: INR %{{y:,.2f}}<extra></extra>",
+        hovertemplate=f"{horizon_label} target estimate: {quote_unit} %{{y:,.2f}}<extra></extra>",
     ))
     chart.add_vline(x=last_x, line_dash="dash", line_color="#718096", line_width=1)
     chart.add_annotation(x=0.02, xref="paper", y=1.08, yref="paper", text="RECENT PRICE HISTORY",
@@ -130,7 +131,7 @@ def _forecast_chart(df, result, window_size, horizon, horizon_label):
             "tickvals": [0, max(0, last_x // 2), last_x, target_x],
             "ticktext": [f"-{len(history)} sessions", "Recent history", "Last close", f"{horizon_label} target"],
         },
-        yaxis_title="Close (INR)",
+        yaxis_title=f"Close ({quote_unit})",
         template=CHART_TEMPLATE,
         **CHART_STYLE,
         height=430,
@@ -143,6 +144,8 @@ def _forecast_chart(df, result, window_size, horizon, horizon_label):
 def render_lstm_tab(df, ticker, MODEL_PATH=None, SCALER_PATH=None):
     st.subheader("Deep Learning Price Forecast")
     ticker = canonical_ticker(ticker)
+    quote_unit = "points" if ticker == "NSEI" else "INR"
+    value_prefix, value_suffix = ("", " points") if ticker == "NSEI" else ("INR ", "")
     horizon = st.selectbox("Forecast Period", HORIZONS, format_func=HORIZON_LABELS.__getitem__)
     try:
         artifact = resolve_artifact(ticker, horizon)
@@ -182,11 +185,12 @@ def render_lstm_tab(df, ticker, MODEL_PATH=None, SCALER_PATH=None):
     if stored and len(stored) == 5 and stored[0] == signature:
         _, result, context, shadow, final_estimate = stored
         prices = result["prices"]
+        result["quote_unit"] = quote_unit
         result["final_prices"] = final_estimate["final_prices"]
         predicted_return = float(final_estimate["final_return"])
         a, b = st.columns(2)
-        a.metric(f"Final Estimate - {HORIZON_LABELS[horizon]}", f"INR {final_estimate['final_predicted_close']:,.2f}", f"{predicted_return:+.2%}")
-        b.metric("LSTM baseline", f"INR {prices[-1]:,.2f}",
+        a.metric(f"Final Estimate - {HORIZON_LABELS[horizon]}", f"{value_prefix}{final_estimate['final_predicted_close']:,.2f}{value_suffix}", f"{predicted_return:+.2%}")
+        b.metric("LSTM baseline", f"{value_prefix}{prices[-1]:,.2f}{value_suffix}",
                  f"{final_estimate['final_predicted_close'] / float(prices[-1]) - 1:+.2%} vs LSTM")
         if shadow_version:
             with st.expander("Experimental LLM + LSTM shadow forecast"):
@@ -197,7 +201,7 @@ def render_lstm_tab(df, ticker, MODEL_PATH=None, SCALER_PATH=None):
                     fused_close = float(shadow["fused_predicted_close"])
                     st.metric(
                         f"Fusion candidate close · {HORIZON_LABELS[horizon]}",
-                        f"INR {fused_close:,.2f}",
+                        f"{value_prefix}{fused_close:,.2f}{value_suffix}",
                         f"{fused_close / float(prices[-1]) - 1:+.2%} vs LSTM",
                     )
                     st.caption(

@@ -116,6 +116,19 @@ def main():
             page.get_by_text("That symbol is outside the current research coverage. Select a company below.", exact=True).wait_for(timeout=90000)
             return "All models available; unsupported-symbol warning exercised. Missing-model rendering also has offline regression coverage."
 
+        def index_forecast():
+            page.goto(base + "/stock_analyzer?ticker=NSEI", wait_until="domcontentloaded")
+            page.get_by_text("LSTM Model", exact=True).wait_for(timeout=90000)
+            page.get_by_text("LSTM Model", exact=True).click()
+            page.get_by_role("button", name="Generate Final Estimate", exact=True).wait_for(timeout=90000)
+            page.get_by_role("button", name="Generate Final Estimate", exact=True).click()
+            download("Export Forecast CSV")
+            values = page.locator('[data-testid="stMetricValue"]').all_text_contents()
+            assert sum("points" in value for value in values) >= 2
+            chart = page.locator('[data-testid="stPlotlyChart"] .js-plotly-plot').first
+            chart.wait_for(state="visible", timeout=90000)
+            assert chart.evaluate("element => element.layout.yaxis.title.text") == "Close (points)"
+
         def mobile():
             page.set_viewport_size({"width": 390, "height": 844})
             page.goto(base, wait_until="domcontentloaded")
@@ -134,6 +147,7 @@ def main():
                              ("Company overview and price CSV", overview), ("Technical chart", technical),
                              ("Forecast and CSV", forecast), ("News evidence CSV", news),
                              ("Fundamentals, statements and peers CSV", fundamentals),
+                             ("Index forecast units and CSV", index_forecast),
                              ("Unavailable symbol/model state", unavailable), ("Mobile layout", mobile)):
             check(name, action)
         browser.close()
