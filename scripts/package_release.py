@@ -1,5 +1,6 @@
 """Package a clean source checkout with its validated local runtime artifacts."""
 from datetime import datetime, timezone
+from contextlib import closing
 import argparse
 import hashlib
 import json
@@ -77,7 +78,7 @@ def main():
         database = ROOT / "data/fundamental_history.sqlite3"
         if database.exists():
             snapshot = Path(temporary) / database.name
-            with sqlite3.connect(database.as_uri() + "?mode=ro", uri=True) as source, sqlite3.connect(snapshot) as target:
+            with closing(sqlite3.connect(database.as_uri() + "?mode=ro", uri=True)) as source, closing(sqlite3.connect(snapshot)) as target:
                 source.backup(target)
             files["data/fundamental_history.sqlite3"] = snapshot
         with zipfile.ZipFile(args.output, "x", compression=zipfile.ZIP_DEFLATED, compresslevel=6) as archive:
