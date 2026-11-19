@@ -406,10 +406,11 @@ def test_training_blocks_a_ticker_without_twenty_fresh_news_items(tmp_path, monk
         training.train_ticker("TEST", horizons=(1,))
 
 
-def test_training_manager_trains_eligible_stocks_and_blocks_short_news(monkeypatch):
+def test_training_manager_trains_eligible_stocks_and_blocks_short_news(monkeypatch, tmp_path):
     from scripts import train_manager
 
     started_training = []
+    monkeypatch.setattr(train_manager, "ROOT", tmp_path)
     monkeypatch.setattr(train_manager, "write_progress", lambda *args, **kwargs: None)
     monkeypatch.setattr(
         train_manager,
@@ -429,6 +430,7 @@ def test_training_manager_trains_eligible_stocks_and_blocks_short_news(monkeypat
         train_manager.main(tickers=["FIRST.NS", "SECOND.NS"])
 
     assert started_training == ["FIRST.NS"]
+    assert (tmp_path / "logs/training_news.json").is_file()
 
 
 def test_panel_training_blocks_before_fit_if_any_ticker_lacks_twenty_news(monkeypatch):
